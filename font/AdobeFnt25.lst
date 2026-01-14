@@ -1,0 +1,53 @@
+%!Adobe-FontList 1.25
+%Locale:0x415
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:TrueType
+FontName:Montserrat-ThinItalic
+FamilyName:Montserrat
+StyleName:Thin Italic
+FullName:Montserrat Thin Italic
+MenuName:Montserrat Thin
+FamilyPrefix:MontserratItalic
+StyleBits:1
+WritingScript:Roman
+OutlineFileName:C:\Users\lyski\Documents\moje-portfolio\Font\Montserrat-Italic-VariableFont_wght.ttf
+DataFormat:sfntData
+hasSVG:no
+hasCOLR:no
+VariableFontType:TrueTypeVariableFont
+FileLength:701156
+FileModTime:1757030914
+WeightClass:100
+WidthClass:5
+AngleClass:1
+NameArray:0,Win,1,Montserrat Thin
+NameArray:0,Win,16,Montserrat
+%EndFont
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:TrueType
+FontName:Montserrat-Thin
+FamilyName:Montserrat
+StyleName:Thin
+FullName:Montserrat Thin
+MenuName:Montserrat Thin
+FamilyPrefix:Montserrat
+StyleBits:0
+WritingScript:Roman
+OutlineFileName:C:\Users\lyski\Documents\moje-portfolio\Font\Montserrat-VariableFont_wght.ttf
+DataFormat:sfntData
+hasSVG:no
+hasCOLR:no
+VariableFontType:TrueTypeVariableFont
+FileLength:688600
+FileModTime:1757030914
+WeightClass:100
+WidthClass:5
+AngleClass:0
+NameArray:0,Win,1,Montserrat Thin
+NameArray:0,Win,16,Montserrat
+%EndFont
+
