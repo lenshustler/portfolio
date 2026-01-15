@@ -192,3 +192,54 @@ footer p {
 
 
 }
+
+footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    padding-top: 40px; /* Odstęp od ostatniego zdjęcia */
+}
+
+.footer-name {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: #000;
+    text-transform: uppercase;
+    margin-bottom: 1px; /* Ekstremalnie mały odstęp od licznika */
+}
+
+.pentax-counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* TO JEST KLUCZ: Wymuszamy pustą przestrzeń POD licznikiem */
+    margin-bottom: 50px; 
+}
+
+.counter-frame {
+    width: 30px;           /* Jeszcze mniejszy, bardziej dyskretny */
+    height: 20px;
+    background-color: #000;
+    border: 1.5px solid #888; 
+    border-radius: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,1);
+}
+
+#frame-count {
+    font-family: 'Courier New', monospace;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.counter-label {
+    font-size: 0.35rem;
+    margin-top: 3px;
+    color: #bbb;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
