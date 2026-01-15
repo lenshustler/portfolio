@@ -84,11 +84,23 @@ document.addEventListener('DOMContentLoaded', () => {
     async function getVisits() {
         const el = document.getElementById('frame-count');
         if (!el) return;
+        
+        // Zmieniamy nazwę na unikalną, żeby stworzyć nową bazę
+        const key = "alan_pentax_final_v10"; 
+        
         try {
-            const r = await fetch('https://api.counterapi.dev/v1/user/alan_lysiak_v7/count');
+            // Używamy endpointu 'up', który zwiększa licznik o 1 przy każdym odświeżeniu
+            const r = await fetch(`https://api.counterapi.dev/v1/user/${key}/up`);
             const d = await r.json();
-            if (d.count) el.innerText = d.count.toString().padStart(2, '0');
-        } catch (err) { el.innerText = "36"; }
+            
+            if (d && d.count !== undefined) {
+                el.innerText = d.count.toString().padStart(2, '0');
+            }
+        } catch (err) {
+            console.log("Błąd licznika:", err);
+            el.innerText = "36"; 
+        }
     }
     getVisits();
 });
+
