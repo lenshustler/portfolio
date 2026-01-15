@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. POBIERANIE ELEMENTÓW
+    // 1. ELEMENTY
     const grid = document.querySelector('.gallery-grid');
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let images = [];
     let currentIndex = 0;
 
-    // 2. MIESZANIE I LISTA ZDJĘĆ
+    // 2. MIESZANIE ZDJĘĆ
     const cards = Array.from(document.querySelectorAll('.photo-card'));
     if (grid && cards.length > 0) {
         cards.sort(() => Math.random() - 0.5);
@@ -21,101 +21,52 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = card.querySelector('img');
             if (img) {
                 images.push(img);
-                img.setAttribute('draggable', 'false'); // Ochrona przed przeciąganiem
+                img.setAttribute('draggable', 'false');
             }
         });
     }
 
-    // 3. FUNKCJA POKAZYWANIA ZDJĘCIA
+    // 3. OBSŁUGA LIGHTBOXA
     function showImage(index) {
         if (!lightbox || !lightboxImg || images.length === 0) return;
-        
         if (index < 0) index = images.length - 1;
         if (index >= images.length) index = 0;
-        
         currentIndex = index;
         lightboxImg.src = images[currentIndex].src;
         lightbox.style.display = "flex";
         document.body.style.overflow = 'hidden';
     }
 
-    // 4. KLIKANIE W MINIATURKI
+    // 4. EVENTY (KLIKANIE, STRZAŁKI, ZAMYKANIE)
     images.forEach((img, index) => {
-        img.style.cursor = "pointer";
-        img.onclick = (e) => {
-            e.preventDefault();
-            showImage(index);
-        };
+        img.onclick = () => showImage(index);
     });
 
-    // 5. STRZAŁKI NAWIGACJI
-    if (nextBtn) {
-        nextBtn.onclick = (e) => {
-            e.stopPropagation();
-            showImage(currentIndex + 1);
-        };
-    }
+    if (nextBtn) nextBtn.onclick = (e) => { e.stopPropagation(); showImage(currentIndex + 1); };
+    if (prevBtn) prevBtn.onclick = (e) => { e.stopPropagation(); showImage(currentIndex - 1); };
 
-    if (prevBtn) {
-        prevBtn.onclick = (e) => {
-            e.stopPropagation();
-            showImage(currentIndex - 1);
-        };
-    }
-
-    // 6. ZAMYKANIE LIGHTBOXA
     const closeLightbox = () => {
-        if (lightbox) {
-            lightbox.style.display = "none";
-            document.body.style.overflow = 'auto';
-        }
+        lightbox.style.display = "none";
+        document.body.style.overflow = 'auto';
     };
 
     if (closeBtn) closeBtn.onclick = closeLightbox;
-
     if (lightbox) {
-        lightbox.onclick = (e) => {
-            // Zamknij jeśli kliknięto w tło lub samo zdjęcie
-            if (e.target === lightbox || e.target === lightboxImg) {
-                closeLightbox();
-            }
-        };
+        lightbox.onclick = (e) => { if (e.target === lightbox || e.target === lightboxImg) closeLightbox(); };
     }
 
-    // 7. GESTY SWIPE (Dla telefonów)
+    // 5. GESTY SWIPE
     let touchstartX = 0;
-    let touchendX = 0;
-
     if (lightbox) {
-        lightbox.addEventListener('touchstart', e => {
-            touchstartX = e.changedTouches[0].screenX;
-        }, {passive: true});
-
+        lightbox.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, {passive: true});
         lightbox.addEventListener('touchend', e => {
-            touchendX = e.changedTouches[0].screenX;
-            if (touchendX < touchstartX - 50) showImage(currentIndex + 1); // Swipe w lewo
-            if (touchendX > touchstartX + 50) showImage(currentIndex - 1); // Swipe w prawo
+            let touchendX = e.changedTouches[0].screenX;
+            if (touchendX < touchstartX - 50) showImage(currentIndex + 1);
+            if (touchendX > touchstartX + 50) showImage(currentIndex - 1);
         }, {passive: true});
     }
 
-    // 8. PRZYCISK BACK TO TOP
-    window.addEventListener('scroll', () => {
-        if (backToTop) {
-            if (window.scrollY > 300) {
-                backToTop.style.display = "block";
-            } else {
-                backToTop.style.display = "none";
-            }
-        }
-    });
-
-    if (backToTop) {
-        backToTop.onclick = () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-    }
-
-    // 9. KLAWIATURA I OCHRONA
+    // 6. KLAWIATURA I OCHRONA
     document.onkeydown = (e) => {
         if (lightbox && lightbox.style.display === "flex") {
             if (e.key === "ArrowRight") showImage(currentIndex + 1);
@@ -123,9 +74,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === "Escape") closeLightbox();
         }
     };
+    document.addEventListener('contextmenu', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
-    // Blokada prawego przycisku na zdjęciach
-    document.addEventListener('contextmenu', (e) => {
-        if (e.target.tagName === 'IMG') e.preventDefault();
-    });
+    // 7. POWRÓT NA GÓRĘ
+    window.onscroll = () => { if (backToTop) backToTop.style.display = window.scrollY > 300 ? "block" : "none"; };
+    if (backToTop) backToTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // 8. LICZNIK (BEZPIECZNA FUNKCJA)
+    async function getVisits() {
+        const el = document.getElementById('frame-count');
+        if (!el) return;
+        try {
+            const r = await fetch('https://api.counterapi.dev/v1/user/alan_lysiak_v7/count');
+            const d = await r.json();
+            if (d.count) el.innerText = d.count.toString().padStart(2, '0');
+        } catch (err) { el.innerText = "36"; }
+    }
+    getVisits();
 });
