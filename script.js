@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let images = [];
     let currentIndex = 0;
 
-    // 2. MIESZANIE ZDJĘĆ
+// 2. MIESZANIE ZDJĘĆ + PŁYNNE POJAWIANIE SIĘ
     const cards = Array.from(document.querySelectorAll('.photo-card'));
     if (grid && cards.length > 0) {
         cards.sort(() => Math.random() - 0.5);
@@ -22,6 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (img) {
                 images.push(img);
                 img.setAttribute('draggable', 'false');
+
+                // Jeśli zdjęcie jest już w pamięci podręcznej (cache), pokazujemy od razu
+                if (img.complete) {
+                    img.classList.add('loaded');
+                } else {
+                    // W przeciwnym razie czekamy, aż się wczyta i wtedy dodajemy klasę
+                    img.onload = () => img.classList.add('loaded');
+                }
             }
         });
     }
@@ -103,4 +111,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     getVisits();
 });
+
 
