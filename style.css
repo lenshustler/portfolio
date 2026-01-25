@@ -5,6 +5,10 @@
     font-style: normal;
     font-display: swap; /* Zapobiega znikanu tekstu przy ładowaniu */
 }
+img {
+    content-visibility: auto; /* Optymalizuje renderowanie poza ekranem */
+    transition: opacity 0.3s ease-in-out;
+}
 
 /* 1. RESET I PODSTAWY */
 * {
@@ -243,3 +247,5 @@ footer {
     letter-spacing: 1px;
     text-transform: uppercase;
 }
+
+
