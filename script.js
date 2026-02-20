@@ -11,17 +11,28 @@ document.addEventListener('DOMContentLoaded', () => {
     let images = [];
     let currentIndex = 0;
 
-    // 2. MIESZANIE ZDJĘĆ
+    // 2. MIESZANIE ZDJĘĆ I INTELIGENTNE ŁADOWANIE (Zoptymalizowane)
     const cards = Array.from(document.querySelectorAll('.photo-card'));
     if (grid && cards.length > 0) {
         cards.sort(() => Math.random() - 0.5);
         grid.innerHTML = "";
-        cards.forEach(card => {
+        cards.forEach((card, index) => {
             grid.appendChild(card);
             const img = card.querySelector('img');
             if (img) {
                 images.push(img);
                 img.setAttribute('draggable', 'false');
+                
+                // Przydzielanie priorytetu po potasowaniu
+                if (index < 6) {
+                    // Pierwsze 6 zdjęć na samej górze ładuje się błyskawicznie
+                    img.removeAttribute('loading');
+                    img.setAttribute('decoding', 'async');
+                } else {
+                    // Reszta zdjęć czeka, aż zaczniesz scrollować w dół
+                    img.setAttribute('loading', 'lazy');
+                    img.setAttribute('decoding', 'async');
+                }
             }
         });
     }
@@ -80,20 +91,19 @@ document.addEventListener('DOMContentLoaded', () => {
     window.onscroll = () => { if (backToTop) backToTop.style.display = window.scrollY > 300 ? "block" : "none"; };
     if (backToTop) backToTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // 8. LICZNIK (BEZPIECZNA FUNKCJA)
+    // 8. LICZNIK (BEZPIECZNA FUNKCJA - POKAZUJE PEŁNĄ LICZBĘ WEJŚĆ)
     async function getVisits() {
         const el = document.getElementById('frame-count');
         if (!el) return;
         
-        // Zmieniamy nazwę na unikalną, żeby stworzyć nową bazę
         const key = "alan_pentax_final_v10"; 
         
         try {
-            // Używamy endpointu 'up', który zwiększa licznik o 1 przy każdym odświeżeniu
             const r = await fetch(`https://api.counterapi.dev/v1/user/${key}/up`);
             const d = await r.json();
             
             if (d && d.count !== undefined) {
+                // Bez modulo (%) - licznik pokaże prawdziwą wartość, np. 125
                 el.innerText = d.count.toString().padStart(2, '0');
             }
         } catch (err) {
