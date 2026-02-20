@@ -99,7 +99,6 @@ nav {
     cursor: pointer;
     user-select: none;
     -webkit-user-drag: none;
-    content-visibility: auto; /* OGROMNY boost do szybkości ładowania i scrollowania */
 }
 
 /* 4. KONTAKT I STOPKA */
@@ -179,3 +178,4 @@ footer p {
 
 .close {
     position
+
