@@ -177,5 +177,63 @@ footer p {
 }
 
 .close {
-    position
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    font-size: 35px;
+    cursor: pointer;
+    color: #000;
+    z-index: 1000001;
+}
 
+.nav-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 40px;
+    padding: 20px;
+    cursor: pointer;
+    color: #000;
+    z-index: 1000001;
+    user-select: none;
+}
+
+.prev { left: 10px; }
+.next { right: 10px; }
+
+/* 7. LICZNIK W STYLU PENTAX (Z miejscem na >100 wejść) */
+.pentax-counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 50px; 
+}
+
+.counter-frame {
+    min-width: 30px; 
+    width: auto;     
+    padding: 0 6px;  
+    height: 20px;
+    background-color: #000;
+    border: 1.5px solid #888; 
+    border-radius: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,1);
+}
+
+#frame-count {
+    font-family: 'Courier New', monospace;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.counter-label {
+    font-size: 0.35rem;
+    margin-top: 3px;
+    color: #bbb;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
