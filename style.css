@@ -25,7 +25,6 @@ header {
     text-align: center;
 }
 
-
 .logo {
     font-size: 1.8rem;
     font-weight: 400;
@@ -33,7 +32,7 @@ header {
     text-transform: uppercase;
 }
 
-/* 1. NAWIGACJA - Układ pionowy (Logo nad przyciskami) */
+/* 2. NAWIGACJA - Układ pionowy (Logo nad przyciskami) */
 nav {
     display: flex;
     flex-direction: column;
@@ -41,7 +40,7 @@ nav {
     gap: 45px; /* Odstęp między logo a przyciskami */
 }
 
-/* 2. LISTA LINKÓW - To naprawia kropki i ustawia je w poziomie */
+/* LISTA LINKÓW */
 .nav-links {
     list-style: none;      /* Usuwa kropki */
     display: flex;         /* Ustawia linki obok siebie */
@@ -51,7 +50,7 @@ nav {
     margin: 0;
 }
 
-/* 3. WYGLĄD LINKÓW */
+/* WYGLĄD LINKÓW */
 .nav-links a {
     text-decoration: none;
     color: #000;
@@ -65,10 +64,8 @@ nav {
 .nav-links a:hover {
     opacity: 0.4;
 }
-	
-
-
-/* 3. GALERIA - Symetryczna i działająca */
+    
+/* 3. GALERIA - Symetryczna i działająca (Z OPTYMALIZACJĄ SAFARI) */
 .gallery-section {
     width: 95%;
     max-width: 1600px;
@@ -86,10 +83,13 @@ nav {
 @media (max-width: 600px) { .gallery-grid { column-count: 1; } }
 
 .photo-card {
-    display: block;
+    display: inline-block; /* POPRAWKA DLA SAFARI: zmiana z block na inline-block */
     width: 100%;
     margin-bottom: 8px;
     break-inside: avoid;
+    -webkit-column-break-inside: avoid; /* Wymuszenie dla Safari */
+    page-break-inside: avoid;
+    vertical-align: top; /* Równa wszystko idealnie do górnej krawędzi */
 }
 
 .photo-card img {
@@ -99,17 +99,21 @@ nav {
     cursor: pointer;
     user-select: none;
     -webkit-user-drag: none;
+    content-visibility: auto; /* OGROMNY boost do szybkości ładowania i scrollowania */
 }
 
-/* 4. KONTAKT I STOPKA - Przywrócenie małego szarego napisu */
+/* 4. KONTAKT I STOPKA */
 .contact-container {
     padding: 60px 20px;
     text-align: center;
 }
 
 footer {
-    padding: 60px 0 40px 0;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    padding: 40px 0; /* Zunifikowane paddingi stopki */
 }
 
 footer p {
@@ -118,6 +122,14 @@ footer p {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 400;
+}
+
+.footer-name {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: #000;
+    text-transform: uppercase;
+    margin-bottom: 1px; /* Ekstremalnie mały odstęp od licznika */
 }
 
 /* 5. BACK TO TOP - Minimalistyczna czarna strzałka */
@@ -166,80 +178,4 @@ footer p {
 }
 
 .close {
-    position: fixed;
-    top: 30px;
-    right: 30px;
-    font-size: 35px;
-    cursor: pointer;
-    color: #000;
-    z-index: 1000001;
-}
-
-.nav-arrow {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 40px;
-    padding: 20px;
-    cursor: pointer;
-    color: #000;
-    z-index: 1000001;
-    user-select: none;
-}
-
-.prev { left: 10px; }
-.next { right: 10px; }
-
-
-}
-
-footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #fff;
-    padding-top: 40px; /* Odstęp od ostatniego zdjęcia */
-}
-
-.footer-name {
-    font-size: 0.6rem;
-    letter-spacing: 2px;
-    color: #000;
-    text-transform: uppercase;
-    margin-bottom: 1px; /* Ekstremalnie mały odstęp od licznika */
-}
-
-.pentax-counter {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* TO JEST KLUCZ: Wymuszamy pustą przestrzeń POD licznikiem */
-    margin-bottom: 50px; 
-}
-
-.counter-frame {
-    width: 30px;           /* Jeszcze mniejszy, bardziej dyskretny */
-    height: 20px;
-    background-color: #000;
-    border: 1.5px solid #888; 
-    border-radius: 2px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,1);
-}
-
-#frame-count {
-    font-family: 'Courier New', monospace;
-    color: #fff;
-    font-size: 0.8rem;
-    font-weight: bold;
-}
-
-.counter-label {
-    font-size: 0.35rem;
-    margin-top: 3px;
-    color: #bbb;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
+    position
