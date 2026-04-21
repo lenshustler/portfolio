@@ -92,24 +92,31 @@ document.addEventListener('DOMContentLoaded', () => {
     if (backToTop) backToTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // 8. LICZNIK (BEZPIECZNA FUNKCJA - POKAZUJE PEŁNĄ LICZBĘ WEJŚĆ)
- async function getVisits() {
+async function getGlobalVisits() {
         const el = document.getElementById('frame-count');
         if (!el) return;
-        
+
+        // Twoja ciężko wypracowana baza (wpisz tu ile chcesz)
+        const baseVisits = 200; 
+
         try {
-            // Przeszliśmy na nowszy, stabilniejszy endpoint (v2)
-            const r = await fetch(`https://api.counterapi.dev/v2/alan_portfolio/visits_pentax/up`);
+            // Uderzamy do nowego, szybkiego serwera API (Abacus)
+            // Używamy unikalnej przestrzeni 'alan_lysiak_portfolio' i klucza 'pentax_v1'
+            const r = await fetch('https://abacus.jasoncameron.dev/hit/alan_lysiak_portfolio/pentax_v1');
             const d = await r.json();
             
-            if (d && d.count !== undefined) {
-                // Dodajemy Twoje odzyskane 120 wejść do nowego licznika!
-                const realCount = d.count + 200; 
+            // Abacus zwraca wynik pod nazwą 'value'
+            if (d && d.value !== undefined) {
+                // Sumujemy nowe wejścia z Twoją bazą 120
+                const realCount = baseVisits + d.value;
                 el.innerText = realCount.toString().padStart(2, '0');
             }
         } catch (err) {
-            console.log("Błąd licznika:", err);
-            el.innerText = "36"; 
+            console.log("Serwer licznika zablokowany przez AdBlocka lub awarię:", err);
+            // Jeśli komuś AdBlock zablokuje skrypt, to przynajmniej wyświetlimy 
+            // Twoją bazę (120), żeby aparat nie był pusty, ani nie pokazywał 36!
+            el.innerText = baseVisits.toString().padStart(2, '0');
         }
     }
-    getVisits();
+    getGlobalVisits();
 });
