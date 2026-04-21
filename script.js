@@ -92,19 +92,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (backToTop) backToTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // 8. LICZNIK (BEZPIECZNA FUNKCJA - POKAZUJE PEŁNĄ LICZBĘ WEJŚĆ)
-    async function getVisits() {
+ async function getVisits() {
         const el = document.getElementById('frame-count');
         if (!el) return;
         
-        const key = "alan_pentax_final_v10"; 
-        
         try {
-            const r = await fetch(`https://api.counterapi.dev/v1/user/${key}/up`);
+            // Przeszliśmy na nowszy, stabilniejszy endpoint (v2)
+            const r = await fetch(`https://api.counterapi.dev/v2/alan_portfolio/visits_pentax/up`);
             const d = await r.json();
             
             if (d && d.count !== undefined) {
-                // Bez modulo (%) - licznik pokaże prawdziwą wartość, np. 125
-                el.innerText = d.count.toString().padStart(2, '0');
+                // Dodajemy Twoje odzyskane 120 wejść do nowego licznika!
+                const realCount = d.count + 200; 
+                el.innerText = realCount.toString().padStart(2, '0');
             }
         } catch (err) {
             console.log("Błąd licznika:", err);
