@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 1. ZAKTUALIZOWANE SEO I TYTUŁ -->
+    <title>Alan Łysiak | Fotografia</title>
+    <meta name="description" content="Portfolio fotograficzne Alan Łysiak">
+    <meta property="og:title" content="Alan Łysiak | Fotografia">
+    <meta property="og:description" content="Zobacz moje portfolio">
+    <meta property="og:type" content="website">
+
+    <link rel="icon" type="image/png" href="favicon.png?v=123">
+    <link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+
+    <!-- 1. SUROWY NAGŁÓWEK Z WYSZUKIWARKĄ -->
+    <header>
+        <div class="logo">Alan Łysiak</div>
+        
+        <nav class="search-nav">
+            <input type="text" id="search-input" class="arnold-search" placeholder="wpisz czego szukasz (np. street, portret)..." autocomplete="off">
+        </nav>
+    </header>
+
+    <!-- 2. GALERIA -->
+    <section id="gallery" class="gallery-section">
+        <div class="gallery-grid">
+            
+            <!-- ZDJĘCIA GŁÓWNE (HIGHLIGHT) - Ładują się błyskawicznie, bez opóźnień -->
+            <div class="photo-card highlight" data-category="street vienna wieden austria ricoh"><img src="images/foto01.webp" alt="Street photography Vienna - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="landscape etna sicily sycylia italy italia wlochy nikon"><img src="images/foto02.webp" alt="Etna sunset Taormina - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="street venice wenecja venezia wlochy italy italia fujifilm"><img src="images/foto03.webp" alt="Vacation Venice - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="street italia italy wlochy treviso fujifilm"><img src="images/foto04.webp" alt="Funny street photography Italy - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="street catania katania italy italia wlochy sicily sycylia nikon"><img src="images/foto05.webp" alt="Catania Sicily fish market - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="street black and white monochrome czarno biale gdynia polska polandricoh"><img src="images/foto06.webp" alt="Black and white street photo - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="ricoh polska poland"><img src="images/foto07.webp" alt="Łapalice zamek Ricoh GR - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="street gdynia polska poland ricoh plaza beach"><img src="images/foto08.webp" alt="Gdynia street photo bulwar - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="street catania katania italy italia wlochy sicily sycylia nikon"><img src="images/foto09.webp" alt="Catania Sicily market - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="street catania katania italy italia wlochy sicily sycylia nikon"><img src="images/foto10.webp" alt="Sicily Syracuse - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="street lichtenstein travel ricoh cow krowa"><img src="images/foto11.webp" alt="Lichtenstein black and white - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="abstract abstrakcja street odbicia monochrome czarno biale black white fujifilm gdynia poland polska"><img src="images/foto12.webp" alt="Abstract street photo - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="street catania katania italy italia wlochy sicily sycylia nikon"><img src="images/foto13.webp" alt="Sicily Catania street photo - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="street syracuse syrakuzy travel italy italia wlochy sicily sycylia nikon beach plaza"><img src="images/foto14.webp" alt="Sicily Syracuse Ortigia - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="landscape dolomity dolomites italy italia wlochy travel ricoh"><img src="images/foto15.webp" alt="Relax Dolomites Italy Ricoh GR3 - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="street ricoh cyprus cypr nicosia samochod car"><img src="images/foto16.webp" alt="BMW E21 Nicosia Cyprus - Alan Łysiak"></div>
+            
+            <!-- UKRYTE ZDJĘCIA (BEZ HIGHLIGHT) - Ładują się w tle dzięki loading="lazy" -->
+            <div class="photo-card" data-category="street catania katania italy italia wlochy sicily sycylia nikon"><img src="images/foto17.webp" alt="Catania marketplace Sicily - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="street syracuse syrakuzy plaza beach italy italia wlochy sicily sycylia nikon "><img src="images/foto18.webp" alt="Sunny Sicily Syracuse Ortigia beach - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="landscape long exposure alicante spain hiszpania travel sunset zachod olympus"><img src="images/foto19.webp" alt="Sunset Alicante Spain - Alan Łysiak" loading="lazy"></div>
+            
+            <div class="photo-card highlight" data-category="street ricoh nicosia cypr cyprus"><img src="images/foto20.webp" alt="Cyprus Nicosia - Alan Łysiak"></div>
+            
+            <div class="photo-card" data-category="street catania katania italy italia wlochy sicily sycylia nikon"><img src="images/foto21.webp" alt="Catania market Italy Sicily - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="black white monochrome czarno biale syrakuzy syracuse italia wlochy italy sicily nikon sycylia abstract"><img src="images/foto22.webp" alt="Ortigia Syracuse Igor Mitoraj sculpture Ikaria - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="landscape street alicante spain hiszpania olympus"><img src="images/foto23.webp" alt="San Juan beach Alicante Spain - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="street prague praga czechy czech long exposure ricoh"><img src="images/foto24.webp" alt="Prague Czech street photo - Alan Łysiak" loading="lazy"></div>
+            
+            <div class="photo-card highlight" data-category="street sicily sycylia wlochy katania italia italy car samochod nikon"><img src="images/foto25.webp" alt="Catania Sicily Porsche 924 - Alan Łysiak"></div>
+            
+            <div class="photo-card highlight" data-category="street czarno biale monochrome black white catania sicily wlochy syrakuzy nikon"><img src="images/foto26.webp" alt="Monochrome street photography silhouette - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="abstract long exposure spain hiszpania alicante"><img src="images/foto27.webp" alt="Abstract long exposure Spain - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="astrography astrografia gwiazdy landscape krajobraz long exposure alicante spain"><img src="images/foto28.webp" alt="Astrophotography long exposure star trails - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="street sicily sycylia wlochy katania italia italy nikon"><img src="images/foto29.webp" alt="Catania Sicily marketplace - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card highlight" data-category="street sicily sycylia wlochy katania italia italy nikon"><img src="images/foto30.webp" alt="Catania fish market Sicily - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="landscape gdynia babie doly poland polska fujifilm monochrome czarno biale black white long exposure"><img src="images/foto31.webp" alt="Gdynia Babie Doły torpedownia long exposure - Alan Łysiak" loading="lazy"></div>
+            
+            <div class="photo-card highlight" data-category="estonia travel street ricoh"><img src="images/foto32.webp" alt="Estonia Rummu quarry - Alan Łysiak"></div>
+            
+            <div class="photo-card" data-category="nikon sicily sycylia wlochy italia italy street monochrome bialo czarne black white"><img src="images/foto33.webp" alt="Sicily Taormina black and white silhouette - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card highlight" data-category="street fujifilm abstract monochrome czarno biale black white amsterdam netherlands holandia"><img src="images/foto34.webp" alt="Amsterdam Netherlands black and white street photography - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="nikon abstract black white czarno biale monochrome sicily sycylia wlochy italia italy"><img src="images/foto35.webp" alt="Monochrome shadows shapes Italy - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card highlight" data-category="street amsterdam netherlands holandia fujifilm"><img src="images/foto36.webp" alt="Street photo Amsterdam Netherlands - Alan Łysiak" loading="lazy"></div>
+            
+            <div class="photo-card highlight" data-category="abstract ricoh black white monochrome czarno biale gdynia poland polska"><img src="images/foto37.webp" alt="Abstract street photo Gdynia - Alan Łysiak"></div>
+            <div class="photo-card highlight" data-category="street ricoh czarno biale monochrome black white gdynia poland"><img src="images/foto38.webp" alt="Gdynia sea towers ricohgr monochrome - Alan Łysiak"></div>
+            
+            <div class="photo-card" data-category="portrait portret studio"><img src="images/foto39.webp" alt="samurai portrait Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="portrait portret studio nikon"><img src="images/foto40.webp" alt="samurai female portrait Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="portrait portret studio nikon"><img src="images/foto41.webp" alt="classic portrait Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="portrait portret studio black and white monochrome nikon "><img src="images/foto42.webp" alt="classic portrait black and white Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="portrait portret studio black and white monochrome nikon"><img src="images/foto43.webp" alt="classic portrait black and white Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="portrait portret studio black and white monochrome double exposure nikon"><img src="images/foto44.webp" alt="classic portrait black and white Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="portrait portret studio black and white monochrome nikon"><img src="images/foto45.webp" alt="classic portrait black and white Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="portrait portret studio black and white monochrome nikon"><img src="images/foto46.webp" alt="classic portrait black and white Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="portrait portret studio black and white monochrome dog nikon"><img src="images/foto47.webp" alt="classic portrait black and white dog Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="landscape krajobraz gdynia polska poland babie doly zorza nikon"><img src="images/foto48.webp" alt="aurora zorza gdynia babie doly - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="gdansk polska poland street zima nikon"><img src="images/foto49.webp" alt="gdansk winter zima street Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="sopot polska poland street ricoh"><img src="images/foto50.webp" alt="sopot street Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="gdynia poland polska bird ptaki mewa seagul"><img src="images/foto52.webp" alt="gdynia mewa seagul Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="gdansk poland polska cosplay batman street ricoh"><img src="images/foto53.webp" alt="gdansk fantasy festival cosplay Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="litwa lithuania street travel ricoh"><img src="images/foto55.webp" alt="lithuania cross mountain Alan Łysiak - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="gdynia poland polska double exposure ricoh"><img src="images/foto56.webp" alt="gdynia double exposure 100  - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="gdynia poland polska double exposure ricoh"><img src="images/foto57.webp" alt="gdynia double exposure 100  - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="gdynia poland polska double exposure ricoh"><img src="images/foto58.webp" alt="gdynia double exposure 100  - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="gdynia poland polska double exposure ricoh"><img src="images/foto59.webp" alt="gdynia double exposure 100  - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="gdynia poland polska double exposure ricoh"><img src="images/foto60.webp" alt="gdynia double exposure 100  - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="gdynia poland polska abstract monochrome czarno biale black and white street ricoh"><img src="images/foto61.webp" alt="gdynia abstract street monochrome - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="nature poland polska abstract long exposure ricoh"><img src="images/foto62.webp" alt="abstract nature long exposure - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="gdynia poland polska street ricoh"><img src="images/foto63.webp" alt="gdynia street photography - Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="gdynia poland polska beach plaza street ricoh batman"><img src="images/foto64.webp" alt="gdynia street photography beach- Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="ricoh italy italia wlochy dolomites dolomity nature travel kon horse znaki"><img src="images/foto65.webp" alt="horse dolomites- Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="long exposure black white czarno biale monochrome abstract flower nature kwiaty"><img src="images/foto66.webp" alt="monochrome abstract flower- Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="black white czarno biale monochrome abstract flower nature kwiaty"><img src="images/foto67.webp" alt="monochrome abstract flower- Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="sopot poland polska street ricoh"><img src="images/foto68.webp" alt="street photography sopot- Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="black white czarno biale monochrome abstract flower nature kwiaty"><img src="images/foto69.webp" alt="monochrome abstract flower- Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="long exposure black white czarno biale monochrome abstract flower nature kwiaty"><img src="images/foto70.webp" alt="monochrome abstract flower- Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="long exposure black white czarno biale monochrome abstract flower nature kwiaty"><img src="images/foto71.webp" alt="monochrome abstract flower- Alan Łysiak" loading="lazy"></div>
+            <div class="photo-card" data-category="gdynia poland polska street ricoh winter zima"><img src="images/foto72.webp" alt="street photography gdynia- Alan Łysiak" loading="lazy"></div>
+            
+        </div>
+    </section>
+
+    <!-- 3. STOPKA Z MENU, LICZNIKIEM I COPYRIGHT -->
+    <footer id="contact">
+        <ul class="footer-links">
+            <li><a href="kontakt.html">Kontakt</a></li>
+            <li class="ig-icon">
+                <a href="https://instagram.com/lenshustler" target="_blank" class="insta-link" title="Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+
+        <div class="pentax-counter">
+            <div class="counter-frame">
+                <span id="frame-count">00</span>
+            </div> 
+        </div>
+
+        <p class="footer-name">&copy; Alan Łysiak</p>
+    </footer>
+
+    <!-- 4. LIGHTBOX -->
+    <div id="lightbox" class="lightbox">
+        <span class="close">&times;</span>
+        <span class="nav-arrow prev">&#10094;</span> 
+        <img class="lightbox-content" id="lightbox-img">
+        <span class="nav-arrow next">&#10095;</span> 
+    </div>
+
+    <!-- 5. PRZYCISK POWROTU NA GÓRĘ -->
+    <button id="back-to-top" title="Wróć na górę">↑</button>
+
+    <script src="script.js"></script>
+</body>
+</html>

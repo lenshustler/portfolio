@@ -1,9 +1,9 @@
 @font-face {
-    font-family: 'Tenor Sans';
-    src: url('fonts/TenorSans-Regular.ttf') format('truetype');
+    font-family: 'Tektur';
+    src: url('fonts/Tektur-VariableFont_wdth,wght.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
-    font-display: swap; /* Zapobiega znikanu tekstu przy ładowaniu */
+    font-display: swap;
 }
 
 /* 1. RESET I PODSTAWY */
@@ -12,6 +12,7 @@
     padding: 0;
     box-sizing: border-box;
 }
+
 body {
     font-family: 'Tenor Sans', sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -21,51 +22,56 @@ body {
 }
 
 header {
-    padding: 50px 0 90px 0; 
+    padding: 40px 0 30px 0; 
     text-align: center;
 }
 
 .logo {
     font-size: 1.8rem;
     font-weight: 400;
-    letter-spacing: 8px; /* Klucz do luksusowego wyglądu */
+    letter-spacing: 8px;
     text-transform: uppercase;
 }
 
-/* 2. NAWIGACJA - Układ pionowy (Logo nad przyciskami) */
-nav {
+/* 2. WYSZUKIWARKA (Minimalizm na górze) */
+.search-nav {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 45px; /* Odstęp między logo a przyciskami */
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto 0 auto; 
 }
 
-/* LISTA LINKÓW */
-.nav-links {
-    list-style: none;      /* Usuwa kropki */
-    display: flex;         /* Ustawia linki obok siebie */
-    flex-direction: row;   /* Wymusza układ poziomy */
-    gap: 35px;             /* Odstęp między Galerią, Portretem i Kontaktem */
-    padding: 0;
-    margin: 0;
-}
-
-/* WYGLĄD LINKÓW */
-.nav-links a {
-    text-decoration: none;
+/* Wyszukiwarka "Styl Arnolda" */
+.arnold-search {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #ccc;
     color: #000;
-    font-size: 0.7rem;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    transition: opacity 0.3s;
+    font-family: 'Courier New', monospace; 
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 10px 0;
+    letter-spacing: 1px;
+    outline: none;
+    transition: border-bottom-color 0.3s;
 }
 
-.nav-links a:hover {
-    opacity: 0.4;
+.arnold-search:focus {
+    border-bottom-color: #000;
 }
-    
-/* 3. GALERIA - Symetryczna i działająca (Z OPTYMALIZACJĄ SAFARI) */
+
+.arnold-search::placeholder {
+    color: #aaa;
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* 3. GALERIA - Gęsta siatka (ściana zdjęć) */
 .gallery-section {
     width: 95%;
     max-width: 1600px;
@@ -75,33 +81,47 @@ nav {
 }
 
 .gallery-grid {
-    column-count: 3;
+    column-count: 5; 
     column-gap: 8px;
+    opacity: 0; /* Ukrywa siatkę na start, żeby zapobiec mignięciom */
+    transition: opacity 0.4s ease-in; /* Płynne pojawienie się galerii */
 }
 
-@media (max-width: 900px) { .gallery-grid { column-count: 2; } }
-@media (max-width: 600px) { .gallery-grid { column-count: 1; } }
+/* Responsywność dla mniejszych ekranów */
+@media (max-width: 1200px) { .gallery-grid { column-count: 4; } }
+@media (max-width: 900px) { .gallery-grid { column-count: 3; } }
+@media (max-width: 600px) { .gallery-grid { column-count: 2; } }
 
 .photo-card {
-    display: inline-block; /* POPRAWKA DLA SAFARI: zmiana z block na inline-block */
+    display: block;
     width: 100%;
     margin-bottom: 8px;
     break-inside: avoid;
-    -webkit-column-break-inside: avoid; /* Wymuszenie dla Safari */
-    page-break-inside: avoid;
-    vertical-align: top; /* Równa wszystko idealnie do górnej krawędzi */
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    opacity: 1;
+    transform: scale(1);
 }
 
 .photo-card img {
     width: 100%;
     height: auto;
+    max-height: 350px; /* Ogranicza wysokość gigantycznych pionowych zdjęć */
+    object-fit: cover; /* Elegancko wypełnia ramkę bez spłaszczania obrazu */
+    object-position: center; /* Środkuje przycięcie */
     display: block;
     cursor: pointer;
     user-select: none;
     -webkit-user-drag: none;
 }
 
-/* 4. KONTAKT I STOPKA */
+/* Ukrywanie wyfiltrowanych zdjęć z płynnym efektem */
+.photo-card.hidden {
+    display: none !important;
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+/* 4. KONTAKT, STOPKA I MENU DOLNE */
 .contact-container {
     padding: 60px 20px;
     text-align: center;
@@ -112,12 +132,56 @@ footer {
     flex-direction: column;
     align-items: center;
     background-color: #fff;
-    padding: 40px 0; /* Zunifikowane paddingi stopki */
+    padding: 60px 0 40px 0;
+    text-align: center;
+}
+
+/* Linki w stopce */
+.footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 35px;
+    padding: 0;
+    margin: 0 0 40px 0; 
+}
+
+.footer-links a {
+    background: none;
+    border: none;
+    text-decoration: none;
+    color: #555; 
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.footer-links a:hover {
+    color: #000; 
+}
+
+/* Ikonka Instagrama w nowym dolnym menu */
+.ig-icon svg {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    transition: color 0.3s ease; 
+    color: #555; 
+}
+
+.ig-icon:hover svg {
+    color: #000;
 }
 
 footer p {
     font-size: 0.65rem;
-    color: #ccc; /* Jasnoszary */
+    color: #ccc;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 400;
@@ -128,10 +192,37 @@ footer p {
     letter-spacing: 2px;
     color: #000;
     text-transform: uppercase;
-    margin-bottom: 1px; /* Ekstremalnie mały odstęp od licznika */
+    margin-bottom: 1px; 
 }
 
-/* 5. BACK TO TOP - Minimalistyczna czarna strzałka */
+/* 5. RETRO LICZNIK PENTAX */
+.pentax-counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 50px; 
+}
+
+.counter-frame {
+    width: 30px; 
+    height: 20px;
+    background-color: #000;
+    border: 1.5px solid #888; 
+    border-radius: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,1);
+}
+
+#frame-count {
+    font-family: 'Courier New', monospace;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* 6. BACK TO TOP - Minimalistyczna czarna strzałka */
 #back-to-top {
     display: none;
     position: fixed;
@@ -147,7 +238,7 @@ footer p {
     transition: 0.3s;
 }
 
-/* 6. LIGHTBOX - Naprawa klikania w galerię */
+/* 7. LIGHTBOX (Wersja dla komputerów) */
 .lightbox {
     display: none;
     position: fixed;
@@ -156,10 +247,9 @@ footer p {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.98);
+    background-color: #ffffff; /* Solidne, białe tło */
 }
 
-/* To pozwala klikać w zdjęcia, gdy lightbox jest zamknięty */
 .lightbox:not([style*="display: flex"]) {
     pointer-events: none;
 }
@@ -182,7 +272,8 @@ footer p {
     right: 30px;
     font-size: 35px;
     cursor: pointer;
-    color: #000;
+    color: #fff; /* Biały środek */
+    -webkit-text-stroke: 1.5px #000; /* Czarna obwódka */
     z-index: 1000001;
 }
 
@@ -193,7 +284,8 @@ footer p {
     font-size: 40px;
     padding: 20px;
     cursor: pointer;
-    color: #000;
+    color: #fff; /* Biały środek */
+    -webkit-text-stroke: 1.5px #000; /* Czarna obwódka */
     z-index: 1000001;
     user-select: none;
 }
@@ -201,39 +293,25 @@ footer p {
 .prev { left: 10px; }
 .next { right: 10px; }
 
-/* 7. LICZNIK W STYLU PENTAX (Z miejscem na >100 wejść) */
-.pentax-counter {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 50px; 
-}
-
-.counter-frame {
-    min-width: 30px; 
-    width: auto;     
-    padding: 0 6px;  
-    height: 20px;
-    background-color: #000;
-    border: 1.5px solid #888; 
-    border-radius: 2px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,1);
-}
-
-#frame-count {
-    font-family: 'Courier New', monospace;
-    color: #fff;
-    font-size: 0.8rem;
-    font-weight: bold;
-}
-
-.counter-label {
-    font-size: 0.35rem;
-    margin-top: 3px;
-    color: #bbb;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+/* 8. WERSJA MOBILNA DLA LIGHTBOXA (Strzałki pod zdjęciem) */
+@media (max-width: 768px) {
+    .lightbox-content {
+        max-height: 75vh; 
+        top: 45%;         
+    }
+    
+    .nav-arrow {
+        top: auto;        
+        bottom: 25px;     
+        transform: none;
+        padding: 10px 30px; 
+    }
+    
+    .prev { left: 15%; }
+    .next { right: 15%; }
+    
+    .close {
+        top: 15px;
+        right: 20px;
+    }
 }
