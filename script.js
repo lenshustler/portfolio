@@ -10,9 +10,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let images = [];
     let activeIdx = 0;
 
+    // --- 1. POBIERANIE DANYCH Z SANITY ---
     if (grid) {
         try {
-            // NAPRAWIONE ZAPYTANIE (bez zbędnych dodatków)
             const QUERY = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, isHighlight, categories, "imageUrl": image.asset->url }`);
             const URL = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${QUERY}`;
             
@@ -30,8 +30,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const card = document.createElement('div');
                     card.className = 'photo-card'; 
                     
-                    // ŚCISŁA LOGIKA HIGHLIGHT
-                    // Jeśli isHighlight NIE JEST równe true, dodajemy klasę hidden
                     if (photo.isHighlight === true) {
                         card.classList.add('highlight');
                     } else {
@@ -53,26 +51,55 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (e) { console.error("Błąd połączenia z Sanity:", e); }
     }
 
-    // --- FUNKCJE LIGHTBOXA ---
+    // --- 2. LOGIKA LIGHTBOXA I GESTÓW (SWIPE) ---
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    function handleSwipe() {
+        const swipeThreshold = 50; // Minimalna odległość przesunięcia
+        if (touchEndX < touchStartX - swipeThreshold) {
+            nextBtn.click(); // Przesunięcie w lewo -> następne
+        }
+        if (touchEndX > touchStartX + swipeThreshold) {
+            prevBtn.click(); // Przesunięcie w prawo -> poprzednie
+        }
+    }
+
+    if (lightbox) {
+        lightbox.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        lightbox.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+    }
+
     function showImage(index) {
         const visible = Array.from(document.querySelectorAll('.photo-card:not(.hidden) img'));
         if (visible.length === 0) return;
+        
         activeIdx = visible.findIndex(img => img.src === images[index].src);
         if (activeIdx === -1) activeIdx = 0;
 
-        lightboxImg.src = visible[activeIdx].src;
+        const updateLightbox = () => {
+            lightboxImg.src = visible[activeIdx].src;
+        };
+
+        updateLightbox();
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
 
         nextBtn.onclick = (e) => {
             e.stopPropagation();
             activeIdx = (activeIdx + 1) % visible.length;
-            lightboxImg.src = visible[activeIdx].src;
+            updateLightbox();
         };
         prevBtn.onclick = (e) => {
             e.stopPropagation();
             activeIdx = (activeIdx - 1 + visible.length) % visible.length;
-            lightboxImg.src = visible[activeIdx].src;
+            updateLightbox();
         };
     }
 
@@ -83,44 +110,42 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (lightbox) lightbox.onclick = (e) => { 
         if (e.target === lightbox || e.target === lightboxImg) {
-            lightbox.classList.remove('active');
-            document.body.style.overflow = 'auto';
+            closeBtn.onclick();
         }
     };
 
+    // Obsługa klawiatury
     document.addEventListener('keydown', (e) => {
         if (lightbox && lightbox.classList.contains('active')) {
             if (e.key === "ArrowRight") nextBtn.click();
             if (e.key === "ArrowLeft") prevBtn.click();
-            if (e.key === "Escape") {
-                lightbox.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
+            if (e.key === "Escape") closeBtn.onclick();
         }
     });
 
-    document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
+    // Blokada prawokliku na zdjęciach
+    document.addEventListener('contextmenu', (e) => { 
+        if (e.target.tagName === 'IMG') e.preventDefault(); 
+    });
 
-    // --- WYSZUKIWARKA ---
+    // --- 3. WYSZUKIWARKA ---
     document.getElementById('search-input')?.addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase().trim();
         document.querySelectorAll('.photo-card').forEach(card => {
             const cat = (card.getAttribute('data-category') || "").toLowerCase();
             if (term === "") {
-                // Powrót do stanu początkowego (tylko Highlight)
                 if (card.classList.contains('highlight')) {
                     card.classList.remove('hidden');
                 } else {
                     card.classList.add('hidden');
                 }
             } else {
-                // Szukanie we wszystkich zdjęciach
                 card.classList.toggle('hidden', !cat.includes(term));
             }
         });
     });
 
-    // --- STRZAŁKA I LICZNIK ---
+    // --- 4. DODATKI (STRZAŁKA I LICZNIK) ---
     const btt = document.getElementById('back-to-top');
     window.onscroll = () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; };
     if (btt) btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -129,6 +154,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         fetch('https://abacus.jasoncameron.dev/hit/alan_lysiak_portfolio/pentax_v1')
         .then(r => r.json())
-        .then(d => { if (counterEl) counterEl.innerText = (200 + (d.value || 0)).toString().padStart(2, '0'); });
-    } catch (e) { if (counterEl) counterEl.innerText = "200"; }
+        .then(d => { 
+            if (counterEl) counterEl.innerText = (200 + (d.value || 0)).toString().padStart(2, '0'); 
+        });
+    } catch (e) { 
+        if (counterEl) counterEl.innerText = "200"; 
+    }
 });
