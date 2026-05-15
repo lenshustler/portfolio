@@ -1,50 +1,100 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. ELEMENTY
+document.addEventListener('DOMContentLoaded', async () => {
+    // ==========================================
+    // 1. KONFIGURACJA SANITY
+    // ==========================================
+    const PROJECT_ID = '6g67d261';
+    const DATASET = 'portfolio'; 
     const grid = document.querySelector('.gallery-grid');
+
+    // Pobieramy WSZYSTKIE zdjęcia typu photo (usuwamy filtr Highlight z zapytania)
+    const QUERY = `*[_type == "photo"] | order(_createdAt desc) {
+        title,
+        isHighlight,
+        categories,
+        "imageUrl": image.asset->url
+    }`;
+    
+    const URL = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${encodeURIComponent(QUERY)}`;
+
+    let images = [];
+
+    // ==========================================
+    // 2. POBIERANIE ZDJĘĆ I BUDOWANIE GALERII
+    // ==========================================
+    if (grid) {
+        try {
+            console.log("Łączenie z Sanity (Dataset: " + DATASET + ")...");
+            const response = await fetch(URL);
+            const data = await response.json();
+            
+            console.log("Dane odebrane:", data);
+
+            let photos = data.result;
+
+            if (!photos || photos.length === 0) {
+                console.warn("Brak zdjęć w Sanity.");
+                grid.innerHTML = "<p style='color:white; text-align:center;'>Baza danych jest pusta.</p>";
+                return;
+            }
+
+            photos.sort(() => Math.random() - 0.5);
+            grid.innerHTML = "";
+
+            photos.forEach((photo, index) => {
+                const card = document.createElement('div');
+                card.classList.add('photo-card');
+                
+                // Jeśli zdjęcie NIE jest wyróżnione, na starcie dodajemy klasę hidden
+                if (photo.isHighlight) {
+                    card.classList.add('highlight');
+                } else {
+                    card.classList.add('hidden'); 
+                }
+                
+                const categoryData = photo.categories ? photo.categories.join(' ') : '';
+                card.setAttribute('data-category', categoryData);
+
+                const img = document.createElement('img');
+                img.src = photo.imageUrl + "?auto=format";
+                img.alt = photo.title || 'Zdjęcie z portfolio';
+                img.setAttribute('draggable', 'false');
+
+                if (index < 6) {
+                    img.removeAttribute('loading');
+                } else {
+                    img.setAttribute('loading', 'lazy');
+                }
+                img.setAttribute('decoding', 'async');
+
+                card.appendChild(img);
+                grid.appendChild(card);
+                images.push(img);
+            });
+
+            setTimeout(() => { grid.style.opacity = "1"; }, 50);
+
+            images.forEach((img, index) => {
+                img.onclick = () => showImage(index);
+            });
+
+        } catch (error) {
+            console.error('Błąd połączenia z Sanity:', error);
+        }
+    }
+
+    // ==========================================
+    // 3. OBSŁUGA LIGHTBOXA 
+    // ==========================================
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
-    const backToTop = document.getElementById('back-to-top');
     const prevBtn = document.querySelector('.prev');
     const nextBtn = document.querySelector('.next');
     const closeBtn = document.querySelector('.close');
-
-    let images = [];
     let currentIndex = 0;
 
-    // 2. MIESZANIE ZDJĘĆ I INTELIGENTNE ŁADOWANIE (Zoptymalizowane)
-    const cards = Array.from(document.querySelectorAll('.photo-card'));
-    if (grid && cards.length > 0) {
-        cards.sort(() => Math.random() - 0.5);
-        grid.innerHTML = "";
-        cards.forEach((card, index) => {
-            grid.appendChild(card);
-            const img = card.querySelector('img');
-            if (img) {
-                images.push(img);
-                img.setAttribute('draggable', 'false');
-                
-                // Przydzielanie priorytetu po potasowaniu
-                if (index < 6) {
-                    // Pierwsze 6 zdjęć na samej górze ładuje się błyskawicznie
-                    img.removeAttribute('loading');
-                    img.setAttribute('decoding', 'async');
-                } else {
-                    // Reszta zdjęć czeka, aż zaczniesz scrollować w dół
-                    img.setAttribute('loading', 'lazy');
-                    img.setAttribute('decoding', 'async');
-                }
-            }
-        });
-
-        // TAA-DAA! Magia! Płynnie pokazuje całą galerię DOPIERO, gdy wszystko jest ułożone
-        setTimeout(() => {
-            grid.style.opacity = "1";
-        }, 50);
-    }
-
-    // 3. OBSŁUGA LIGHTBOXA (Z uwzględnieniem filtrowania wyszukiwarki)
     function showImage(index) {
-        const visibleImages = images.filter(img => !img.parentElement.classList.contains('hidden'));
+        const visibleCards = Array.from(document.querySelectorAll('.photo-card:not(.hidden)'));
+        const visibleImages = visibleCards.map(card => card.querySelector('img'));
         
         if (!lightbox || !lightboxImg || visibleImages.length === 0) return;
         
@@ -53,18 +103,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         nextBtn.onclick = (e) => { 
             e.stopPropagation(); 
-            let nextIndex = activeIndex + 1;
-            if (nextIndex >= visibleImages.length) nextIndex = 0;
-            let globalNextIndex = images.findIndex(img => img.src === visibleImages[nextIndex].src);
-            showImage(globalNextIndex);
+            let nextIdx = (activeIndex + 1) % visibleImages.length;
+            const globalIdx = images.findIndex(img => img.src === visibleImages[nextIdx].src);
+            showImage(globalIdx);
         };
         
         prevBtn.onclick = (e) => { 
             e.stopPropagation(); 
-            let prevIndex = activeIndex - 1;
-            if (prevIndex < 0) prevIndex = visibleImages.length - 1;
-            let globalPrevIndex = images.findIndex(img => img.src === visibleImages[prevIndex].src);
-            showImage(globalPrevIndex);
+            let prevIdx = (activeIndex - 1 + visibleImages.length) % visibleImages.length;
+            const globalIdx = images.findIndex(img => img.src === visibleImages[prevIdx].src);
+            showImage(globalIdx);
         };
 
         currentIndex = index;
@@ -73,14 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = 'hidden';
     }
 
-    // 4. EVENTY (KLIKANIE, ZAMYKANIE)
-    images.forEach((img, index) => {
-        img.onclick = () => showImage(index);
-    });
-
     const closeLightbox = () => {
-        lightbox.style.display = "none";
-        document.body.style.overflow = 'auto';
+        if (lightbox) {
+            lightbox.style.display = "none";
+            document.body.style.overflow = 'auto';
+        }
     };
 
     if (closeBtn) closeBtn.onclick = closeLightbox;
@@ -88,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
         lightbox.onclick = (e) => { if (e.target === lightbox || e.target === lightboxImg) closeLightbox(); };
     }
 
-    // 5. GESTY SWIPE
     let touchstartX = 0;
     if (lightbox) {
         lightbox.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, {passive: true});
@@ -99,84 +143,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }, {passive: true});
     }
 
-    // 6. KLAWIATURA I OCHRONA
     document.onkeydown = (e) => {
         if (lightbox && lightbox.style.display === "flex") {
-            if (e.key === "ArrowRight" && nextBtn) nextBtn.click();
-            if (e.key === "ArrowLeft" && prevBtn) prevBtn.click();
+            if (e.key === "ArrowRight") nextBtn.click();
+            if (e.key === "ArrowLeft") prevBtn.click();
             if (e.key === "Escape") closeLightbox();
         }
     };
     document.addEventListener('contextmenu', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
-    // 7. POWRÓT NA GÓRĘ
+    const backToTop = document.getElementById('back-to-top');
     window.onscroll = () => { if (backToTop) backToTop.style.display = window.scrollY > 300 ? "block" : "none"; };
     if (backToTop) backToTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // 8. LICZNIK (BEZPIECZNA FUNKCJA - POKAZUJE PEŁNĄ LICZBĘ WEJŚĆ)
     async function getGlobalVisits() {
         const el = document.getElementById('frame-count');
         if (!el) return;
-
-        // Twoja ciężko wypracowana baza (wpisz tu ile chcesz)
-        const baseVisits = 200; 
-
         try {
-            // Uderzamy do nowego, szybkiego serwera API (Abacus)
             const r = await fetch('https://abacus.jasoncameron.dev/hit/alan_lysiak_portfolio/pentax_v1');
             const d = await r.json();
-            
-            // Abacus zwraca wynik pod nazwą 'value'
             if (d && d.value !== undefined) {
-                // Sumujemy nowe wejścia z Twoją bazą
-                const realCount = baseVisits + d.value;
-                el.innerText = realCount.toString().padStart(2, '0');
+                el.innerText = (200 + d.value).toString().padStart(2, '0');
             }
         } catch (err) {
-            console.log("Serwer licznika zablokowany przez AdBlocka lub awarię:", err);
-            el.innerText = baseVisits.toString().padStart(2, '0');
+            el.innerText = "200";
         }
     }
     getGlobalVisits();
 
-    // 9. SILNIK WYSZUKIWANIA (STYL ARNOLDA)
+    // ==========================================
+    // 7. WYSZUKIWARKA
+    // ==========================================
     function initArnoldSearch() {
         const searchInput = document.getElementById('search-input');
-        
-        if (!searchInput || !cards.length) return;
+        if (!searchInput) return;
 
-        // Na start: Ukrywamy wszystko OPRÓCZ zdjęć z klasą "highlight"
-        cards.forEach(card => {
-            if (!card.classList.contains('highlight')) {
-                card.classList.add('hidden');
-            }
-        });
-
-        // Nasłuchiwanie wpisywania tekstu
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.photo-card');
 
             cards.forEach(card => {
-                const category = (card.getAttribute('data-category') || "").toLowerCase();
+                const categories = (card.getAttribute('data-category') || "").toLowerCase();
                 
-                // Jeśli pole jest puste, wracamy do trybu "highlight"
                 if (searchTerm === "") {
+                    // Puste szukanie -> pokazujemy tylko Highlight
                     if (card.classList.contains('highlight')) {
                         card.classList.remove('hidden');
                     } else {
                         card.classList.add('hidden');
                     }
-                } 
-                // Sprawdzamy, czy kategoria ZAWIERA ten tekst
-                else if (category.includes(searchTerm)) {
+                } else if (categories.includes(searchTerm)) {
+                    // Szukanie aktywne -> pokazujemy wszystko co pasuje
                     card.classList.remove('hidden');
-                } 
-                // Ukrywamy to, co nie pasuje
-                else {
+                } else {
                     card.classList.add('hidden');
                 }
             });
         });
     }
-    initArnoldSearch();
+    setTimeout(initArnoldSearch, 400); 
 });
