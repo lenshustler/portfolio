@@ -46,6 +46,7 @@ header {
     width: 100%;
     max-width: 600px;
     margin: 20px auto 0 auto; 
+    padding: 0 20px;
 }
 
 .arnold-search {
@@ -76,13 +77,14 @@ header {
 }
 
 /* ==========================================================================
-   3. GALERIA - MASONRY Z LIMITEM WYSOKOŚCI 455px
+   3. GALERIA - MASONRY Z LIMITEM WYSOKOŚCI 460px
    ========================================================================== */
 .gallery-section {
     width: 98%; 
     max-width: 1800px;
     margin: 10px auto 40px auto; 
     padding: 0 10px;
+    position: relative;
 }
 
 .gallery-grid {
@@ -92,27 +94,23 @@ header {
 }
 
 .photo-card {
-    display: inline-block; /* Przywrócenie układu Masonry */
+    display: inline-block; 
     width: 100%;
     margin-bottom: 15px;
     background-color: #f0f0f0;
     break-inside: avoid;
     overflow: hidden;
-    /* Ogranicznik pionów */
     max-height: 460px; 
 }
 
 .photo-card img {
     width: 100%;
-    height: auto; /* Pozwala poziomom być niskimi */
+    height: auto; 
     display: block;
     cursor: pointer;
-    
-    /* Jeśli zdjęcie przekroczy 455px, zostanie docięte z priorytetem na góry (oczy) */
     min-height: 100%; 
     object-fit: cover;
     object-position: center 20%; 
-    
     user-select: none;
     -webkit-user-drag: none;
     transition: transform 0.3s ease; 
@@ -202,7 +200,7 @@ footer {
 }
 
 /* ==========================================================================
-   7. LIGHTBOX (Poprawione Fixed)
+   7. LIGHTBOX
    ========================================================================== */
 .lightbox {
     display: none; 
@@ -225,8 +223,8 @@ footer {
 }
 
 .lightbox-content {
-    max-width: 90vw;
-    max-height: 85vh;
+    max-width: 95vw;
+    max-height: 90vh;
     object-fit: contain;
 }
 
@@ -244,16 +242,24 @@ footer {
 .prev { left: 20px; }
 .next { right: 20px; }
 
-/* 8. RESPONSIVE */
+/* ==========================================================================
+   8. RESPONSIVE - POPRAWKI MOBILNE
+   ========================================================================== */
 @media (max-width: 1400px) { .gallery-grid { column-count: 4; } }
 @media (max-width: 1000px) { 
     .gallery-grid { column-count: 3; } 
     .photo-card { max-height: 400px; }
 }
 @media (max-width: 768px) {
+    /* Mniejsza wyszukiwarka, by napis się mieścił */
+    .arnold-search { font-size: 0.8rem; }
+    .arnold-search::placeholder { font-size: 0.55rem; letter-spacing: 1px; }
+
     .gallery-grid { column-count: 2; gap: 10px; }
     .photo-card { max-height: 320px; }
-    .nav-arrow { top: auto; bottom: 30px; transform: none; }
-    .prev { left: 15%; } .next { right: 15%; }
-    .close { top: 15px; right: 20px; }
+    
+    /* UKRYWAMY STRZAŁKI NA MOBILE - używamy swipe palcem (dodane w JS) */
+    .nav-arrow { display: none !important; }
+    
+    .close { top: 15px; right: 20px; font-size: 30px; }
 }
