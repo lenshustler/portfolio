@@ -101,4 +101,168 @@ header {
 .photo-card {
     margin: 0; /* Resetujemy marginesy z poprzedniej wersji masonry */
     width: 100%;
-    height: 280px; /* Ustawiamy stałą
+    height: 280px; /* Ustawiamy stałą wysokość kafelka */
+    overflow: hidden; /* Przycinamy zdjęcie, jeśli nie pasuje */
+}
+
+.photo-card img {
+    width: 100%;
+    height: 100%; /* Zdjęcie wypełnia cały kafelek */
+    object-fit: cover; /* Przycina zdjęcie zachowując proporcje (idealne dla siatki) */
+    object-position: center;
+    display: block;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-drag: none;
+    transition: transform 0.3s ease; /* Płynny efekt najechania */
+}
+
+/* Delikatny zoom po najechaniu myszką */
+.photo-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Ukrywanie wyfiltrowanych zdjęć z płynnym efektem */
+.photo-card.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   4. KONTAKT, STOPKA I MENU DOLNE
+   ========================================================================== */
+.contact-container {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    padding: 60px 0 40px 0;
+    text-align: center;
+    position: relative; /* Ważne dla pozycjonowania strzałki względem stopki */
+}
+
+/* Linki w stopce */
+.footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 35px;
+    padding: 0;
+    margin: 0 0 40px 0; 
+}
+
+.footer-links a {
+    background: none;
+    border: none;
+    text-decoration: none;
+    color: #555; 
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.footer-links a:hover {
+    color: #000; 
+}
+
+/* Ikonka Instagrama w nowym dolnym menu */
+.ig-icon svg {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    transition: color 0.3s ease; 
+    color: #555; 
+}
+
+.ig-icon:hover svg {
+    color: #000;
+}
+
+footer p {
+    font-size: 0.65rem;
+    color: #ccc;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 400;
+}
+
+.footer-name {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: #000;
+    text-transform: uppercase;
+    margin-bottom: 1px; 
+}
+
+/* 5. RETRO LICZNIK PENTAX */
+.pentax-counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 50px; 
+}
+
+.counter-frame {
+    width: 30px; 
+    height: 20px;
+    background-color: #000;
+    border: 1.5px solid #888; 
+    border-radius: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,1);
+}
+
+#frame-count {
+    font-family: 'Courier New', monospace;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   6. BACK TO TOP - Poprawiona pozycja (zawsze widoczna po przewinięciu)
+   ========================================================================== */
+#back-to-top {
+    display: none; /* Ukryta na start (JS ją pokaże) */
+    position: fixed;
+    bottom: 20px; /* Stała pozycja od dołu ekranu */
+    right: 20px;  /* Stała pozycja od prawej */
+    background-color: rgba(255, 255, 255, 0.8); /* Lekkie białe tło dla czytelności */
+    border: 1px solid #000;
+    border-radius: 50%; /* Okrągły przycisk */
+    color: #000;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10000; /* Bardzo wysoki zindex, żeby była nad wszystkim */
+    transition: opacity 0.3s, background-color 0.3s;
+    text-align: center;
+    line-height: 48px; /* Środkuje strzałkę pionowo bez użycia flexboxa */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+#back-to-top:hover {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+/* ==========================================================================
+   7. LIGHTBOX (Wersja dla komputerów)
+   ========================================================================== */
+.lightbox {
+    display: none;
+    position: fixed;
+    z-index: 999
