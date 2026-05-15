@@ -100,7 +100,7 @@ header {
     background-color: #f0f0f0;
     break-inside: avoid;
     overflow: hidden;
-    max-height: 460px; 
+    max-height: 458px; 
 }
 
 .photo-card img {
