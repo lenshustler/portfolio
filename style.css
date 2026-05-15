@@ -100,7 +100,7 @@ header {
     background-color: #f0f0f0;
     break-inside: avoid;
     overflow: hidden;
-    max-height: 450px;
+    max-height: 460px;
 }
 
 .photo-card img {
@@ -184,21 +184,21 @@ footer {
 }
 
 /* ==========================================================================
-   6. BACK TO TOP (Modern Square)
+   6. BACK TO TOP (Spójny z nawigacją Lightboxa)
    ========================================================================== */
 #back-to-top {
     display: none; 
     position: fixed;
     bottom: 30px; 
     right: 30px;  
-    background: #000;
-    width: 40px; 
-    height: 40px;
+    background: transparent;
+    width: 50px; 
+    height: 50px;
     cursor: pointer;
     z-index: 9999; 
     border: none;
     transition: all 0.3s ease;
-    opacity: 0.4;
+    opacity: 0.2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -206,21 +206,22 @@ footer {
 
 #back-to-top:after {
     content: '';
-    width: 10px;
-    height: 10px;
-    border-top: 2px solid #fff;
-    border-right: 2px solid #fff;
+    width: 15px;
+    height: 15px;
+    border-top: 1.5px solid #000;
+    border-right: 1.5px solid #000;
     transform: rotate(-45deg);
-    margin-top: 4px;
+    margin-top: 5px;
 }
 
 #back-to-top:hover {
     opacity: 1;
-    transform: translateY(-5px);
+    background-color: rgba(0,0,0,0.03);
+    border-radius: 50%;
 }
 
 /* ==========================================================================
-   7. LIGHTBOX (Solidna biel i nowoczesna nawigacja)
+   7. LIGHTBOX (Solidna biel i czysta nawigacja)
    ========================================================================== */
 .lightbox {
     display: none; 
@@ -228,7 +229,7 @@ footer {
     z-index: 999999;
     left: 0; top: 0;
     width: 100%; height: 100%;
-    background-color: #ffffff; /* Pełna biel */
+    background-color: #ffffff; 
     opacity: 0; 
     transition: opacity 0.25s ease-out;
     pointer-events: none; 
@@ -246,39 +247,43 @@ footer {
     object-fit: contain;
 }
 
-/* PRZYCISK ZAMYKANIA (Minimalist X) */
+/* PRZYCISK ZAMYKANIA (Ultra-Thin X) */
 .close {
     position: fixed;
-    top: 40px;
-    right: 40px;
-    width: 30px;
-    height: 30px;
+    top: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
     cursor: pointer;
     z-index: 1000002;
-    opacity: 0.3;
-    transition: opacity 0.3s ease;
+    opacity: 0.2;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+    font-size: 35px;
+    font-weight: 100;
+    color: #000;
 }
 
-.close:before, .close:after {
-    position: absolute;
-    left: 14px;
-    content: ' ';
-    height: 30px;
-    width: 2px;
-    background-color: #000;
+.close:after {
+    content: '\2715'; /* Matematyczny symbol mnożenia - czysty X */
 }
 
-.close:before { transform: rotate(45deg); }
-.close:after { transform: rotate(-45deg); }
-.close:hover { opacity: 1; }
+.close:hover { 
+    opacity: 1; 
+    background-color: rgba(0,0,0,0.03);
+    border-radius: 50%;
+}
 
-/* STRZAŁKI NAWIGACJI (Czyste jodełki) */
+/* STRZAŁKI NAWIGACJI (Pojedyncza linia) */
 .nav-arrow {
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     cursor: pointer;
     z-index: 1000002;
     opacity: 0.15;
@@ -296,18 +301,18 @@ footer {
 
 .nav-arrow:after {
     content: '';
-    width: 18px;
-    height: 18px;
-    border-top: 2px solid #000;
-    border-right: 2px solid #000;
+    width: 20px;
+    height: 20px;
+    border-top: 1.5px solid #000;
+    border-right: 1.5px solid #000;
     display: inline-block;
 }
 
-.prev:after { transform: rotate(-135deg); }
-.next:after { transform: rotate(45deg); }
+.prev:after { transform: rotate(-135deg); margin-left: 8px; }
+.next:after { transform: rotate(45deg); margin-right: 8px; }
 
-.prev { left: 30px; }
-.next { right: 30px; }
+.prev { left: 20px; }
+.next { right: 20px; }
 
 /* ==========================================================================
    8. RESPONSIVE - POPRAWKI MOBILNE
@@ -328,8 +333,8 @@ footer {
     .nav-arrow { display: none !important; }
     
     .close { 
-        top: 25px; 
-        right: 25px; 
+        top: 20px; 
+        right: 20px; 
         opacity: 0.6;
     }
 
