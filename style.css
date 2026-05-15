@@ -77,13 +77,13 @@ header {
 }
 
 /* ==========================================================================
-   3. GALERIA - MASONRY Z LIMITEM WYSOKOŚCI 460px
+   3. GALERIA - MASONRY (Węższa, by strzałka miała miejsce)
    ========================================================================== */
 .gallery-section {
-    width: 98%; 
-    max-width: 1800px;
+    width: 92%; /* Węższa galeria tworzy margines dla strzałki */
+    max-width: 1700px;
     margin: 10px auto 40px auto; 
-    padding: 0 10px;
+    padding: 0;
     position: relative;
 }
 
@@ -183,12 +183,11 @@ footer {
 }
 
 /* ==========================================================================
-   5. NAWIGACJA (BACK TO TOP & ARROWS) - SPÓJNY STYL
+   5. NAWIGACJA (SPÓJNY STYL)
    ========================================================================== */
 #back-to-top, .nav-arrow, .close {
     position: fixed;
     cursor: pointer;
-    z-index: 1000002;
     transition: all 0.3s ease;
     background: transparent;
     border: none;
@@ -204,7 +203,7 @@ footer {
     border-radius: 50%;
 }
 
-/* RYSOWANIE JODEŁEK (Back to top i Strzałki) */
+/* RYSOWANIE POJEDYNCZYCH JODEŁEK */
 #back-to-top:after, .nav-arrow:after {
     content: '';
     width: 14px;
@@ -214,24 +213,31 @@ footer {
     display: inline-block;
 }
 
-/* Kierunki jodełek */
-#back-to-top { bottom: 30px; right: 30px; width: 50px; height: 50px; }
+/* BACK TO TOP - Maksymalnie do prawej krawędzi */
+#back-to-top { 
+    bottom: 30px; 
+    right: 10px; /* Przesunięte do krawędzi ekranu */
+    width: 50px; 
+    height: 50px; 
+    z-index: 10000;
+}
 #back-to-top:after { transform: rotate(-45deg); margin-top: 5px; }
 
-.prev { left: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; }
+/* STRZAŁKI LIGHTBOX */
+.prev { left: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; z-index: 1000002; }
 .prev:after { transform: rotate(-135deg); margin-left: 6px; }
 
-.next { right: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; }
+.next { right: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; z-index: 1000002; }
 .next:after { transform: rotate(45deg); margin-right: 6px; }
 
-/* RYSOWANIE CZYSZTEGO X (Zamykanie) */
-.close {
+/* PRZYCISK ZAMYKANIA */
+.close { 
     top: 30px; 
     right: 30px; 
     width: 55px; 
-    height: 55px;
+    height: 55px; 
+    z-index: 1000002;
 }
-
 .close:before, .close:after {
     content: '';
     position: absolute;
@@ -243,7 +249,7 @@ footer {
 .close:after { transform: rotate(-45deg); }
 
 /* ==========================================================================
-   6. LIGHTBOX (Solidna biel)
+   6. LIGHTBOX
    ========================================================================== */
 .lightbox {
     display: none; 
@@ -263,6 +269,11 @@ footer {
     display: flex; opacity: 1; pointer-events: auto; 
 }
 
+/* Ukrywamy Back to Top, gdy Lightbox jest aktywny */
+.lightbox.active ~ #back-to-top {
+    display: none !important;
+}
+
 .lightbox-content {
     max-width: 92vw;
     max-height: 88vh;
@@ -279,6 +290,7 @@ footer {
 }
 
 @media (max-width: 768px) {
+    .gallery-section { width: 94%; }
     .arnold-search { font-size: 0.8rem; }
     .arnold-search::placeholder { font-size: 0.55rem; letter-spacing: 1px; }
 
@@ -287,17 +299,11 @@ footer {
     
     .nav-arrow { display: none !important; }
     
-    .close { 
-        top: 20px; 
-        right: 20px; 
-        width: 45px;
-        height: 45px;
-        opacity: 0.6;
-    }
+    .close { top: 20px; right: 15px; width: 45px; height: 45px; opacity: 0.6; }
 
     #back-to-top {
         bottom: 20px;
-        right: 20px;
+        right: 5px; /* Jeszcze bliżej krawędzi na telefonach */
         width: 45px;
         height: 45px;
     }
