@@ -13,7 +13,6 @@
     box-sizing: border-box;
     /* Usuwa niebieski/szary prostokąt przy kliknięciu na każdym elemencie */
     -webkit-tap-highlight-color: transparent !important;
-    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
     outline: none !important;
 }
 
@@ -23,8 +22,10 @@ body {
     -moz-osx-font-smoothing: grayscale;
     background-color: #ffffff;
     color: #000;
-    /* Blokada zaznaczania na poziomie całego body dla pewności */
+    /* Blokada zaznaczania na poziomie całego body */
     -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
 }
 
@@ -74,7 +75,7 @@ header {
 }
 
 /* ==========================================================================
-   3. GALERIA - MASONRY (Blokada wszystkiego co psuje estetykę)
+   3. GALERIA - MASONRY (Wersja Alan 460px + Blokady)
    ========================================================================== */
 .gallery-section {
     width: 92%; 
@@ -98,8 +99,6 @@ header {
     break-inside: avoid;
     overflow: hidden;
     max-height: 460px;
-    /* Blokada zaznaczania kafelka */
-    -webkit-touch-callout: none;
 }
 
 .photo-card img {
@@ -111,13 +110,13 @@ header {
     object-fit: cover;
     object-position: center 20%; 
     
-    /* BLOKADA ZAZNACZANIA, PRZECIĄGANIA I MENU KONTEKSTOWEGO (iOS/Android) */
+    /* BLOKADA ZAZNACZANIA, PRZECIĄGANIA I MENU KONTEKSTOWEGO */
     -webkit-user-select: none !important;
     -moz-user-select: none !important;
     -ms-user-select: none !important;
     user-select: none !important;
-    -webkit-touch-callout: none !important; /* Blokuje menu "Zapisz obraz" na telefonie */
-    -webkit-user-drag: none !important;
+    -webkit-touch-callout: none !important; /* Wyłącza menu "Zapisz" na iOS */
+    -webkit-user-drag: none !important;      /* Wyłącza przeciąganie obrazu */
 
     transition: transform 0.3s ease; 
 }
@@ -202,7 +201,6 @@ footer {
     align-items: center;
     justify-content: center;
     opacity: 0.2;
-    /* Ponowne upewnienie się co do braku koloru przy kliknięciu */
     -webkit-tap-highlight-color: transparent !important;
 }
 
@@ -242,7 +240,7 @@ footer {
 .close:after { transform: rotate(-45deg); }
 
 /* ==========================================================================
-   6. LIGHTBOX
+   6. LIGHTBOX (Pełna ochrona obrazu)
    ========================================================================== */
 .lightbox {
     display: none; 
@@ -270,9 +268,11 @@ footer {
     max-width: 92vw;
     max-height: 88vh;
     object-fit: contain;
-    /* Blokada zaznaczania w lightboxie */
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
+    /* BLOKADA POBIERANIA W PODGLĄDZIE */
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important; /* To jest kluczowe dla mobilnego Save Image */
+    -webkit-user-drag: none !important;
+    pointer-events: auto; /* Pozwala na swipe palcem, ale blokuje menu kontekstowe */
 }
 
 /* ==========================================================================
@@ -302,8 +302,6 @@ footer {
         background-color: rgba(255,255,255,0.9);
         border: 1px solid rgba(0,0,0,0.05);
         opacity: 0.8;
-        /* Ponowne wymuszenie braku podświetlenia na mobile */
-        -webkit-tap-highlight-color: transparent !important;
     }
     
     .prev { left: 18%; }
