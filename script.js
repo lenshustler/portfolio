@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // ==========================================
-    // 3. OBSŁUGA LIGHTBOXA 
+    // 3. OBSŁUGA LIGHTBOXA (Z klasą .active)
     // ==========================================
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
@@ -115,97 +115,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         currentIndex = index;
         lightboxImg.src = images[currentIndex].src;
-        lightbox.style.display = "flex";
+        
+        // NOWY SPOSÓB WŁĄCZANIA (Dodaje klasę .active zamiast zmieniać style.display)
+        lightbox.classList.add('active'); 
         document.body.style.overflow = 'hidden';
     }
 
     const closeLightbox = () => {
         if (lightbox) {
-            lightbox.style.display = "none";
-            document.body.style.overflow = 'auto';
-        }
-    };
-
-    if (closeBtn) closeBtn.onclick = closeLightbox;
-    if (lightbox) {
-        lightbox.onclick = (e) => { if (e.target === lightbox || e.target === lightboxImg) closeLightbox(); };
-    }
-
-    let touchstartX = 0;
-    if (lightbox) {
-        lightbox.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, {passive: true});
-        lightbox.addEventListener('touchend', e => {
-            let touchendX = e.changedTouches[0].screenX;
-            if (touchendX < touchstartX - 50 && nextBtn) nextBtn.click();
-            if (touchendX > touchstartX + 50 && prevBtn) prevBtn.click();
-        }, {passive: true});
-    }
-
-    document.onkeydown = (e) => {
-        if (lightbox && lightbox.style.display === "flex") {
-            if (e.key === "ArrowRight") nextBtn.click();
-            if (e.key === "ArrowLeft") prevBtn.click();
-            if (e.key === "Escape") closeLightbox();
-        }
-    };
-    document.addEventListener('contextmenu', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
-
-    // ==========================================
-    // 6. STRZAŁKA POWROTU NA GÓRĘ
-    // ==========================================
-    const backToTop = document.getElementById('back-to-top');
-    window.onscroll = () => { 
-        if (backToTop) {
-            backToTop.style.display = window.scrollY > 300 ? "block" : "none"; 
-        }
-    };
-    if (backToTop) backToTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // ==========================================
-    // 7. LICZNIK WIZYT
-    // ==========================================
-    async function getGlobalVisits() {
-        const el = document.getElementById('frame-count');
-        if (!el) return;
-        try {
-            const r = await fetch('https://abacus.jasoncameron.dev/hit/alan_lysiak_portfolio/pentax_v1');
-            const d = await r.json();
-            if (d && d.value !== undefined) {
-                el.innerText = (200 + d.value).toString().padStart(2, '0');
-            }
-        } catch (err) {
-            el.innerText = "200";
-        }
-    }
-    getGlobalVisits();
-
-    // ==========================================
-    // 8. WYSZUKIWARKA
-    // ==========================================
-    function initArnoldSearch() {
-        const searchInput = document.getElementById('search-input');
-        if (!searchInput) return;
-
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            const cards = document.querySelectorAll('.photo-card');
-
-            cards.forEach(card => {
-                const categories = (card.getAttribute('data-category') || "").toLowerCase();
-                
-                if (searchTerm === "") {
-                    if (card.classList.contains('highlight')) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
-                } else if (categories.includes(searchTerm)) {
-                    card.classList.remove('hidden');
-                } else {
-                    card.classList.add('hidden');
-                }
-            });
-        });
-    }
-    setTimeout(initArnoldSearch, 400); 
-});
