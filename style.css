@@ -11,6 +11,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    /* Usuwa niebieski/szary prostokąt przy kliknięciu na telefonie */
     -webkit-tap-highlight-color: transparent !important;
     outline: none !important;
 }
@@ -21,7 +22,10 @@ body {
     -moz-osx-font-smoothing: grayscale;
     background-color: #ffffff;
     color: #000;
+    /* Blokada zaznaczania na poziomie całego body dla pewności */
     -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
 }
 
@@ -60,11 +64,12 @@ header {
     border-bottom: 1px solid #ccc;
     color: #000;
     font-family: 'Courier New', monospace; 
-    font-size: 1rem; /* POWIĘKSZONE DLA WYGODY */
+    font-size: 0.9rem; /* ZMNIEJSZONE Z 1rem */
     text-align: center;
     padding: 10px 0;
     letter-spacing: 1px;
     outline: none;
+    /* Tutaj pozwalamy na wpisywanie tekstu */
     -webkit-user-select: text;
     user-select: text;
 }
@@ -76,16 +81,16 @@ header {
 .arnold-search::placeholder {
     color: #aaa;
     font-family: 'Tenor Sans', sans-serif;
-    font-size: 0.8rem; /* POWIĘKSZONE DLA WYGODY */
+    font-size: 0.7rem; /* ZMNIEJSZONE Z 0.8rem */
     text-transform: uppercase;
     letter-spacing: 2px;
 }
 
 /* ==========================================================================
-   3. GALERIA - MASONRY (Wersja Alan 460px + "Szyba" ochronna)
+   3. GALERIA - MASONRY (Ulepszona ochrona bez blokowania kliknięć)
    ========================================================================== */
 .gallery-section {
-    width: 92%; 
+    width: 92%; /* Miejsce na strzałkę powrotu po prawej */
     max-width: 1700px;
     margin: 10px auto 40px auto; 
     padding: 0;
@@ -95,6 +100,7 @@ header {
 .gallery-grid {
     column-count: 5;
     column-gap: 15px;
+    opacity: 1;
 }
 
 .photo-card {
@@ -105,17 +111,9 @@ header {
     break-inside: avoid;
     overflow: hidden;
     max-height: 460px;
-    position: relative; /* Potrzebne dla szyby */
-}
-
-/* NIEWIDZIALNA SZYBA NAD ZDJĘCIEM */
-.photo-card::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 10;
-    background: transparent;
+    position: relative;
+    /* Pozwala kliknięciom przechodzić do obrazka */
+    pointer-events: auto; 
 }
 
 .photo-card img {
@@ -126,7 +124,18 @@ header {
     min-height: 100%; 
     object-fit: cover;
     object-position: center 20%; 
+    
+    /* BLOKADA ZAZNACZANIA, PRZECIĄGANIA I MENU KONTEKSTOWEGO (iOS/Android) */
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important; /* Blokuje menu "Zapisz obraz" na iOS */
     -webkit-user-drag: none !important;
+    
+    /* Zapewnia odbieranie kliknięć */
+    pointer-events: auto;
+
     transition: transform 0.3s ease; 
 }
 
@@ -195,7 +204,7 @@ footer {
 }
 
 /* ==========================================================================
-   5. NAWIGACJA (SPÓJNY STYL)
+   5. NAWIGACJA (BACK TO TOP, ARROWS, CLOSE)
    ========================================================================== */
 #back-to-top, .nav-arrow, .close {
     position: fixed;
@@ -203,10 +212,12 @@ footer {
     transition: all 0.3s ease;
     background: transparent;
     border: none !important;
+    outline: none !important;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0.2;
+    -webkit-tap-highlight-color: transparent !important;
 }
 
 #back-to-top:hover, .nav-arrow:hover, .close:hover {
@@ -245,7 +256,7 @@ footer {
 .close:after { transform: rotate(-45deg); }
 
 /* ==========================================================================
-   6. LIGHTBOX (Pełna biel + ochrona)
+   6. LIGHTBOX (Solidna biel + ochrona)
    ========================================================================== */
 .lightbox {
     display: none; 
@@ -265,23 +276,17 @@ footer {
 
 .lightbox.active ~ #back-to-top { display: none !important; }
 
-/* Szyba ochronna w lightboxie */
-.lightbox::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 1000000;
-    background: transparent;
-    pointer-events: none; /* Zmieniamy w zależności od potrzeb gestów */
-}
-
 .lightbox-content {
     max-width: 92vw;
     max-height: 88vh;
     object-fit: contain;
     position: relative;
     z-index: 999999;
+    /* Ochrona w podglądzie */
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-drag: none !important;
+    pointer-events: auto; /* Pozwala na swipe */
 }
 
 /* ==========================================================================
@@ -296,9 +301,9 @@ footer {
 @media (max-width: 768px) {
     .gallery-section { width: 94%; }
     
-    /* Wyszukiwarka z czytelnym tekstem */
-    .arnold-search { font-size: 1rem; }
-    .arnold-search::placeholder { font-size: 0.8rem; letter-spacing: 1px; }
+    /* Mobilna wyszukiwarka - ZMNIEJSZONA CZCIONKA */
+    .arnold-search { font-size: 0.9rem; }
+    .arnold-search::placeholder { font-size: 0.7rem; letter-spacing: 1px; }
 
     .gallery-grid { column-count: 2; gap: 10px; }
     .photo-card { max-height: 320px; }
