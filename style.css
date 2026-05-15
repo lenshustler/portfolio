@@ -108,7 +108,7 @@ header {
     cursor: pointer;
     
     /* MOCNY LIMITER: Pion nie będzie wyższy niż ok. 480px */
-    max-height: 480px; 
+    max-height: 450px; 
     object-fit: cover;
     object-position: center 20%; 
 
