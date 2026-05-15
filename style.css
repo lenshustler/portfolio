@@ -99,7 +99,7 @@ header {
     break-inside: avoid;
     overflow: hidden;
     /* Ogranicznik pionów */
-    max-height: 455px; 
+    max-height: 460px; 
 }
 
 .photo-card img {
