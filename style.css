@@ -76,7 +76,7 @@ header {
 }
 
 /* ==========================================================================
-   3. GALERIA - INTELIGENTNE MASONRY (Naprawia poziomy i piony)
+   3. GALERIA - KONTROLOWANE MASONRY (Wersja Alan v3)
    ========================================================================== */
 .gallery-section {
     width: 95%;
@@ -94,7 +94,7 @@ header {
 }
 
 .photo-card {
-    display: inline-block; /* Przywracamy masonry */
+    display: inline-block;
     width: 100%;
     margin-bottom: 20px;
     overflow: hidden; 
@@ -104,14 +104,16 @@ header {
 
 .photo-card img {
     width: 100%;
-    height: auto; /* Zdjęcie zachowuje naturalne proporcje */
+    height: auto;
     display: block;
     cursor: pointer;
     
-    /* Ogranicznik dla pionów: nie wyższe niż 70% ekranu */
-    max-height: 70vh; 
-    object-fit: cover; 
-    object-position: center 20%; /* Priorytet na twarze/oczy */
+    /* LIMITER: Pion nie przekroczy wysokości dwóch poziomów (ok. 580px) */
+    max-height: 580px; 
+    
+    /* object-fit: cover + position center 20% ratuje kadrowanie twarzy/oczu */
+    object-fit: cover;
+    object-position: center 20%; 
     
     user-select: none;
     -webkit-user-drag: none;
@@ -201,3 +203,55 @@ footer {
     font-family: 'Courier New', monospace;
     color: #fff;
     font-size: 0.8rem;
+}
+
+/* 6. BACK TO TOP (Strzałka) */
+#back-to-top {
+    display: none; 
+    position: fixed;
+    bottom: 20px; 
+    right: 20px;  
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid #000;
+    border-radius: 50%;
+    color: #000;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 10000; 
+    text-align: center;
+    line-height: 48px; 
+}
+
+/* 7. LIGHTBOX */
+.lightbox {
+    display: none; 
+    position: fixed;
+    z-index: 999999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff; 
+    opacity: 0; 
+    transition: opacity 0.3s ease;
+    pointer-events: none; 
+}
+
+.lightbox.active {
+    display: flex; 
+    opacity: 1; 
+    pointer-events: auto; 
+}
+
+.lightbox-content {
+    margin: auto;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
