@@ -11,6 +11,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    /* WYŁĄCZENIE NIEBIESKIEGO KWADRATU NA MOBILE DLA WSZYSTKIEGO */
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -77,10 +79,10 @@ header {
 }
 
 /* ==========================================================================
-   3. GALERIA - MASONRY (Węższa, by strzałka miała miejsce)
+   3. GALERIA - MASONRY (Węższa, blokada zaznaczania)
    ========================================================================== */
 .gallery-section {
-    width: 92%; /* Miejsce na strzałkę powrotu po prawej */
+    width: 92%; 
     max-width: 1700px;
     margin: 10px auto 40px auto; 
     padding: 0;
@@ -111,8 +113,12 @@ header {
     min-height: 100%; 
     object-fit: cover;
     object-position: center 20%; 
+    
+    /* BLOKADA ZAZNACZANIA NA NIEBIESKO I PRZECIĄGANIA */
     user-select: none;
+    -webkit-user-select: none;
     -webkit-user-drag: none;
+
     transition: transform 0.3s ease; 
 }
 
@@ -183,7 +189,7 @@ footer {
 }
 
 /* ==========================================================================
-   5. NAWIGACJA (SPÓJNY STYL)
+   5. NAWIGACJA (SPÓJNY STYL, BEZ OBRYSÓW)
    ========================================================================== */
 #back-to-top, .nav-arrow, .close {
     position: fixed;
@@ -191,6 +197,7 @@ footer {
     transition: all 0.3s ease;
     background: transparent;
     border: none;
+    outline: none; /* Usuwa kwadratową obwódkę focusa */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -213,31 +220,16 @@ footer {
     display: inline-block;
 }
 
-/* BACK TO TOP */
-#back-to-top { 
-    bottom: 30px; 
-    right: 10px; /* Maksymalnie do prawej */
-    width: 50px; 
-    height: 50px; 
-    z-index: 10000;
-}
+#back-to-top { bottom: 30px; right: 10px; width: 50px; height: 50px; z-index: 10000; }
 #back-to-top:after { transform: rotate(-45deg); margin-top: 5px; }
 
-/* STRZAŁKI LIGHTBOX (Desktop) */
 .prev { left: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; z-index: 1000002; }
 .prev:after { transform: rotate(-135deg); margin-left: 6px; }
 
 .next { right: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; z-index: 1000002; }
 .next:after { transform: rotate(45deg); margin-right: 6px; }
 
-/* PRZYCISK ZAMYKANIA */
-.close { 
-    top: 30px; 
-    right: 30px; 
-    width: 55px; 
-    height: 55px; 
-    z-index: 1000002;
-}
+.close { top: 30px; right: 30px; width: 55px; height: 55px; z-index: 1000002; }
 .close:before, .close:after {
     content: '';
     position: absolute;
@@ -257,7 +249,7 @@ footer {
     z-index: 999999;
     left: 0; top: 0;
     width: 100%; height: 100%;
-    background-color: #ffffff; /* Solidna biel */
+    background-color: #ffffff; 
     opacity: 0; 
     transition: opacity 0.25s ease-out;
     pointer-events: none; 
@@ -269,7 +261,6 @@ footer {
     display: flex; opacity: 1; pointer-events: auto; 
 }
 
-/* UKRYWAMY BACK-TO-TOP, GDY LIGHTBOX JEST AKTYWNY */
 .lightbox.active ~ #back-to-top {
     display: none !important;
 }
@@ -297,15 +288,20 @@ footer {
     .gallery-grid { column-count: 2; gap: 10px; }
     .photo-card { max-height: 320px; }
     
-    /* STRZAŁKI NA DOLE NA MOBILE */
+    /* FIX DLA MOBILE: Usunięcie szarego/niebieskiego kwadratu przy tapnięciu */
+    .nav-arrow, .close, #back-to-top {
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+
     .nav-arrow { 
         display: flex !important;
         top: auto;
-        bottom: 25px; /* Nisko, by nie zasłaniać zdjęcia */
+        bottom: 25px;
         transform: none;
         width: 50px;
         height: 50px;
-        background-color: rgba(255,255,255,0.9); /* Delikatne kółko */
+        background-color: rgba(255,255,255,0.9);
         border: 1px solid rgba(0,0,0,0.05);
         opacity: 0.8;
     }
