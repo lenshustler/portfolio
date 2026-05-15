@@ -125,7 +125,7 @@ header {
 }
 
 /* ==========================================================================
-   4. STOPKA
+   4. STOPKA & LICZNIK
    ========================================================================== */
 footer {
     display: flex;
@@ -159,7 +159,6 @@ footer {
     text-transform: uppercase;
 }
 
-/* 5. RETRO LICZNIK */
 .pentax-counter {
     display: flex;
     flex-direction: column;
@@ -184,44 +183,67 @@ footer {
 }
 
 /* ==========================================================================
-   6. BACK TO TOP (Spójny z nawigacją Lightboxa)
+   5. NAWIGACJA (BACK TO TOP & ARROWS) - SPÓJNY STYL
    ========================================================================== */
-#back-to-top {
-    display: none; 
+#back-to-top, .nav-arrow, .close {
     position: fixed;
-    bottom: 30px; 
-    right: 30px;  
-    background: transparent;
-    width: 50px; 
-    height: 50px;
     cursor: pointer;
-    z-index: 9999; 
-    border: none;
+    z-index: 1000002;
     transition: all 0.3s ease;
-    opacity: 0.2;
+    background: transparent;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 0.2;
 }
 
-#back-to-top:after {
-    content: '';
-    width: 15px;
-    height: 15px;
-    border-top: 1.5px solid #000;
-    border-right: 1.5px solid #000;
-    transform: rotate(-45deg);
-    margin-top: 5px;
-}
-
-#back-to-top:hover {
+#back-to-top:hover, .nav-arrow:hover, .close:hover {
     opacity: 1;
-    background-color: rgba(0,0,0,0.03);
+    background-color: rgba(0,0,0,0.04);
     border-radius: 50%;
 }
 
+/* RYSOWANIE JODEŁEK (Back to top i Strzałki) */
+#back-to-top:after, .nav-arrow:after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border-top: 1.5px solid #000;
+    border-right: 1.5px solid #000;
+    display: inline-block;
+}
+
+/* Kierunki jodełek */
+#back-to-top { bottom: 30px; right: 30px; width: 50px; height: 50px; }
+#back-to-top:after { transform: rotate(-45deg); margin-top: 5px; }
+
+.prev { left: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; }
+.prev:after { transform: rotate(-135deg); margin-left: 6px; }
+
+.next { right: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; }
+.next:after { transform: rotate(45deg); margin-right: 6px; }
+
+/* RYSOWANIE CZYSZTEGO X (Zamykanie) */
+.close {
+    top: 30px; 
+    right: 30px; 
+    width: 55px; 
+    height: 55px;
+}
+
+.close:before, .close:after {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 1.5px;
+    background-color: #000;
+}
+.close:before { transform: rotate(45deg); }
+.close:after { transform: rotate(-45deg); }
+
 /* ==========================================================================
-   7. LIGHTBOX (Solidna biel i czysta nawigacja)
+   6. LIGHTBOX (Solidna biel)
    ========================================================================== */
 .lightbox {
     display: none; 
@@ -247,75 +269,8 @@ footer {
     object-fit: contain;
 }
 
-/* PRZYCISK ZAMYKANIA (Ultra-Thin X) */
-.close {
-    position: fixed;
-    top: 30px;
-    right: 30px;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    z-index: 1000002;
-    opacity: 0.2;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: Arial, sans-serif;
-    font-size: 35px;
-    font-weight: 100;
-    color: #000;
-}
-
-.close:after {
-    content: '\2715'; /* Matematyczny symbol mnożenia - czysty X */
-}
-
-.close:hover { 
-    opacity: 1; 
-    background-color: rgba(0,0,0,0.03);
-    border-radius: 50%;
-}
-
-/* STRZAŁKI NAWIGACJI (Pojedyncza linia) */
-.nav-arrow {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 70px;
-    height: 70px;
-    cursor: pointer;
-    z-index: 1000002;
-    opacity: 0.15;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.nav-arrow:hover {
-    opacity: 1;
-    background-color: rgba(0,0,0,0.03);
-    border-radius: 50%;
-}
-
-.nav-arrow:after {
-    content: '';
-    width: 20px;
-    height: 20px;
-    border-top: 1.5px solid #000;
-    border-right: 1.5px solid #000;
-    display: inline-block;
-}
-
-.prev:after { transform: rotate(-135deg); margin-left: 8px; }
-.next:after { transform: rotate(45deg); margin-right: 8px; }
-
-.prev { left: 20px; }
-.next { right: 20px; }
-
 /* ==========================================================================
-   8. RESPONSIVE - POPRAWKI MOBILNE
+   7. RESPONSIVE
    ========================================================================== */
 @media (max-width: 1400px) { .gallery-grid { column-count: 4; } }
 @media (max-width: 1000px) { 
@@ -335,11 +290,15 @@ footer {
     .close { 
         top: 20px; 
         right: 20px; 
+        width: 45px;
+        height: 45px;
         opacity: 0.6;
     }
 
     #back-to-top {
         bottom: 20px;
         right: 20px;
+        width: 45px;
+        height: 45px;
     }
 }
