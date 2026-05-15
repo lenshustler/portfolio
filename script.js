@@ -1,7 +1,4 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // ==========================================
-    // 1. KONFIGURACJA SANITY
-    // ==========================================
     const PROJECT_ID = '6g67d261';
     const DATASET = 'portfolio'; 
     const grid = document.querySelector('.gallery-grid');
@@ -13,12 +10,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     let images = [];
     let activeIdx = 0;
 
-    // 1. POBIERANIE ZDJĘĆ (Z uwzględnieniem isHighlight)
     if (grid) {
         try {
-            // DODANO isHighlight do zapytania
+            // Pobieramy dane - wymuszamy świeżość przez dopisanie timestampu do URL
             const QUERY = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, isHighlight, categories, "imageUrl": image.asset->url }`);
-            const URL = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${QUERY}`;
+            const URL = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${QUERY}&nocache=${Date.now()}`;
             
             const response = await fetch(URL);
             const data = await response.json();
@@ -34,7 +30,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const card = document.createElement('div');
                     card.className = 'photo-card'; 
                     
-                    // LOGIKA STARTOWA: Ukrywamy te bez Highlight
+                    // --- DIAGNOSTYKA ---
+                    console.log(`Zdjęcie: ${photo.title}, Highlight: ${photo.isHighlight}`);
+
+                    // Ścisłe sprawdzenie: tylko jeśli isHighlight jest dokładnie TRUE
                     if (photo.isHighlight === true) {
                         card.classList.add('highlight');
                     } else {
@@ -42,12 +41,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
 
                     card.setAttribute('data-category', (photo.categories || []).join(' '));
-
                     const img = document.createElement('img');
                     img.src = photo.imageUrl + "?auto=format";
-                    img.alt = photo.title || 'Zdjęcie';
                     img.setAttribute('draggable', 'false');
-                    
                     img.onclick = () => showImage(index);
                     
                     card.appendChild(img);
@@ -56,17 +52,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
                 grid.style.opacity = "1";
             }
-        } catch (e) { console.error("Błąd pobierania danych:", e); }
+        } catch (e) { console.error("Błąd:", e); }
     }
 
-    // 2. FUNKCJE LIGHTBOXA
+    // --- RESZTA SKRYPTU (LIGHTBOX, WYSZUKIWARKA ITP.) ---
     function showImage(index) {
         const visible = Array.from(document.querySelectorAll('.photo-card:not(.hidden) img'));
         if (visible.length === 0) return;
-
         activeIdx = visible.findIndex(img => img.src === images[index].src);
         if (activeIdx === -1) activeIdx = 0;
-
         updateLightbox(visible);
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -74,13 +68,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function updateLightbox(visibleList) {
         lightboxImg.src = visibleList[activeIdx].src;
-
         nextBtn.onclick = (e) => {
             e.stopPropagation();
             activeIdx = (activeIdx + 1) % visibleList.length;
             lightboxImg.src = visibleList[activeIdx].src;
         };
-
         prevBtn.onclick = (e) => {
             e.stopPropagation();
             activeIdx = (activeIdx - 1 + visibleList.length) % visibleList.length;
@@ -94,11 +86,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (closeBtn) closeBtn.onclick = closeLightbox;
-    if (lightbox) {
-        lightbox.onclick = (e) => { if (e.target === lightbox || e.target === lightboxImg) closeLightbox(); };
-    }
+    if (lightbox) lightbox.onclick = (e) => { if (e.target === lightbox || e.target === lightboxImg) closeLightbox(); };
 
-    // 3. OBSŁUGA KLAWIATURY (Strzałki i ESC)
     document.addEventListener('keydown', (e) => {
         if (lightbox && lightbox.classList.contains('active')) {
             if (e.key === "ArrowRight") nextBtn.click();
@@ -107,32 +96,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // 4. BLOKADA PRAWOKLIKU
-    document.addEventListener('contextmenu', (e) => {
-        if (e.target.tagName === 'IMG') e.preventDefault();
-    });
+    document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
-    // 5. WYSZUKIWARKA (Poprawiona logika: czyści do Highlight)
     document.getElementById('search-input')?.addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase().trim();
         document.querySelectorAll('.photo-card').forEach(card => {
             const cat = (card.getAttribute('data-category') || "").toLowerCase();
-            
             if (term === "") {
-                // Gdy puste: pokazuj tylko Highlight
                 if (card.classList.contains('highlight')) {
                     card.classList.remove('hidden');
                 } else {
                     card.classList.add('hidden');
                 }
             } else {
-                // Gdy szukasz: filtruj po kategoriach
                 card.classList.toggle('hidden', !cat.includes(term));
             }
         });
     });
 
-    // 6. STRZAŁKA POWROTU I LICZNIK
     const btt = document.getElementById('back-to-top');
     window.onscroll = () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; };
     if (btt) btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
