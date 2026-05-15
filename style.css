@@ -89,32 +89,30 @@ header {
 }
 
 .gallery-grid {
-    /* Zmieniamy z column-count na display: grid */
     display: grid;
-    /* Automatycznie tworzy kolumny, każda o szerokości minimum 250px */
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 15px; /* Większy odstęp między zdjęciami */
+    gap: 15px; 
     opacity: 0;
     transition: opacity 0.4s ease-in;
 }
 
 .photo-card {
-    margin: 0; /* Resetujemy marginesy z poprzedniej wersji masonry */
+    margin: 0; 
     width: 100%;
-    height: 280px; /* Ustawiamy stałą wysokość kafelka */
-    overflow: hidden; /* Przycinamy zdjęcie, jeśli nie pasuje */
+    height: 280px; 
+    overflow: hidden; 
 }
 
 .photo-card img {
     width: 100%;
-    height: 100%; /* Zdjęcie wypełnia cały kafelek */
-    object-fit: cover; /* Przycina zdjęcie zachowując proporcje (idealne dla siatki) */
+    height: 100%; 
+    object-fit: cover; 
     object-position: center;
     display: block;
     cursor: pointer;
     user-select: none;
     -webkit-user-drag: none;
-    transition: transform 0.3s ease; /* Płynny efekt najechania */
+    transition: transform 0.3s ease; 
 }
 
 /* Delikatny zoom po najechaniu myszką */
@@ -142,7 +140,7 @@ footer {
     background-color: #fff;
     padding: 60px 0 40px 0;
     text-align: center;
-    position: relative; /* Ważne dla pozycjonowania strzałki względem stopki */
+    position: relative; 
 }
 
 /* Linki w stopce */
@@ -232,26 +230,26 @@ footer p {
 }
 
 /* ==========================================================================
-   6. BACK TO TOP - Poprawiona pozycja (zawsze widoczna po przewinięciu)
+   6. BACK TO TOP
    ========================================================================== */
 #back-to-top {
-    display: none; /* Ukryta na start (JS ją pokaże) */
+    display: none; 
     position: fixed;
-    bottom: 20px; /* Stała pozycja od dołu ekranu */
-    right: 20px;  /* Stała pozycja od prawej */
-    background-color: rgba(255, 255, 255, 0.8); /* Lekkie białe tło dla czytelności */
+    bottom: 20px; 
+    right: 20px;  
+    background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid #000;
-    border-radius: 50%; /* Okrągły przycisk */
+    border-radius: 50%;
     color: #000;
     width: 50px;
     height: 50px;
     font-size: 24px;
     font-weight: bold;
     cursor: pointer;
-    z-index: 10000; /* Bardzo wysoki zindex, żeby była nad wszystkim */
+    z-index: 10000; 
     transition: opacity 0.3s, background-color 0.3s;
     text-align: center;
-    line-height: 48px; /* Środkuje strzałkę pionowo bez użycia flexboxa */
+    line-height: 48px; 
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
@@ -260,9 +258,17 @@ footer p {
 }
 
 /* ==========================================================================
-   7. LIGHTBOX (Wersja dla komputerów)
+   7. LIGHTBOX (Poprawiona logika włączania)
    ========================================================================== */
 .lightbox {
-    display: none;
+    display: none; /* Domyślnie ukryty */
     position: fixed;
-    z-index: 999
+    z-index: 999999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff; /* Solidne, białe tło */
+    opacity: 0; /* Płynne pojawianie się */
+    transition: opacity 0.3s ease;
+    pointer-events: none; /* Domyślnie ignoruje kliknięcia, żeby
