@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const DATASET = 'portfolio'; 
     const grid = document.querySelector('.gallery-grid');
 
-    // Pobieramy WSZYSTKIE zdjęcia typu photo (usuwamy filtr Highlight z zapytania)
     const QUERY = `*[_type == "photo"] | order(_createdAt desc) {
         title,
         isHighlight,
@@ -33,49 +32,48 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (!photos || photos.length === 0) {
                 console.warn("Brak zdjęć w Sanity.");
-                grid.innerHTML = "<p style='color:white; text-align:center;'>Baza danych jest pusta.</p>";
-                return;
+                grid.innerHTML = "<p style='color:black; text-align:center; grid-column: 1 / -1; margin-top: 50px;'>Baza danych jest pusta lub zablokowana.</p>";
+                grid.style.opacity = "1";
+            } else {
+                photos.sort(() => Math.random() - 0.5);
+                grid.innerHTML = "";
+
+                photos.forEach((photo, index) => {
+                    const card = document.createElement('div');
+                    card.classList.add('photo-card');
+                    
+                    if (photo.isHighlight) {
+                        card.classList.add('highlight');
+                    } else {
+                        card.classList.add('hidden'); 
+                    }
+                    
+                    const categoryData = photo.categories ? photo.categories.join(' ') : '';
+                    card.setAttribute('data-category', categoryData);
+
+                    const img = document.createElement('img');
+                    img.src = photo.imageUrl + "?auto=format";
+                    img.alt = photo.title || 'Zdjęcie z portfolio';
+                    img.setAttribute('draggable', 'false');
+
+                    if (index < 6) {
+                        img.removeAttribute('loading');
+                    } else {
+                        img.setAttribute('loading', 'lazy');
+                    }
+                    img.setAttribute('decoding', 'async');
+
+                    card.appendChild(img);
+                    grid.appendChild(card);
+                    images.push(img);
+                });
+
+                setTimeout(() => { grid.style.opacity = "1"; }, 50);
+
+                images.forEach((img, index) => {
+                    img.onclick = () => showImage(index);
+                });
             }
-
-            photos.sort(() => Math.random() - 0.5);
-            grid.innerHTML = "";
-
-            photos.forEach((photo, index) => {
-                const card = document.createElement('div');
-                card.classList.add('photo-card');
-                
-                // Jeśli zdjęcie NIE jest wyróżnione, na starcie dodajemy klasę hidden
-                if (photo.isHighlight) {
-                    card.classList.add('highlight');
-                } else {
-                    card.classList.add('hidden'); 
-                }
-                
-                const categoryData = photo.categories ? photo.categories.join(' ') : '';
-                card.setAttribute('data-category', categoryData);
-
-                const img = document.createElement('img');
-                img.src = photo.imageUrl + "?auto=format";
-                img.alt = photo.title || 'Zdjęcie z portfolio';
-                img.setAttribute('draggable', 'false');
-
-                if (index < 6) {
-                    img.removeAttribute('loading');
-                } else {
-                    img.setAttribute('loading', 'lazy');
-                }
-                img.setAttribute('decoding', 'async');
-
-                card.appendChild(img);
-                grid.appendChild(card);
-                images.push(img);
-            });
-
-            setTimeout(() => { grid.style.opacity = "1"; }, 50);
-
-            images.forEach((img, index) => {
-                img.onclick = () => showImage(index);
-            });
 
         } catch (error) {
             console.error('Błąd połączenia z Sanity:', error);
@@ -152,10 +150,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
     document.addEventListener('contextmenu', e => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
+    // ==========================================
+    // 6. STRZAŁKA POWROTU NA GÓRĘ
+    // ==========================================
     const backToTop = document.getElementById('back-to-top');
-    window.onscroll = () => { if (backToTop) backToTop.style.display = window.scrollY > 300 ? "block" : "none"; };
+    window.onscroll = () => { 
+        if (backToTop) {
+            backToTop.style.display = window.scrollY > 300 ? "block" : "none"; 
+        }
+    };
     if (backToTop) backToTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
+    // ==========================================
+    // 7. LICZNIK WIZYT
+    // ==========================================
     async function getGlobalVisits() {
         const el = document.getElementById('frame-count');
         if (!el) return;
@@ -172,7 +180,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     getGlobalVisits();
 
     // ==========================================
-    // 7. WYSZUKIWARKA
+    // 8. WYSZUKIWARKA
     // ==========================================
     function initArnoldSearch() {
         const searchInput = document.getElementById('search-input');
@@ -186,14 +194,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const categories = (card.getAttribute('data-category') || "").toLowerCase();
                 
                 if (searchTerm === "") {
-                    // Puste szukanie -> pokazujemy tylko Highlight
                     if (card.classList.contains('highlight')) {
                         card.classList.remove('hidden');
                     } else {
                         card.classList.add('hidden');
                     }
                 } else if (categories.includes(searchTerm)) {
-                    // Szukanie aktywne -> pokazujemy wszystko co pasuje
                     card.classList.remove('hidden');
                 } else {
                     card.classList.add('hidden');
