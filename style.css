@@ -6,13 +6,15 @@
     font-display: swap;
 }
 
-/* 1. RESET I PODSTAWY */
+/* 1. RESET I PODSTAWY - BLOKADA TOTALNA SYSTEMOWYCH NAKŁADEK */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* WYŁĄCZENIE NIEBIESKIEGO KWADRATU NA MOBILE DLA WSZYSTKIEGO */
-    -webkit-tap-highlight-color: transparent;
+    /* Usuwa niebieski/szary prostokąt przy kliknięciu na każdym elemencie */
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+    outline: none !important;
 }
 
 body {
@@ -21,6 +23,9 @@ body {
     -moz-osx-font-smoothing: grayscale;
     background-color: #ffffff;
     color: #000;
+    /* Blokada zaznaczania na poziomie całego body dla pewności */
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 header {
@@ -63,23 +68,13 @@ header {
     padding: 10px 0;
     letter-spacing: 1px;
     outline: none;
-    transition: border-bottom-color 0.3s;
-}
-
-.arnold-search:focus {
-    border-bottom-color: #000;
-}
-
-.arnold-search::placeholder {
-    color: #aaa;
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    /* Tutaj pozwalamy na wpisywanie tekstu */
+    -webkit-user-select: text;
+    user-select: text;
 }
 
 /* ==========================================================================
-   3. GALERIA - MASONRY (Węższa, blokada zaznaczania)
+   3. GALERIA - MASONRY (Blokada wszystkiego co psuje estetykę)
    ========================================================================== */
 .gallery-section {
     width: 92%; 
@@ -103,6 +98,8 @@ header {
     break-inside: avoid;
     overflow: hidden;
     max-height: 460px;
+    /* Blokada zaznaczania kafelka */
+    -webkit-touch-callout: none;
 }
 
 .photo-card img {
@@ -114,10 +111,13 @@ header {
     object-fit: cover;
     object-position: center 20%; 
     
-    /* BLOKADA ZAZNACZANIA NA NIEBIESKO I PRZECIĄGANIA */
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
+    /* BLOKADA ZAZNACZANIA, PRZECIĄGANIA I MENU KONTEKSTOWEGO (iOS/Android) */
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important; /* Blokuje menu "Zapisz obraz" na telefonie */
+    -webkit-user-drag: none !important;
 
     transition: transform 0.3s ease; 
 }
@@ -189,19 +189,21 @@ footer {
 }
 
 /* ==========================================================================
-   5. NAWIGACJA (SPÓJNY STYL, BEZ OBRYSÓW)
+   5. NAWIGACJA (BACK TO TOP, ARROWS, CLOSE)
    ========================================================================== */
 #back-to-top, .nav-arrow, .close {
     position: fixed;
     cursor: pointer;
     transition: all 0.3s ease;
     background: transparent;
-    border: none;
-    outline: none; /* Usuwa kwadratową obwódkę focusa */
+    border: none !important;
+    outline: none !important;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0.2;
+    /* Ponowne upewnienie się co do braku koloru przy kliknięciu */
+    -webkit-tap-highlight-color: transparent !important;
 }
 
 #back-to-top:hover, .nav-arrow:hover, .close:hover {
@@ -210,7 +212,6 @@ footer {
     border-radius: 50%;
 }
 
-/* RYSOWANIE POJEDYNCZYCH JODEŁEK */
 #back-to-top:after, .nav-arrow:after {
     content: '';
     width: 14px;
@@ -269,6 +270,9 @@ footer {
     max-width: 92vw;
     max-height: 88vh;
     object-fit: contain;
+    /* Blokada zaznaczania w lightboxie */
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 /* ==========================================================================
@@ -288,12 +292,6 @@ footer {
     .gallery-grid { column-count: 2; gap: 10px; }
     .photo-card { max-height: 320px; }
     
-    /* FIX DLA MOBILE: Usunięcie szarego/niebieskiego kwadratu przy tapnięciu */
-    .nav-arrow, .close, #back-to-top {
-        -webkit-tap-highlight-color: transparent;
-        outline: none;
-    }
-
     .nav-arrow { 
         display: flex !important;
         top: auto;
@@ -304,10 +302,12 @@ footer {
         background-color: rgba(255,255,255,0.9);
         border: 1px solid rgba(0,0,0,0.05);
         opacity: 0.8;
+        /* Ponowne wymuszenie braku podświetlenia na mobile */
+        -webkit-tap-highlight-color: transparent !important;
     }
     
-    .prev { left: 20%; }
-    .next { right: 20%; }
+    .prev { left: 18%; }
+    .next { right: 18%; }
     
     .close { top: 15px; right: 15px; width: 45px; height: 45px; opacity: 0.6; }
 
