@@ -76,7 +76,7 @@ header {
 }
 
 /* ==========================================================================
-   3. GALERIA - STYL MASONRY (Nic nie ucina zdjęć)
+   3. GALERIA - KONTROLOWANE MASONRY (Nic nie ucina oczu)
    ========================================================================== */
 .gallery-section {
     width: 95%;
@@ -87,7 +87,6 @@ header {
 }
 
 .gallery-grid {
-    /* Używamy kolumn zamiast siatki grid dla efektu masonry */
     column-count: 4;
     column-gap: 15px;
     opacity: 1;
@@ -95,19 +94,25 @@ header {
 }
 
 .photo-card {
-    display: inline-block; /* Ważne dla układu kolumnowego */
+    display: inline-block;
     width: 100%;
     margin-bottom: 15px;
     overflow: hidden; 
     background-color: #f0f0f0;
-    break-inside: avoid; /* Zapobiega dzieleniu kafelka między kolumny */
+    break-inside: avoid;
+    /* Ograniczamy wysokość pionowych kadrów, żeby nie były za duże */
+    max-height: 550px; 
 }
 
 .photo-card img {
     width: 100%;
-    height: auto; /* Zdjęcie zachowuje swoje proporcje */
+    height: 100%; 
     display: block;
     cursor: pointer;
+    /* Skupiamy kadr na 20% od góry - tam gdzie zazwyczaj są oczy */
+    object-fit: cover;
+    object-position: center 20%;
+    
     user-select: none;
     -webkit-user-drag: none;
     transition: transform 0.3s ease; 
@@ -277,13 +282,15 @@ footer {
 /* 8. WERSJA MOBILNA */
 @media (max-width: 1100px) {
     .gallery-grid { column-count: 3; }
+    .photo-card { max-height: 500px; }
 }
 
 @media (max-width: 768px) {
     .gallery-grid { column-count: 2; gap: 8px; }
-    .photo-card { margin-bottom: 8px; }
+    .photo-card { margin-bottom: 8px; max-height: 380px; }
     .lightbox-content { max-height: 75vh; top: 45%; }
     .nav-arrow { top: auto; bottom: 25px; transform: none; padding: 10px 30px; }
     .prev { left: 15%; }
     .next { right: 15%; }
+    .close { top: 15px; right: 20px; }
 }
