@@ -80,7 +80,7 @@ header {
    3. GALERIA - MASONRY (Węższa, by strzałka miała miejsce)
    ========================================================================== */
 .gallery-section {
-    width: 92%; /* Węższa galeria tworzy margines dla strzałki */
+    width: 92%; /* Miejsce na strzałkę powrotu po prawej */
     max-width: 1700px;
     margin: 10px auto 40px auto; 
     padding: 0;
@@ -213,17 +213,17 @@ footer {
     display: inline-block;
 }
 
-/* BACK TO TOP - Maksymalnie do prawej krawędzi */
+/* BACK TO TOP */
 #back-to-top { 
     bottom: 30px; 
-    right: 10px; /* Przesunięte do krawędzi ekranu */
+    right: 10px; /* Maksymalnie do prawej */
     width: 50px; 
     height: 50px; 
     z-index: 10000;
 }
 #back-to-top:after { transform: rotate(-45deg); margin-top: 5px; }
 
-/* STRZAŁKI LIGHTBOX */
+/* STRZAŁKI LIGHTBOX (Desktop) */
 .prev { left: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; z-index: 1000002; }
 .prev:after { transform: rotate(-135deg); margin-left: 6px; }
 
@@ -257,7 +257,7 @@ footer {
     z-index: 999999;
     left: 0; top: 0;
     width: 100%; height: 100%;
-    background-color: #ffffff; 
+    background-color: #ffffff; /* Solidna biel */
     opacity: 0; 
     transition: opacity 0.25s ease-out;
     pointer-events: none; 
@@ -269,7 +269,7 @@ footer {
     display: flex; opacity: 1; pointer-events: auto; 
 }
 
-/* Ukrywamy Back to Top, gdy Lightbox jest aktywny */
+/* UKRYWAMY BACK-TO-TOP, GDY LIGHTBOX JEST AKTYWNY */
 .lightbox.active ~ #back-to-top {
     display: none !important;
 }
@@ -297,13 +297,27 @@ footer {
     .gallery-grid { column-count: 2; gap: 10px; }
     .photo-card { max-height: 320px; }
     
-    .nav-arrow { display: none !important; }
+    /* STRZAŁKI NA DOLE NA MOBILE */
+    .nav-arrow { 
+        display: flex !important;
+        top: auto;
+        bottom: 25px; /* Nisko, by nie zasłaniać zdjęcia */
+        transform: none;
+        width: 50px;
+        height: 50px;
+        background-color: rgba(255,255,255,0.9); /* Delikatne kółko */
+        border: 1px solid rgba(0,0,0,0.05);
+        opacity: 0.8;
+    }
     
-    .close { top: 20px; right: 15px; width: 45px; height: 45px; opacity: 0.6; }
+    .prev { left: 20%; }
+    .next { right: 20%; }
+    
+    .close { top: 15px; right: 15px; width: 45px; height: 45px; opacity: 0.6; }
 
     #back-to-top {
         bottom: 20px;
-        right: 5px; /* Jeszcze bliżej krawędzi na telefonach */
+        right: 5px;
         width: 45px;
         height: 45px;
     }
