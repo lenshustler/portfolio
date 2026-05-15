@@ -6,12 +6,11 @@
     font-display: swap;
 }
 
-/* 1. RESET I PODSTAWY - BLOKADA TOTALNA SYSTEMOWYCH NAKŁADEK */
+/* 1. RESET I PODSTAWY */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* Usuwa niebieski/szary prostokąt przy kliknięciu na każdym elemencie */
     -webkit-tap-highlight-color: transparent !important;
     outline: none !important;
 }
@@ -22,10 +21,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
     background-color: #ffffff;
     color: #000;
-    /* Blokada zaznaczania na poziomie całego body */
     -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
@@ -64,18 +60,29 @@ header {
     border-bottom: 1px solid #ccc;
     color: #000;
     font-family: 'Courier New', monospace; 
-    font-size: 0.9rem;
+    font-size: 1rem; /* POWIĘKSZONE DLA WYGODY */
     text-align: center;
     padding: 10px 0;
     letter-spacing: 1px;
     outline: none;
-    /* Tutaj pozwalamy na wpisywanie tekstu */
     -webkit-user-select: text;
     user-select: text;
 }
 
+.arnold-search:focus {
+    border-bottom-color: #000;
+}
+
+.arnold-search::placeholder {
+    color: #aaa;
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 0.8rem; /* POWIĘKSZONE DLA WYGODY */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
 /* ==========================================================================
-   3. GALERIA - MASONRY (Wersja Alan 460px + Blokady)
+   3. GALERIA - MASONRY (Wersja Alan 460px + "Szyba" ochronna)
    ========================================================================== */
 .gallery-section {
     width: 92%; 
@@ -88,7 +95,6 @@ header {
 .gallery-grid {
     column-count: 5;
     column-gap: 15px;
-    opacity: 1;
 }
 
 .photo-card {
@@ -99,6 +105,17 @@ header {
     break-inside: avoid;
     overflow: hidden;
     max-height: 460px;
+    position: relative; /* Potrzebne dla szyby */
+}
+
+/* NIEWIDZIALNA SZYBA NAD ZDJĘCIEM */
+.photo-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 10;
+    background: transparent;
 }
 
 .photo-card img {
@@ -109,15 +126,7 @@ header {
     min-height: 100%; 
     object-fit: cover;
     object-position: center 20%; 
-    
-    /* BLOKADA ZAZNACZANIA, PRZECIĄGANIA I MENU KONTEKSTOWEGO */
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-    user-select: none !important;
-    -webkit-touch-callout: none !important; /* Wyłącza menu "Zapisz" na iOS */
-    -webkit-user-drag: none !important;      /* Wyłącza przeciąganie obrazu */
-
+    -webkit-user-drag: none !important;
     transition: transform 0.3s ease; 
 }
 
@@ -125,9 +134,7 @@ header {
     transform: scale(1.03);
 }
 
-.photo-card.hidden {
-    display: none !important;
-}
+.photo-card.hidden { display: none !important; }
 
 /* ==========================================================================
    4. STOPKA & LICZNIK
@@ -188,7 +195,7 @@ footer {
 }
 
 /* ==========================================================================
-   5. NAWIGACJA (BACK TO TOP, ARROWS, CLOSE)
+   5. NAWIGACJA (SPÓJNY STYL)
    ========================================================================== */
 #back-to-top, .nav-arrow, .close {
     position: fixed;
@@ -196,12 +203,10 @@ footer {
     transition: all 0.3s ease;
     background: transparent;
     border: none !important;
-    outline: none !important;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0.2;
-    -webkit-tap-highlight-color: transparent !important;
 }
 
 #back-to-top:hover, .nav-arrow:hover, .close:hover {
@@ -240,7 +245,7 @@ footer {
 .close:after { transform: rotate(-45deg); }
 
 /* ==========================================================================
-   6. LIGHTBOX (Pełna ochrona obrazu)
+   6. LIGHTBOX (Pełna biel + ochrona)
    ========================================================================== */
 .lightbox {
     display: none; 
@@ -256,23 +261,27 @@ footer {
     align-items: center;
 }
 
-.lightbox.active {
-    display: flex; opacity: 1; pointer-events: auto; 
-}
+.lightbox.active { display: flex; opacity: 1; pointer-events: auto; }
 
-.lightbox.active ~ #back-to-top {
-    display: none !important;
+.lightbox.active ~ #back-to-top { display: none !important; }
+
+/* Szyba ochronna w lightboxie */
+.lightbox::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1000000;
+    background: transparent;
+    pointer-events: none; /* Zmieniamy w zależności od potrzeb gestów */
 }
 
 .lightbox-content {
     max-width: 92vw;
     max-height: 88vh;
     object-fit: contain;
-    /* BLOKADA POBIERANIA W PODGLĄDZIE */
-    -webkit-user-select: none !important;
-    -webkit-touch-callout: none !important; /* To jest kluczowe dla mobilnego Save Image */
-    -webkit-user-drag: none !important;
-    pointer-events: auto; /* Pozwala na swipe palcem, ale blokuje menu kontekstowe */
+    position: relative;
+    z-index: 999999;
 }
 
 /* ==========================================================================
@@ -286,8 +295,10 @@ footer {
 
 @media (max-width: 768px) {
     .gallery-section { width: 94%; }
-    .arnold-search { font-size: 0.8rem; }
-    .arnold-search::placeholder { font-size: 0.55rem; letter-spacing: 1px; }
+    
+    /* Wyszukiwarka z czytelnym tekstem */
+    .arnold-search { font-size: 1rem; }
+    .arnold-search::placeholder { font-size: 0.8rem; letter-spacing: 1px; }
 
     .gallery-grid { column-count: 2; gap: 10px; }
     .photo-card { max-height: 320px; }
