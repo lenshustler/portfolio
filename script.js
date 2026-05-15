@@ -1,154 +1,123 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // ==========================================
-    // 1. KONFIGURACJA SANITY
-    // ==========================================
     const PROJECT_ID = '6g67d261';
     const DATASET = 'portfolio'; 
     const grid = document.querySelector('.gallery-grid');
-
-    const QUERY = `*[_type == "photo"] | order(_createdAt desc) {
-        title,
-        isHighlight,
-        categories,
-        "imageUrl": image.asset->url
-    }`;
-    
-    const URL = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${encodeURIComponent(QUERY)}`;
-
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const prevBtn = document.querySelector('.prev');
+    const nextBtn = document.querySelector('.next');
+    const closeBtn = document.querySelector('.close');
     let images = [];
+    let activeIdx = 0;
 
-    // ==========================================
-    // 2. POBIERANIE ZDJĘĆ I BUDOWANIE GALERII
-    // ==========================================
+    // 1. POBIERANIE ZDJĘĆ
     if (grid) {
         try {
-            console.log("Łączenie z Sanity...");
+            const QUERY = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, categories, "imageUrl": image.asset->url }`);
+            const URL = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${QUERY}`;
+            
             const response = await fetch(URL);
             const data = await response.json();
-            let photos = data.result;
+            const photos = data.result;
 
             if (!photos || photos.length === 0) {
-                grid.innerHTML = "<p style='color:black; text-align:center; grid-column: 1 / -1; margin-top: 50px;'>Baza danych jest pusta.</p>";
+                grid.innerHTML = "<p style='color:black; text-align:center; grid-column: 1/-1;'>Baza danych jest pusta.</p>";
             } else {
                 photos.sort(() => Math.random() - 0.5);
                 grid.innerHTML = "";
 
                 photos.forEach((photo, index) => {
                     const card = document.createElement('div');
-                    card.classList.add('photo-card');
-                    
-                    // Pokazujemy WSZYSTKIE zdjęcia od razu
-                    const categoryData = photo.categories ? photo.categories.join(' ') : '';
-                    card.setAttribute('data-category', categoryData);
+                    card.className = 'photo-card'; 
+                    card.setAttribute('data-category', (photo.categories || []).join(' '));
 
                     const img = document.createElement('img');
                     img.src = photo.imageUrl + "?auto=format";
                     img.alt = photo.title || 'Zdjęcie';
+                    // Blokada przeciągania zdjęcia
                     img.setAttribute('draggable', 'false');
-                    img.setAttribute('loading', index < 6 ? 'eager' : 'lazy');
-
+                    
+                    img.onclick = () => showImage(index);
+                    
                     card.appendChild(img);
                     grid.appendChild(card);
                     images.push(img);
                 });
-
                 grid.style.opacity = "1";
-
-                images.forEach((img, index) => {
-                    img.onclick = () => showImage(index);
-                });
             }
-        } catch (error) {
-            console.error('Błąd Sanity:', error);
-        }
+        } catch (e) { console.error("Błąd:", e); }
     }
 
-    // ==========================================
-    // 3. OBSŁUGA LIGHTBOXA
-    // ==========================================
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const prevBtn = document.querySelector('.prev');
-    const nextBtn = document.querySelector('.next');
-    const closeBtn = document.querySelector('.close');
-
+    // 2. FUNKCJE LIGHTBOXA
     function showImage(index) {
-        const visibleCards = Array.from(document.querySelectorAll('.photo-card:not(.hidden)'));
-        const visibleImages = visibleCards.map(card => card.querySelector('img'));
-        
-        if (!lightbox || !lightboxImg || visibleImages.length === 0) return;
-        
-        let activeIndex = visibleImages.findIndex(img => img.src === images[index].src);
-        if (activeIndex === -1) activeIndex = 0;
+        const visible = Array.from(document.querySelectorAll('.photo-card:not(.hidden) img'));
+        activeIdx = visible.findIndex(img => img.src === images[index].src);
+        if (activeIdx === -1) activeIdx = 0;
 
-        nextBtn.onclick = (e) => { 
-            e.stopPropagation(); 
-            activeIndex = (activeIndex + 1) % visibleImages.length;
-            lightboxImg.src = visibleImages[activeIndex].src;
-        };
-        
-        prevBtn.onclick = (e) => { 
-            e.stopPropagation(); 
-            activeIndex = (activeIndex - 1 + visibleImages.length) % visibleImages.length;
-            lightboxImg.src = visibleImages[activeIndex].src;
-        };
-
-        lightboxImg.src = images[index].src;
-        lightbox.classList.add('active'); 
+        updateLightbox(visible);
+        lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
 
-    if (closeBtn) {
-        closeBtn.onclick = () => {
-            lightbox.classList.remove('active');
-            document.body.style.overflow = 'auto';
+    function updateLightbox(visibleList) {
+        lightboxImg.src = visibleList[activeIdx].src;
+
+        nextBtn.onclick = (e) => {
+            e.stopPropagation();
+            activeIdx = (activeIdx + 1) % visibleList.length;
+            lightboxImg.src = visibleList[activeIdx].src;
+        };
+
+        prevBtn.onclick = (e) => {
+            e.stopPropagation();
+            activeIdx = (activeIdx - 1 + visibleList.length) % visibleList.length;
+            lightboxImg.src = visibleList[activeIdx].src;
         };
     }
 
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    if (closeBtn) closeBtn.onclick = closeLightbox;
     if (lightbox) {
-        lightbox.onclick = (e) => { 
-            if (e.target === lightbox || e.target === lightboxImg) {
-                lightbox.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-        };
+        lightbox.onclick = (e) => { if (e.target === lightbox || e.target === lightboxImg) closeLightbox(); };
     }
 
-    // ==========================================
-    // 4. STRZAŁKA I LICZNIK
-    // ==========================================
-    const backToTop = document.getElementById('back-to-top');
-    window.onscroll = () => { 
-        if (backToTop) {
-            backToTop.style.display = window.scrollY > 300 ? "block" : "none"; 
+    // 3. OBSŁUGA KLAWIATURY (Strzałki i ESC)
+    document.addEventListener('keydown', (e) => {
+        if (lightbox && lightbox.classList.contains('active')) {
+            if (e.key === "ArrowRight") nextBtn.click();
+            if (e.key === "ArrowLeft") prevBtn.click();
+            if (e.key === "Escape") closeLightbox();
         }
-    };
-    if (backToTop) backToTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 
-    async function getGlobalVisits() {
-        const el = document.getElementById('frame-count');
-        if (!el) return;
-        try {
-            const r = await fetch('https://abacus.jasoncameron.dev/hit/alan_lysiak_portfolio/pentax_v1');
-            const d = await r.json();
-            if (d && d.value !== undefined) {
-                el.innerText = (200 + d.value).toString().padStart(2, '0');
-            }
-        } catch (err) { el.innerText = "200"; }
-    }
-    getGlobalVisits();
+    // 4. BLOKADA PRAWOKLIKU (Na wszystkie zdjęcia na stronie)
+    document.addEventListener('contextmenu', (e) => {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+        }
+    });
 
-    // ==========================================
-    // 5. WYSZUKIWARKA
-    // ==========================================
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase().trim();
-            document.querySelectorAll('.photo-card').forEach(card => {
-                const cat = (card.getAttribute('data-category') || "").toLowerCase();
-                card.classList.toggle('hidden', term !== "" && !cat.includes(term));
-            });
+    // 5. WYSZUKIWARKA, LICZNIK I STRZAŁKA POWROTU (Bez zmian)
+    document.getElementById('search-input')?.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        document.querySelectorAll('.photo-card').forEach(card => {
+            const cat = (card.getAttribute('data-category') || "").toLowerCase();
+            card.classList.toggle('hidden', term !== "" && !cat.includes(term));
         });
-    }
+    });
+
+    const btt = document.getElementById('back-to-top');
+    window.onscroll = () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; };
+    if (btt) btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const counterEl = document.getElementById('frame-count');
+    try {
+        const r = await fetch('https://abacus.jasoncameron.dev/hit/alan_lysiak_portfolio/pentax_v1');
+        const d = await r.json();
+        if (counterEl) counterEl.innerText = (200 + (d.value || 0)).toString().padStart(2, '0');
+    } catch (e) { if (counterEl) counterEl.innerText = "200"; }
 });
