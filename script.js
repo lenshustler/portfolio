@@ -22,18 +22,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ==========================================
     if (grid) {
         try {
-            console.log("Łączenie z Sanity (Dataset: " + DATASET + ")...");
+            console.log("Łączenie z Sanity...");
             const response = await fetch(URL);
             const data = await response.json();
-            
-            console.log("Dane odebrane:", data);
-
             let photos = data.result;
 
             if (!photos || photos.length === 0) {
-                console.warn("Brak zdjęć w Sanity.");
-                grid.innerHTML = "<p style='color:black; text-align:center; grid-column: 1 / -1; margin-top: 50px;'>Baza danych jest pusta lub zablokowana.</p>";
-                grid.style.opacity = "1";
+                grid.innerHTML = "<p style='color:black; text-align:center; grid-column: 1 / -1; margin-top: 50px;'>Baza danych jest pusta.</p>";
             } else {
                 photos.sort(() => Math.random() - 0.5);
                 grid.innerHTML = "";
@@ -42,53 +37,40 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const card = document.createElement('div');
                     card.classList.add('photo-card');
                     
-                    if (photo.isHighlight) {
-                        card.classList.add('highlight');
-                    } else {
-                        card.classList.add('hidden'); 
-                    }
-                    
+                    // Pokazujemy WSZYSTKIE zdjęcia od razu
                     const categoryData = photo.categories ? photo.categories.join(' ') : '';
                     card.setAttribute('data-category', categoryData);
 
                     const img = document.createElement('img');
                     img.src = photo.imageUrl + "?auto=format";
-                    img.alt = photo.title || 'Zdjęcie z portfolio';
+                    img.alt = photo.title || 'Zdjęcie';
                     img.setAttribute('draggable', 'false');
-
-                    if (index < 6) {
-                        img.removeAttribute('loading');
-                    } else {
-                        img.setAttribute('loading', 'lazy');
-                    }
-                    img.setAttribute('decoding', 'async');
+                    img.setAttribute('loading', index < 6 ? 'eager' : 'lazy');
 
                     card.appendChild(img);
                     grid.appendChild(card);
                     images.push(img);
                 });
 
-                setTimeout(() => { grid.style.opacity = "1"; }, 50);
+                grid.style.opacity = "1";
 
                 images.forEach((img, index) => {
                     img.onclick = () => showImage(index);
                 });
             }
-
         } catch (error) {
-            console.error('Błąd połączenia z Sanity:', error);
+            console.error('Błąd Sanity:', error);
         }
     }
 
     // ==========================================
-    // 3. OBSŁUGA LIGHTBOXA (Z klasą .active)
+    // 3. OBSŁUGA LIGHTBOXA
     // ==========================================
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const prevBtn = document.querySelector('.prev');
     const nextBtn = document.querySelector('.next');
     const closeBtn = document.querySelector('.close');
-    let currentIndex = 0;
 
     function showImage(index) {
         const visibleCards = Array.from(document.querySelectorAll('.photo-card:not(.hidden)'));
@@ -101,25 +83,72 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         nextBtn.onclick = (e) => { 
             e.stopPropagation(); 
-            let nextIdx = (activeIndex + 1) % visibleImages.length;
-            const globalIdx = images.findIndex(img => img.src === visibleImages[nextIdx].src);
-            showImage(globalIdx);
+            activeIndex = (activeIndex + 1) % visibleImages.length;
+            lightboxImg.src = visibleImages[activeIndex].src;
         };
         
         prevBtn.onclick = (e) => { 
             e.stopPropagation(); 
-            let prevIdx = (activeIndex - 1 + visibleImages.length) % visibleImages.length;
-            const globalIdx = images.findIndex(img => img.src === visibleImages[prevIdx].src);
-            showImage(globalIdx);
+            activeIndex = (activeIndex - 1 + visibleImages.length) % visibleImages.length;
+            lightboxImg.src = visibleImages[activeIndex].src;
         };
 
-        currentIndex = index;
-        lightboxImg.src = images[currentIndex].src;
-        
-        // NOWY SPOSÓB WŁĄCZANIA (Dodaje klasę .active zamiast zmieniać style.display)
+        lightboxImg.src = images[index].src;
         lightbox.classList.add('active'); 
         document.body.style.overflow = 'hidden';
     }
 
-    const closeLightbox = () => {
-        if (lightbox) {
+    if (closeBtn) {
+        closeBtn.onclick = () => {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+    }
+
+    if (lightbox) {
+        lightbox.onclick = (e) => { 
+            if (e.target === lightbox || e.target === lightboxImg) {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        };
+    }
+
+    // ==========================================
+    // 4. STRZAŁKA I LICZNIK
+    // ==========================================
+    const backToTop = document.getElementById('back-to-top');
+    window.onscroll = () => { 
+        if (backToTop) {
+            backToTop.style.display = window.scrollY > 300 ? "block" : "none"; 
+        }
+    };
+    if (backToTop) backToTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    async function getGlobalVisits() {
+        const el = document.getElementById('frame-count');
+        if (!el) return;
+        try {
+            const r = await fetch('https://abacus.jasoncameron.dev/hit/alan_lysiak_portfolio/pentax_v1');
+            const d = await r.json();
+            if (d && d.value !== undefined) {
+                el.innerText = (200 + d.value).toString().padStart(2, '0');
+            }
+        } catch (err) { el.innerText = "200"; }
+    }
+    getGlobalVisits();
+
+    // ==========================================
+    // 5. WYSZUKIWARKA
+    // ==========================================
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+            document.querySelectorAll('.photo-card').forEach(card => {
+                const cat = (card.getAttribute('data-category') || "").toLowerCase();
+                card.classList.toggle('hidden', term !== "" && !cat.includes(term));
+            });
+        });
+    }
+});
