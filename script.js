@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    // ==========================================
+    // 1. KONFIGURACJA SANITY
+    // ==========================================
     const PROJECT_ID = '6g67d261';
     const DATASET = 'portfolio'; 
     const grid = document.querySelector('.gallery-grid');
@@ -10,10 +13,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     let images = [];
     let activeIdx = 0;
 
-    // 1. POBIERANIE ZDJĘĆ
+    // 1. POBIERANIE ZDJĘĆ (Z uwzględnieniem isHighlight)
     if (grid) {
         try {
-            const QUERY = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, categories, "imageUrl": image.asset->url }`);
+            // DODANO isHighlight do zapytania
+            const QUERY = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, isHighlight, categories, "imageUrl": image.asset->url }`);
             const URL = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${QUERY}`;
             
             const response = await fetch(URL);
@@ -29,12 +33,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 photos.forEach((photo, index) => {
                     const card = document.createElement('div');
                     card.className = 'photo-card'; 
+                    
+                    // LOGIKA STARTOWA: Ukrywamy te bez Highlight
+                    if (photo.isHighlight === true) {
+                        card.classList.add('highlight');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+
                     card.setAttribute('data-category', (photo.categories || []).join(' '));
 
                     const img = document.createElement('img');
                     img.src = photo.imageUrl + "?auto=format";
                     img.alt = photo.title || 'Zdjęcie';
-                    // Blokada przeciągania zdjęcia
                     img.setAttribute('draggable', 'false');
                     
                     img.onclick = () => showImage(index);
@@ -45,12 +56,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
                 grid.style.opacity = "1";
             }
-        } catch (e) { console.error("Błąd:", e); }
+        } catch (e) { console.error("Błąd pobierania danych:", e); }
     }
 
     // 2. FUNKCJE LIGHTBOXA
     function showImage(index) {
         const visible = Array.from(document.querySelectorAll('.photo-card:not(.hidden) img'));
+        if (visible.length === 0) return;
+
         activeIdx = visible.findIndex(img => img.src === images[index].src);
         if (activeIdx === -1) activeIdx = 0;
 
@@ -94,22 +107,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // 4. BLOKADA PRAWOKLIKU (Na wszystkie zdjęcia na stronie)
+    // 4. BLOKADA PRAWOKLIKU
     document.addEventListener('contextmenu', (e) => {
-        if (e.target.tagName === 'IMG') {
-            e.preventDefault();
-        }
+        if (e.target.tagName === 'IMG') e.preventDefault();
     });
 
-    // 5. WYSZUKIWARKA, LICZNIK I STRZAŁKA POWROTU (Bez zmian)
+    // 5. WYSZUKIWARKA (Poprawiona logika: czyści do Highlight)
     document.getElementById('search-input')?.addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase().trim();
         document.querySelectorAll('.photo-card').forEach(card => {
             const cat = (card.getAttribute('data-category') || "").toLowerCase();
-            card.classList.toggle('hidden', term !== "" && !cat.includes(term));
+            
+            if (term === "") {
+                // Gdy puste: pokazuj tylko Highlight
+                if (card.classList.contains('highlight')) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            } else {
+                // Gdy szukasz: filtruj po kategoriach
+                card.classList.toggle('hidden', !cat.includes(term));
+            }
         });
     });
 
+    // 6. STRZAŁKA POWROTU I LICZNIK
     const btt = document.getElementById('back-to-top');
     window.onscroll = () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; };
     if (btt) btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
