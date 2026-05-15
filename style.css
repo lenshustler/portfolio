@@ -76,7 +76,7 @@ header {
 }
 
 /* ==========================================================================
-   3. GALERIA - KOMPAKTOWE MASONRY (5 kolumn, niskie piony)
+   3. GALERIA - SZTYWNA WYSOKOŚĆ (Kompaktowe 5 kolumn)
    ========================================================================== */
 .gallery-section {
     width: 98%; 
@@ -86,32 +86,29 @@ header {
 }
 
 .gallery-grid {
-    /* 5 kolumn sprawia, że kafelki są mniejsze i zgrabniejsze */
     column-count: 5;
     column-gap: 15px;
     opacity: 1;
 }
 
 .photo-card {
-    display: inline-block;
+    display: block;
     width: 100%;
     margin-bottom: 15px;
     background-color: #f0f0f0;
     break-inside: avoid;
     overflow: hidden;
+    /* SZTYWNA WYSOKOŚĆ DLA WSZYSTKICH ZDJĘĆ */
+    height: 455px; 
 }
 
 .photo-card img {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
     cursor: pointer;
-    
-    /* MOCNY LIMITER: Pion nie będzie wyższy niż ok. 480px */
-    max-height: 460px; 
     object-fit: cover;
     object-position: center 20%; 
-
     user-select: none;
     -webkit-user-drag: none;
     transition: transform 0.3s ease; 
@@ -153,8 +150,6 @@ footer {
     letter-spacing: 3px;
     transition: color 0.3s ease;
 }
-
-.footer-links a:hover { color: #000; }
 
 .footer-name {
     font-size: 0.6rem;
@@ -198,4 +193,74 @@ footer {
     width: 50px; height: 50px;
     font-size: 24px;
     cursor: pointer;
-    z-index:
+    z-index: 9999; 
+    text-align: center;
+    line-height: 48px; 
+}
+
+/* ==========================================================================
+   7. LIGHTBOX (Naprawione pozycjonowanie ikon)
+   ========================================================================== */
+.lightbox {
+    display: none; 
+    position: fixed;
+    z-index: 999999;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: #ffffff; 
+    opacity: 0; 
+    transition: opacity 0.3s ease;
+    pointer-events: none; 
+    justify-content: center;
+    align-items: center;
+}
+
+.lightbox.active {
+    display: flex; 
+    opacity: 1; 
+    pointer-events: auto; 
+}
+
+.lightbox-content {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+}
+
+.close, .nav-arrow {
+    position: fixed; /* PRZYWRÓCONO FIXED */
+    cursor: pointer;
+    color: #fff; 
+    -webkit-text-stroke: 1.5px #000; 
+    z-index: 1000001;
+    user-select: none;
+}
+
+.close { 
+    top: 30px; 
+    right: 30px; 
+    font-size: 40px; 
+}
+
+.nav-arrow { 
+    top: 50%; 
+    transform: translateY(-50%); 
+    font-size: 50px; 
+    padding: 20px; 
+}
+
+.prev { left: 20px; }
+.next { right: 20px; }
+
+/* 8. RESPONSIVE */
+@media (max-width: 1400px) { .gallery-grid { column-count: 4; } }
+@media (max-width: 1000px) { 
+    .gallery-grid { column-count: 3; } 
+    .photo-card { height: 400px; }
+}
+@media (max-width: 768px) {
+    .gallery-grid { column-count: 2; gap: 10px; }
+    .photo-card { height: 280px; }
+    .nav-arrow { top: auto; bottom: 30px; transform: none; }
+    .prev { left: 20%; } .next { right: 20%; }
+}
