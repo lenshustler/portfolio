@@ -73,6 +73,7 @@ header {
     /* Tutaj pozwalamy na wpisywanie tekstu */
     -webkit-user-select: text;
     user-select: text;
+    text-transform: uppercase; /* Wymusza duże litery podczas wpisywania */
 }
 
 .arnold-search:focus {
@@ -321,53 +322,4 @@ footer {
     object-fit: contain;
     position: relative;
     z-index: 999999;
-    /* Ochrona w podglądzie */
-    -webkit-user-select: none !important;
-    -webkit-touch-callout: none !important;
-    -webkit-user-drag: none !important;
-    pointer-events: auto; /* Pozwala na swipe */
-}
-
-/* ==========================================================================
-   7. RESPONSIVE
-   ========================================================================== */
-@media (max-width: 1400px) { .gallery-grid { column-count: 4; } }
-@media (max-width: 1000px) { 
-    .gallery-grid { column-count: 3; } 
-    .photo-card { max-height: 400px; }
-}
-
-@media (max-width: 768px) {
-    .gallery-section { width: 94%; }
-    
-    /* Mobilna wyszukiwarka - ZMNIEJSZONA CZCIONKA */
-    .arnold-search { font-size: 0.9rem; }
-    .arnold-search::placeholder { font-size: 0.7rem; letter-spacing: 1px; }
-
-    .gallery-grid { column-count: 2; gap: 10px; }
-    .photo-card { max-height: 320px; }
-    
-    .nav-arrow { 
-        display: flex !important;
-        top: auto;
-        bottom: 25px;
-        transform: none;
-        width: 50px;
-        height: 50px;
-        background-color: rgba(255,255,255,0.9);
-        border: 1px solid rgba(0,0,0,0.05);
-        opacity: 0.8;
-    }
-    
-    .prev { left: 18%; }
-    .next { right: 18%; }
-    
-    .close { top: 15px; right: 15px; width: 45px; height: 45px; opacity: 0.6; }
-
-    #back-to-top {
-        bottom: 20px;
-        right: 5px;
-        width: 45px;
-        height: 45px;
-    }
-}
+    /* O
