@@ -324,9 +324,9 @@ footer {
 
     .lightbox-content {
         max-width: 98vw;
-        /* Zwiększone z 60vh na 72vh, żeby drastycznie zmniejszyć pustkę nad/pod obrazem */
         max-height: 72vh; 
-        margin-top: 0; 
+        /* PRZESUNIĘCIE DO GÓRY: ujemny margines podnosi zdjęcie */
+        margin-top: -35px; 
     }
 
     .close {
@@ -337,10 +337,10 @@ footer {
         opacity: 0.6;
     }
 
-    /* Strzałki obok siebie */
+    /* Strzałki na dole */
     .nav-arrow {
         position: absolute;
-        bottom: 25px; /* Delikatnie obniżone dla lepszego balansu */
+        bottom: 25px; 
         top: auto;
         transform: none;
         width: 60px;
