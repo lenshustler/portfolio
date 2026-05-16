@@ -6,12 +6,13 @@
     font-display: swap;
 }
 
-/* 1. RESET I PODSTAWY */
+/* ==========================================================================
+   1. RESET I PODSTAWY
+   ========================================================================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* Usuwa niebieski/szary prostokąt przy kliknięciu na telefonie */
     -webkit-tap-highlight-color: transparent !important;
     outline: none !important;
 }
@@ -22,7 +23,6 @@ body {
     -moz-osx-font-smoothing: grayscale;
     background-color: #ffffff;
     color: #000;
-    /* Blokada zaznaczania na poziomie całego body dla pewności */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -46,7 +46,41 @@ header {
     color: #000;
 }
 
-/* 2. WYSZUKIWARKA */
+/* ==========================================================================
+   2. NAWIGACJA (GÓRA I DÓŁ)
+   ========================================================================== */
+.header-links, .footer-links {
+    list-style: none !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 30px !important;
+    margin: 20px 0 !important;
+    padding: 0 !important;
+}
+
+.header-links a, .footer-links a {
+    text-decoration: none !important;
+    color: #555 !important;
+    font-family: 'Tenor Sans', sans-serif !important;
+    font-size: 0.7rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 3px !important;
+    transition: color 0.3s ease;
+}
+
+.header-links a:hover, .footer-links a:hover {
+    color: #000 !important;
+}
+
+.ig-icon svg {
+    display: block;
+    color: #555;
+}
+
+/* ==========================================================================
+   3. WYSZUKIWARKA
+   ========================================================================== */
 .search-nav {
     display: flex;
     flex-direction: column;
@@ -55,7 +89,7 @@ header {
     max-width: 600px;
     margin: 20px auto 0 auto; 
     padding: 0 20px;
-    position: relative; /* Wymagane dla pozycjonowania listy podpowiedzi */
+    position: relative;
 }
 
 .arnold-search {
@@ -64,7 +98,6 @@ header {
     border: none;
     border-bottom: 1px solid #ccc;
     color: #000;
-    /* JEDNA SPÓJNA CZCIONKA DLA CAŁEJ STRONY */
     font-family: 'Tenor Sans', sans-serif; 
     font-size: 0.9rem; 
     text-align: center;
@@ -83,12 +116,11 @@ header {
 .arnold-search::placeholder {
     color: #aaa;
     font-family: 'Tenor Sans', sans-serif;
-    font-size: 0.7rem; /* ZMNIEJSZONE Z 0.8rem */
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 2px;
 }
 
-/* Wygląd listy podpowiedzi wyszukiwarki */
 .suggestions-list {
     position: absolute;
     top: 100%;
@@ -101,8 +133,8 @@ header {
     max-height: 200px;
     overflow-y: auto;
     z-index: 1000;
-    display: none; /* Domyślnie ukryta */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05); /* Delikatny cień */
+    display: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
 .suggestions-list li {
@@ -117,20 +149,16 @@ header {
     transition: background-color 0.2s, color 0.2s;
 }
 
-.suggestions-list li:last-child {
-    border-bottom: none;
-}
-
 .suggestions-list li:hover {
     background-color: #000;
     color: #fff;
 }
 
 /* ==========================================================================
-   3. GALERIA - MASONRY (Ulepszona ochrona bez blokowania kliknięć)
+   4. GALERIA - MASONRY
    ========================================================================== */
 .gallery-section {
-    width: 92%; /* Miejsce na strzałkę powrotu po prawej */
+    width: 92%; 
     max-width: 1700px;
     margin: 10px auto 40px auto; 
     padding: 0;
@@ -152,7 +180,6 @@ header {
     overflow: hidden;
     max-height: 460px;
     position: relative;
-    /* Pozwala kliknięciom przechodzić do obrazka */
     pointer-events: auto; 
 }
 
@@ -164,18 +191,12 @@ header {
     min-height: 100%; 
     object-fit: cover;
     object-position: center 20%; 
-    
-    /* BLOKADA ZAZNACZANIA, PRZECIĄGANIA I MENU KONTEKSTOWEGO (iOS/Android) */
     -webkit-user-select: none !important;
     -moz-user-select: none !important;
-    -ms-user-select: none !important;
     user-select: none !important;
-    -webkit-touch-callout: none !important; /* Blokuje menu "Zapisz obraz" na iOS */
+    -webkit-touch-callout: none !important;
     -webkit-user-drag: none !important;
-    
-    /* Zapewnia odbieranie kliknięć */
     pointer-events: auto;
-
     transition: transform 0.3s ease; 
 }
 
@@ -186,7 +207,7 @@ header {
 .photo-card.hidden { display: none !important; }
 
 /* ==========================================================================
-   4. STOPKA & LICZNIK
+   5. STOPKA & LICZNIK
    ========================================================================== */
 footer {
     display: flex;
@@ -194,23 +215,6 @@ footer {
     align-items: center;
     background-color: #fff;
     padding: 60px 0 40px 0;
-}
-
-.footer-links {
-    list-style: none;
-    display: flex;
-    gap: 35px;
-    margin-bottom: 40px; 
-}
-
-.footer-links a {
-    text-decoration: none;
-    color: #555; 
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    transition: color 0.3s ease;
 }
 
 .footer-name {
@@ -244,60 +248,28 @@ footer {
 }
 
 /* ==========================================================================
-   5. NAWIGACJA (BACK TO TOP, ARROWS, CLOSE)
+   6. NAWIGACJA DODATKOWA (STRZAŁKI, LIGHTBOX)
    ========================================================================== */
 #back-to-top, .nav-arrow, .close {
     position: fixed;
     cursor: pointer;
     transition: all 0.3s ease;
     background: transparent;
-    border: none !important;
-    outline: none !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     opacity: 0.2;
-    -webkit-tap-highlight-color: transparent !important;
+    z-index: 10000;
 }
 
-#back-to-top:hover, .nav-arrow:hover, .close:hover {
-    opacity: 1;
-    background-color: rgba(0,0,0,0.04);
-    border-radius: 50%;
-}
-
-#back-to-top:after, .nav-arrow:after {
+#back-to-top { bottom: 30px; right: 10px; width: 50px; height: 50px; display: none; }
+#back-to-top:after {
     content: '';
-    width: 14px;
-    height: 14px;
+    width: 14px; height: 14px;
     border-top: 1.5px solid #000;
     border-right: 1.5px solid #000;
     display: inline-block;
+    transform: rotate(-45deg);
+    margin-top: 5px;
 }
 
-#back-to-top { bottom: 30px; right: 10px; width: 50px; height: 50px; z-index: 10000; }
-#back-to-top:after { transform: rotate(-45deg); margin-top: 5px; }
-
-.prev { left: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; z-index: 1000002; }
-.prev:after { transform: rotate(-135deg); margin-left: 6px; }
-
-.next { right: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; z-index: 1000002; }
-.next:after { transform: rotate(45deg); margin-right: 6px; }
-
-.close { top: 30px; right: 30px; width: 55px; height: 55px; z-index: 1000002; }
-.close:before, .close:after {
-    content: '';
-    position: absolute;
-    width: 22px;
-    height: 1.5px;
-    background-color: #000;
-}
-.close:before { transform: rotate(45deg); }
-.close:after { transform: rotate(-45deg); }
-
-/* ==========================================================================
-   6. LIGHTBOX (Solidna biel + ochrona)
-   ========================================================================== */
 .lightbox {
     display: none; 
     position: fixed;
@@ -305,21 +277,30 @@ footer {
     left: 0; top: 0;
     width: 100%; height: 100%;
     background-color: #ffffff; 
-    opacity: 0; 
-    transition: opacity 0.25s ease-out;
-    pointer-events: none; 
     justify-content: center;
     align-items: center;
 }
 
-.lightbox.active { display: flex; opacity: 1; pointer-events: auto; }
-
-.lightbox.active ~ #back-to-top { display: none !important; }
+.lightbox.active { display: flex; }
 
 .lightbox-content {
     max-width: 92vw;
     max-height: 88vh;
     object-fit: contain;
-    position: relative;
-    z-index: 999999;
-    /* O
+}
+
+/* ==========================================================================
+   7. RESPONSIVE (TELEFONY)
+   ========================================================================== */
+@media (max-width: 1000px) { 
+    .gallery-grid { column-count: 2 !important; gap: 10px !important; }
+    .photo-card { max-height: none !important; }
+    .header-links, .footer-links { gap: 20px !important; }
+    .header-links a, .footer-links a { font-size: 0.6rem !important; letter-spacing: 2px !important; }
+    .logo { font-size: 1.4rem !important; }
+}
+
+@media (max-width: 600px) {
+    header { padding: 25px 0 10px 0; }
+    .gallery-section { width: 95%; }
+}
