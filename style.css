@@ -27,7 +27,7 @@ body {
 }
 
 header {
-    padding: 40px 0 20px 0; 
+    padding: 40px 0 10px 0; /* POPRAWKA: Mniejszy margines pod headerem */
     text-align: center;
 }
 
@@ -52,7 +52,7 @@ header {
     justify-content: center;
     align-items: center;
     gap: 35px;
-    margin: 20px 0;
+    margin: 15px 0 10px 0; /* POPRAWKA: Zacieśniony margines nawigacji */
     padding: 0;
 }
 
@@ -103,6 +103,10 @@ header {
     text-transform: uppercase; 
 }
 
+.arnold-search:focus {
+    border-bottom-color: #000;
+}
+
 .arnold-search::placeholder {
     color: #aaa;
     font-family: 'Tenor Sans', sans-serif;
@@ -138,7 +142,7 @@ header {
 .gallery-section {
     width: 92%; 
     max-width: 1700px;
-    margin: 20px auto 40px auto; 
+    margin: 5px auto 40px auto; /* POPRAWKA: Galeria podciągnięta wyżej */
 }
 
 .gallery-grid {
@@ -314,7 +318,22 @@ footer {
     .header-links a, .footer-links a { font-size: 0.6rem; letter-spacing: 2px; }
     .gallery-grid { column-count: 2; column-gap: 10px; }
     .photo-card { margin-bottom: 10px; max-height: none; }
-    #back-to-top { bottom: 20px; right: 10px; width: 40px; height: 40px; }
+
+    /* POPRAWKA: Minimalistyczna strzałka powrotu na mobile/tablet */
+    #back-to-top {
+        bottom: 15px;
+        right: 5px;
+        width: 35px;
+        height: 35px;
+        opacity: 0.15;
+    }
+    #back-to-top:after {
+        width: 10px;
+        height: 10px;
+        border-top-width: 1px;
+        border-right-width: 1px;
+        margin: 15px auto 0 auto;
+    }
 
     /* LIGHTBOX MOBILE */
     .lightbox {
@@ -325,8 +344,7 @@ footer {
     .lightbox-content {
         max-width: 98vw;
         max-height: 72vh; 
-        /* PRZESUNIĘCIE DO GÓRY: ujemny margines podnosi zdjęcie */
-        margin-top: -35px; 
+        margin-top: -35px; /* Podniesienie zdjęcia wyżej */
     }
 
     .close {
@@ -337,7 +355,6 @@ footer {
         opacity: 0.6;
     }
 
-    /* Strzałki na dole */
     .nav-arrow {
         position: absolute;
         bottom: 25px; 
@@ -348,93 +365,32 @@ footer {
         opacity: 0.6;
     }
 
-    .prev {
-        left: 25%; 
-    }
-
-    .next {
-        right: 25%;
-    }
+    .prev { left: 25%; }
+    .next { right: 25%; }
 }
+
 /* ==========================================================================
-   9. LANDSCAPE MODE (OBRÓCONY TELEFON) - POPRAWKA NA DUŻE ZDJĘCIE
+   9. LANDSCAPE MODE (OBRÓCONY TELEFON)
    ========================================================================== */
 @media (max-width: 950px) and (orientation: landscape) {
-    
-    /* Zmiana dla kompaktowej wyszukiwarki i loga w poziomie (by odzyskać miejsce) */
-    header {
-        padding: 10px 0 5px 0 !important;
-    }
-    .logo {
-        font-size: 1.2rem !important;
-        margin-bottom: 5px !important;
-        letter-spacing: 4px !important;
-    }
-    .header-links {
-        margin: 5px 0 !important;
-        gap: 25px !important;
-    }
-    .arnold-search {
-        padding: 5px 0 !important;
-        font-size: 0.7rem !important;
-    }
+    header { padding: 10px 0 5px 0 !important; }
+    .logo { font-size: 1.2rem !important; margin-bottom: 5px !important; letter-spacing: 4px !important; }
+    .header-links { margin: 5px 0 !important; gap: 25px !important; }
+    .arnold-search { padding: 5px 0 !important; font-size: 0.7rem !important; }
 
-    /* Galeria w poziomie: Więcej kolumn (4 to optimum) */
-    .gallery-grid {
-        column-count: 4 !important;
-        column-gap: 8px !important;
-    }
-    .photo-card {
-        margin-bottom: 8px !important;
-    }
+    .gallery-grid { column-count: 4 !important; column-gap: 8px !important; }
+    .photo-card { margin-bottom: 8px !important; }
 
-    /* LIGHTBOX W POZIOMIE: ZDJĘCIE JEST KRÓLEM */
-    .lightbox {
-        justify-content: center !important;
-        align-items: center !important;
-        padding-top: 0 !important; /* Rezygnujemy z odgórnego paddingu */
-    }
-    
+    .lightbox { justify-content: center !important; align-items: center !important; padding-top: 0 !important; }
     .lightbox-content {
-        /* PANCERNA MAKSYMALIZACJA PIONU */
-        max-height: 98vh !important; /* Zdjęcie wypełnia niemal cały pion */
-        
-        /* MAGIA CALC: Szerokość to 100% minus bezpieczne 120px na strzałki po bokach */
+        max-height: 98vh !important; 
         max-width: calc(100vw - 120px) !important; 
-        
-        margin-top: 0 !important; /* Kasujemy marginesy pionowe z portrait */
+        margin-top: 0 !important;
         margin-bottom: 0 !important;
     }
 
-    /* Iks (X) mniejszy i subtelniejszy w rogu */
-    .close {
-        top: 10px !important;
-        right: 10px !important;
-        width: 40px !important;
-        height: 40px !important;
-        opacity: 0.2 !important;
-    }
-    .close:hover { opacity: 1 !important; }
-
-    /* Strzałki po bokach, SUBTELNE (bardzo niskie opacity) */
-    .nav-arrow {
-        position: fixed !important; /* Wracamy do fixed po bokach */
-        top: 50% !important; /* Na środku pionowo */
-        bottom: auto !important;
-        transform: translateY(-50%) !important;
-        width: 50px !important; /* Większy obszar klikalny, ale subtelny wygląd */
-        height: 50px !important;
-        opacity: 0.1 !important; /* Prawie niewidoczne, by nie odciągać uwagi */
-        margin-top: 0 !important;
-    }
-    
-    .nav-arrow:hover { opacity: 1 !important; }
-
-    .prev { 
-        left: 5px !important; /* Bardzo blisko krawędzi */
-    }
-    
-    .next { 
-        right: 5px !important; 
-    }
+    .close { top: 10px !important; right: 10px !important; width: 40px !important; height: 40px !important; opacity: 0.2 !important; }
+    .nav-arrow { position: fixed !important; top: 50% !important; bottom: auto !important; transform: translateY(-50%) !important; width: 50px !important; height: 50px !important; opacity: 0.1 !important; margin-top: 0 !important; }
+    .prev { left: 5px !important; }
+    .next { right: 5px !important; }
 }
