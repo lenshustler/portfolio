@@ -75,7 +75,7 @@ header {
 }
 
 /* ==========================================================================
-   3. WYSZUKIWARKA
+   3. WYSZUKIWARKA (POPRAWIONA CZCIONKA)
    ========================================================================== */
 .search-nav {
     display: flex;
@@ -95,11 +95,24 @@ header {
     border-bottom: 1px solid #ccc;
     color: #000;
     font-family: 'Tenor Sans', sans-serif; 
-    font-size: 0.9rem; 
+    font-size: 0.75rem; /* Zmniejszona dla minimalizmu */
     text-align: center;
     padding: 10px 0;
-    letter-spacing: 1px;
+    letter-spacing: 2px; /* Większy odstęp */
+    outline: none;
     text-transform: uppercase; 
+}
+
+.arnold-search:focus {
+    border-bottom-color: #000;
+}
+
+.arnold-search::placeholder {
+    color: #aaa;
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 0.65rem; /* Subtelny placeholder */
+    text-transform: uppercase;
+    letter-spacing: 3px;
 }
 
 .suggestions-list {
@@ -227,10 +240,10 @@ footer {
 }
 
 /* ==========================================================================
-   7. LIGHTBOX (Powiększanie na pełen ekran) - NAPRAWIONE
+   7. LIGHTBOX (PEŁEN EKRAN)
    ========================================================================== */
 .lightbox {
-    display: none; /* Domyślnie ukryty */
+    display: none; 
     position: fixed;
     z-index: 999999;
     left: 0; top: 0;
@@ -240,14 +253,13 @@ footer {
     transition: opacity 0.3s ease;
     justify-content: center;
     align-items: center;
-    pointer-events: none; /* Blokuje kliknięcia, gdy nieaktywny */
+    pointer-events: none;
 }
 
-/* Klasa dodawana przez JavaScript, która aktywuje lightbox */
 .lightbox.active {
     display: flex !important;
     opacity: 1 !important;
-    pointer-events: auto !important; /* Włącza kliknięcia */
+    pointer-events: auto !important;
 }
 
 .lightbox-content {
