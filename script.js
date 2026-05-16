@@ -128,22 +128,79 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.target.tagName === 'IMG') e.preventDefault(); 
     });
 
-    // --- 3. WYSZUKIWARKA ---
-    document.getElementById('search-input')?.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase().trim();
-        document.querySelectorAll('.photo-card').forEach(card => {
-            const cat = (card.getAttribute('data-category') || "").toLowerCase();
-            if (term === "") {
-                if (card.classList.contains('highlight')) {
-                    card.classList.remove('hidden');
-                } else {
-                    card.classList.add('hidden');
+    // --- 3. WYSZUKIWARKA I PODPOWIEDZI ---
+    const searchInput = document.getElementById('search-input');
+    const suggestionsBox = document.getElementById('search-suggestions');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.photo-card');
+            
+            // 1. Zbieranie unikalnych kategorii z załadowanych zdjęć
+            let allCategories = new Set();
+            cards.forEach(card => {
+                const cats = card.getAttribute('data-category');
+                if (cats) {
+                    cats.split(' ').forEach(c => {
+                        if(c) allCategories.add(c.toLowerCase());
+                    });
                 }
+            });
+            const uniqueCategories = Array.from(allCategories);
+
+            // 2. Filtrowanie zdjęć na żywo
+            cards.forEach(card => {
+                const cat = (card.getAttribute('data-category') || "").toLowerCase();
+                if (term === "") {
+                    // Powrót do stanu początkowego (tylko Highlight)
+                    if (card.classList.contains('highlight')) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                } else {
+                    card.classList.toggle('hidden', !cat.includes(term));
+                }
+            });
+
+            // 3. Pokazywanie podpowiedzi
+            if (term === "" || !suggestionsBox) {
+                if (suggestionsBox) suggestionsBox.style.display = "none";
             } else {
-                card.classList.toggle('hidden', !cat.includes(term));
+                // Znajdź kategorie pasujące do wpisanego tekstu
+                const matches = uniqueCategories.filter(c => c.includes(term) && c !== term);
+                
+                if (matches.length > 0) {
+                    suggestionsBox.innerHTML = matches.map(match => `<li>${match}</li>`).join('');
+                    suggestionsBox.style.display = "block";
+                } else {
+                    suggestionsBox.style.display = "none";
+                }
             }
         });
-    });
+
+        // 4. Kliknięcie w podpowiedź
+        if (suggestionsBox) {
+            suggestionsBox.addEventListener('click', (e) => {
+                if (e.target.tagName === 'LI') {
+                    // Wpisz klikniętą kategorię do inputa
+                    searchInput.value = e.target.textContent;
+                    suggestionsBox.style.display = "none";
+                    
+                    // Wymuś zdarzenie 'input', żeby galeria się odświeżyła
+                    searchInput.dispatchEvent(new Event('input'));
+                }
+            });
+        }
+
+        // 5. Ukrywanie podpowiedzi po kliknięciu gdziekolwiek indziej
+        document.addEventListener('click', (e) => {
+            if (e.target !== searchInput && e.target !== suggestionsBox) {
+                if (suggestionsBox) suggestionsBox.style.display = "none";
+            }
+        });
+    }
 
     // --- 4. DODATKI (STRZAŁKA I LICZNIK) ---
     const btt = document.getElementById('back-to-top');
