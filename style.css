@@ -55,6 +55,7 @@ header {
     max-width: 600px;
     margin: 20px auto 0 auto; 
     padding: 0 20px;
+    position: relative; /* Wymagane dla pozycjonowania listy podpowiedzi */
 }
 
 .arnold-search {
@@ -84,6 +85,44 @@ header {
     font-size: 0.7rem; /* ZMNIEJSZONE Z 0.8rem */
     text-transform: uppercase;
     letter-spacing: 2px;
+}
+
+/* Wygląd listy podpowiedzi wyszukiwarki */
+.suggestions-list {
+    position: absolute;
+    top: 100%;
+    left: 20px;
+    right: 20px;
+    background-color: #fff;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none; /* Domyślnie ukryta */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05); /* Delikatny cień */
+}
+
+.suggestions-list li {
+    padding: 12px 15px;
+    font-size: 0.7rem;
+    font-family: 'Tenor Sans', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-bottom: 1px solid #f9f9f9;
+    color: #555;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.suggestions-list li:last-child {
+    border-bottom: none;
+}
+
+.suggestions-list li:hover {
+    background-color: #000;
+    color: #fff;
 }
 
 /* ==========================================================================
