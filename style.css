@@ -108,7 +108,7 @@ header {
     font-family: 'Tenor Sans', sans-serif;
     font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 1px; /* Maksymalnie ściśnięte dla mobile */
+    letter-spacing: 1px;
 }
 
 .suggestions-list {
@@ -282,7 +282,8 @@ footer {
 
 .nav-arrow:after {
     content: '';
-    width: 14px; height: 14px;
+    width: 14px;
+    height: 14px;
     border-top: 1.5px solid #000;
     border-right: 1.5px solid #000;
     display: block;
@@ -315,7 +316,7 @@ footer {
     .photo-card { margin-bottom: 10px; max-height: none; }
     #back-to-top { bottom: 20px; right: 10px; width: 40px; height: 40px; }
 
-    /* LIGHTBOX MOBILE FIXES */
+    /* LIGHTBOX MOBILE */
     .lightbox {
         flex-direction: column;
         justify-content: center;
@@ -323,9 +324,9 @@ footer {
 
     .lightbox-content {
         max-width: 95vw;
-        /* Zmniejszamy wysokość zdjęcia, żeby u góry był luz na X, a na dole na strzałki */
-        max-height: 65vh; 
-        margin-top: 40px; /* Odsuwa pionowe zdjęcia od X */
+        /* Zmniejszona wysokość, by strzałki nie były "przyklejone" do zdjęcia */
+        max-height: 60vh; 
+        margin-top: 0px; 
     }
 
     .close {
@@ -336,10 +337,10 @@ footer {
         opacity: 0.6;
     }
 
-    /* Strzałki obok siebie na dole */
+    /* Strzałki na samym dole */
     .nav-arrow {
-        position: absolute; /* Wracamy do absolutnego pozycjonowania względem dołu lightboxa */
-        bottom: 40px;
+        position: absolute;
+        bottom: 30px; /* Obniżone dla większego marginesu pod zdjęciem */
         top: auto;
         transform: none;
         width: 60px;
@@ -348,10 +349,10 @@ footer {
     }
 
     .prev {
-        left: 20%; /* Ustawienie obok siebie w centrum */
+        left: 25%; 
     }
 
     .next {
-        right: 20%;
+        right: 25%;
     }
 }
