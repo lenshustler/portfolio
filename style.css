@@ -323,10 +323,10 @@ footer {
     }
 
     .lightbox-content {
-        max-width: 95vw;
-        /* Zmniejszona wysokość, by strzałki nie były "przyklejone" do zdjęcia */
-        max-height: 60vh; 
-        margin-top: 0px; 
+        max-width: 98vw;
+        /* Zwiększone z 60vh na 72vh, żeby drastycznie zmniejszyć pustkę nad/pod obrazem */
+        max-height: 72vh; 
+        margin-top: 0; 
     }
 
     .close {
@@ -337,10 +337,10 @@ footer {
         opacity: 0.6;
     }
 
-    /* Strzałki na samym dole */
+    /* Strzałki obok siebie */
     .nav-arrow {
         position: absolute;
-        bottom: 30px; /* Obniżone dla większego marginesu pod zdjęciem */
+        bottom: 25px; /* Delikatnie obniżone dla lepszego balansu */
         top: auto;
         transform: none;
         width: 60px;
