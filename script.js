@@ -56,12 +56,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     let touchEndX = 0;
 
     function handleSwipe() {
-        const swipeThreshold = 50; // Minimalna odległość przesunięcia
+        const swipeThreshold = 50; 
         if (touchEndX < touchStartX - swipeThreshold) {
-            nextBtn.click(); // Przesunięcie w lewo -> następne
+            nextBtn.click(); 
         }
         if (touchEndX > touchStartX + swipeThreshold) {
-            prevBtn.click(); // Przesunięcie w prawo -> poprzednie
+            prevBtn.click(); 
         }
     }
 
@@ -114,7 +114,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // Obsługa klawiatury
     document.addEventListener('keydown', (e) => {
         if (lightbox && lightbox.classList.contains('active')) {
             if (e.key === "ArrowRight") nextBtn.click();
@@ -123,7 +122,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Blokada prawokliku na zdjęciach
     document.addEventListener('contextmenu', (e) => { 
         if (e.target.tagName === 'IMG') e.preventDefault(); 
     });
@@ -149,9 +147,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             const uniqueCategories = Array.from(allCategories);
 
-            // 2. Filtrowanie zdjęć na żywo
+            // 2. Filtrowanie zdjęć na żywo (tylko słowa ZACZYNAJĄCE SIĘ od wpisanej frazy)
             cards.forEach(card => {
-                const cat = (card.getAttribute('data-category') || "").toLowerCase();
+                const catString = (card.getAttribute('data-category') || "").toLowerCase();
+                const catWords = catString.split(' '); 
+
                 if (term === "") {
                     // Powrót do stanu początkowego (tylko Highlight)
                     if (card.classList.contains('highlight')) {
@@ -160,16 +160,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                         card.classList.add('hidden');
                     }
                 } else {
-                    card.classList.toggle('hidden', !cat.includes(term));
+                    // Szukamy, czy którekolwiek ze słów ZACZYNA SIĘ od wpisanej frazy
+                    const isMatch = catWords.some(word => word.startsWith(term));
+                    card.classList.toggle('hidden', !isMatch);
                 }
             });
 
-            // 3. Pokazywanie podpowiedzi
+            // 3. Pokazywanie podpowiedzi (tylko te zaczynające się od frazy)
             if (term === "" || !suggestionsBox) {
                 if (suggestionsBox) suggestionsBox.style.display = "none";
             } else {
-                // Znajdź kategorie pasujące do wpisanego tekstu
-                const matches = uniqueCategories.filter(c => c.includes(term) && c !== term);
+                // Znajdź kategorie ZACZYNAJĄCE SIĘ od wpisanego tekstu
+                const matches = uniqueCategories.filter(c => c.startsWith(term) && c !== term);
                 
                 if (matches.length > 0) {
                     suggestionsBox.innerHTML = matches.map(match => `<li>${match}</li>`).join('');
