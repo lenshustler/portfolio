@@ -20,25 +20,22 @@
 body {
     font-family: 'Tenor Sans', sans-serif;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     background-color: #ffffff;
     color: #000;
     -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
 header {
-    padding: 40px 0 30px 0; 
+    padding: 40px 0 20px 0; 
     text-align: center;
 }
 
 .logo {
     font-size: 1.8rem;
-    font-weight: 400;
     letter-spacing: 8px;
     text-transform: uppercase;
+    margin-bottom: 20px;
 }
 
 .logo a {
@@ -50,27 +47,26 @@ header {
    2. NAWIGACJA (GÓRA I DÓŁ)
    ========================================================================== */
 .header-links, .footer-links {
-    list-style: none !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 30px !important;
-    margin: 20px 0 !important;
-    padding: 0 !important;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 35px;
+    margin: 20px 0;
+    padding: 0;
 }
 
 .header-links a, .footer-links a {
-    text-decoration: none !important;
-    color: #555 !important;
-    font-family: 'Tenor Sans', sans-serif !important;
-    font-size: 0.7rem !important;
-    text-transform: uppercase !important;
-    letter-spacing: 3px !important;
+    text-decoration: none;
+    color: #555;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
     transition: color 0.3s ease;
 }
 
 .header-links a:hover, .footer-links a:hover {
-    color: #000 !important;
+    color: #000;
 }
 
 .ig-icon svg {
@@ -87,7 +83,7 @@ header {
     align-items: center;
     width: 100%;
     max-width: 600px;
-    margin: 20px auto 0 auto; 
+    margin: 10px auto 10px auto; 
     padding: 0 20px;
     position: relative;
 }
@@ -103,22 +99,7 @@ header {
     text-align: center;
     padding: 10px 0;
     letter-spacing: 1px;
-    outline: none;
-    -webkit-user-select: text;
-    user-select: text;
     text-transform: uppercase; 
-}
-
-.arnold-search:focus {
-    border-bottom-color: #000;
-}
-
-.arnold-search::placeholder {
-    color: #aaa;
-    font-family: 'Tenor Sans', sans-serif;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
 }
 
 .suggestions-list {
@@ -128,10 +109,6 @@ header {
     right: 20px;
     background-color: #fff;
     list-style: none;
-    margin: 0;
-    padding: 0;
-    max-height: 200px;
-    overflow-y: auto;
     z-index: 1000;
     display: none;
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
@@ -140,47 +117,33 @@ header {
 .suggestions-list li {
     padding: 12px 15px;
     font-size: 0.7rem;
-    font-family: 'Tenor Sans', sans-serif;
     text-transform: uppercase;
     letter-spacing: 2px;
     cursor: pointer;
     border-bottom: 1px solid #f9f9f9;
-    color: #555;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.suggestions-list li:hover {
-    background-color: #000;
-    color: #fff;
 }
 
 /* ==========================================================================
-   4. GALERIA - MASONRY
+   4. GALERIA
    ========================================================================== */
 .gallery-section {
     width: 92%; 
     max-width: 1700px;
-    margin: 10px auto 40px auto; 
-    padding: 0;
-    position: relative;
+    margin: 20px auto 40px auto; 
 }
 
 .gallery-grid {
     column-count: 5;
     column-gap: 15px;
-    opacity: 1;
 }
 
 .photo-card {
     display: inline-block; 
     width: 100%;
     margin-bottom: 15px;
-    background-color: #f0f0f0;
     break-inside: avoid;
     overflow: hidden;
     max-height: 460px;
-    position: relative;
-    pointer-events: auto; 
 }
 
 .photo-card img {
@@ -188,22 +151,12 @@ header {
     height: auto; 
     display: block;
     cursor: pointer;
-    min-height: 100%; 
     object-fit: cover;
     object-position: center 20%; 
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    user-select: none !important;
-    -webkit-touch-callout: none !important;
-    -webkit-user-drag: none !important;
-    pointer-events: auto;
     transition: transform 0.3s ease; 
 }
 
-.photo-card:hover img {
-    transform: scale(1.03);
-}
-
+.photo-card:hover img { transform: scale(1.03); }
 .photo-card.hidden { display: none !important; }
 
 /* ==========================================================================
@@ -213,22 +166,11 @@ footer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #fff;
     padding: 60px 0 40px 0;
 }
 
-.footer-name {
-    font-size: 0.6rem;
-    letter-spacing: 2px;
-    color: #000;
-    text-transform: uppercase;
-}
-
 .pentax-counter {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 50px; 
+    margin-bottom: 40px; 
 }
 
 .counter-frame {
@@ -247,60 +189,59 @@ footer {
     font-size: 0.8rem;
 }
 
-/* ==========================================================================
-   6. NAWIGACJA DODATKOWA (STRZAŁKI, LIGHTBOX)
-   ========================================================================== */
-#back-to-top, .nav-arrow, .close {
-    position: fixed;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: transparent;
-    opacity: 0.2;
-    z-index: 10000;
+.footer-name {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
-#back-to-top { bottom: 30px; right: 10px; width: 50px; height: 50px; display: none; }
+/* ==========================================================================
+   6. STRZAŁKA BACK TO TOP (ORYGINALNA)
+   ========================================================================== */
+#back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    display: none;
+    z-index: 1000;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+}
+
+#back-to-top:hover { opacity: 1; }
+
 #back-to-top:after {
     content: '';
-    width: 14px; height: 14px;
+    width: 12px;
+    height: 12px;
     border-top: 1.5px solid #000;
     border-right: 1.5px solid #000;
-    display: inline-block;
+    display: block;
     transform: rotate(-45deg);
-    margin-top: 5px;
-}
-
-.lightbox {
-    display: none; 
-    position: fixed;
-    z-index: 999999;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: #ffffff; 
-    justify-content: center;
-    align-items: center;
-}
-
-.lightbox.active { display: flex; }
-
-.lightbox-content {
-    max-width: 92vw;
-    max-height: 88vh;
-    object-fit: contain;
+    margin: 20px auto 0 auto;
 }
 
 /* ==========================================================================
-   7. RESPONSIVE (TELEFONY)
+   7. RESPONSIVE (MOBILE)
    ========================================================================== */
-@media (max-width: 1000px) { 
-    .gallery-grid { column-count: 2 !important; gap: 10px !important; }
-    .photo-card { max-height: none !important; }
-    .header-links, .footer-links { gap: 20px !important; }
-    .header-links a, .footer-links a { font-size: 0.6rem !important; letter-spacing: 2px !important; }
-    .logo { font-size: 1.4rem !important; }
+@media (max-width: 1100px) {
+    .gallery-grid { column-count: 3; }
 }
 
-@media (max-width: 600px) {
-    header { padding: 25px 0 10px 0; }
-    .gallery-section { width: 95%; }
+@media (max-width: 768px) {
+    header { padding: 30px 0 10px 0; }
+    .logo { font-size: 1.4rem; letter-spacing: 5px; }
+    
+    .header-links, .footer-links { gap: 20px; }
+    .header-links a, .footer-links a { font-size: 0.6rem; letter-spacing: 2px; }
+    
+    .gallery-grid { column-count: 2; column-gap: 10px; }
+    .photo-card { margin-bottom: 10px; max-height: none; }
+    
+    #back-to-top { bottom: 20px; right: 10px; width: 40px; height: 40px; }
 }
