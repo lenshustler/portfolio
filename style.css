@@ -356,3 +356,85 @@ footer {
         right: 25%;
     }
 }
+/* ==========================================================================
+   9. LANDSCAPE MODE (OBRÓCONY TELEFON) - POPRAWKA NA DUŻE ZDJĘCIE
+   ========================================================================== */
+@media (max-width: 950px) and (orientation: landscape) {
+    
+    /* Zmiana dla kompaktowej wyszukiwarki i loga w poziomie (by odzyskać miejsce) */
+    header {
+        padding: 10px 0 5px 0 !important;
+    }
+    .logo {
+        font-size: 1.2rem !important;
+        margin-bottom: 5px !important;
+        letter-spacing: 4px !important;
+    }
+    .header-links {
+        margin: 5px 0 !important;
+        gap: 25px !important;
+    }
+    .arnold-search {
+        padding: 5px 0 !important;
+        font-size: 0.7rem !important;
+    }
+
+    /* Galeria w poziomie: Więcej kolumn (4 to optimum) */
+    .gallery-grid {
+        column-count: 4 !important;
+        column-gap: 8px !important;
+    }
+    .photo-card {
+        margin-bottom: 8px !important;
+    }
+
+    /* LIGHTBOX W POZIOMIE: ZDJĘCIE JEST KRÓLEM */
+    .lightbox {
+        justify-content: center !important;
+        align-items: center !important;
+        padding-top: 0 !important; /* Rezygnujemy z odgórnego paddingu */
+    }
+    
+    .lightbox-content {
+        /* PANCERNA MAKSYMALIZACJA PIONU */
+        max-height: 98vh !important; /* Zdjęcie wypełnia niemal cały pion */
+        
+        /* MAGIA CALC: Szerokość to 100% minus bezpieczne 120px na strzałki po bokach */
+        max-width: calc(100vw - 120px) !important; 
+        
+        margin-top: 0 !important; /* Kasujemy marginesy pionowe z portrait */
+        margin-bottom: 0 !important;
+    }
+
+    /* Iks (X) mniejszy i subtelniejszy w rogu */
+    .close {
+        top: 10px !important;
+        right: 10px !important;
+        width: 40px !important;
+        height: 40px !important;
+        opacity: 0.2 !important;
+    }
+    .close:hover { opacity: 1 !important; }
+
+    /* Strzałki po bokach, SUBTELNE (bardzo niskie opacity) */
+    .nav-arrow {
+        position: fixed !important; /* Wracamy do fixed po bokach */
+        top: 50% !important; /* Na środku pionowo */
+        bottom: auto !important;
+        transform: translateY(-50%) !important;
+        width: 50px !important; /* Większy obszar klikalny, ale subtelny wygląd */
+        height: 50px !important;
+        opacity: 0.1 !important; /* Prawie niewidoczne, by nie odciągać uwagi */
+        margin-top: 0 !important;
+    }
+    
+    .nav-arrow:hover { opacity: 1 !important; }
+
+    .prev { 
+        left: 5px !important; /* Bardzo blisko krawędzi */
+    }
+    
+    .next { 
+        right: 5px !important; 
+    }
+}
