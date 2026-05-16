@@ -75,7 +75,7 @@ header {
 }
 
 /* ==========================================================================
-   3. WYSZUKIWARKA (POPRAWIONA CZCIONKA)
+   3. WYSZUKIWARKA
    ========================================================================== */
 .search-nav {
     display: flex;
@@ -95,24 +95,20 @@ header {
     border-bottom: 1px solid #ccc;
     color: #000;
     font-family: 'Tenor Sans', sans-serif; 
-    font-size: 0.75rem; /* Zmniejszona dla minimalizmu */
+    font-size: 0.75rem; 
     text-align: center;
     padding: 10px 0;
-    letter-spacing: 2px; /* Większy odstęp */
+    letter-spacing: 2px;
     outline: none;
     text-transform: uppercase; 
-}
-
-.arnold-search:focus {
-    border-bottom-color: #000;
 }
 
 .arnold-search::placeholder {
     color: #aaa;
     font-family: 'Tenor Sans', sans-serif;
-    font-size: 0.65rem; /* Subtelny placeholder */
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 1.5px; /* Zmniejszone, żeby mieściło się na mobile */
 }
 
 .suggestions-list {
@@ -251,6 +247,8 @@ footer {
     background-color: #ffffff; 
     opacity: 0;
     transition: opacity 0.3s ease;
+    display: flex;
+    flex-direction: column; /* Ustawienie pionowe dla mobile */
     justify-content: center;
     align-items: center;
     pointer-events: none;
@@ -264,7 +262,7 @@ footer {
 
 .lightbox-content {
     max-width: 92vw;
-    max-height: 88vh;
+    max-height: 85vh; /* Zostawia miejsce na strzałki pod spodem na mobile */
     object-fit: contain;
 }
 
@@ -276,15 +274,28 @@ footer {
     background: transparent;
     border: none;
     z-index: 1000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .nav-arrow:hover, .close:hover { opacity: 1; }
 
+.nav-arrow:after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border-top: 1.5px solid #000;
+    border-right: 1.5px solid #000;
+    display: block;
+}
+
+/* DESKTOP POSITIONS */
 .prev { left: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; }
-.prev:after { content: ''; width: 14px; height: 14px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; transform: rotate(-135deg); margin-left: 6px; }
+.prev:after { transform: rotate(-135deg); margin-left: 6px; }
 
 .next { right: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; }
-.next:after { content: ''; width: 14px; height: 14px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; transform: rotate(45deg); margin-right: 6px; }
+.next:after { transform: rotate(45deg); margin-right: 6px; }
 
 .close { top: 30px; right: 30px; width: 55px; height: 55px; }
 .close:before, .close:after { content: ''; position: absolute; width: 22px; height: 1.5px; background-color: #000; }
@@ -310,7 +321,37 @@ footer {
     
     #back-to-top { bottom: 20px; right: 10px; width: 40px; height: 40px; }
     
-    .lightbox-content { max-width: 98vw; max-height: 95vh; }
-    .prev, .next { width: 50px; height: 50px; }
-    .close { top: 15px; right: 15px; width: 40px; height: 40px; }
+    /* LIGHTBOX MOBILE FIXES */
+    .lightbox {
+        justify-content: center;
+    }
+    
+    .lightbox-content {
+        max-width: 98vw;
+        max-height: 70vh; /* Zdjęcie krótsze, żeby strzałki były pod nim */
+        margin-bottom: 20px;
+    }
+    
+    /* Strzałki pod obrazem */
+    .nav-arrow {
+        position: static; /* Wyłączamy 'fixed', żeby wskoczyły w flexbox pod obraz */
+        transform: none;
+        margin: 0 20px;
+        width: 60px;
+        height: 60px;
+        opacity: 0.6;
+    }
+    
+    /* Kontener na strzałki tworzy się automatycznie przez flex-direction: column w .lightbox */
+    .prev { order: 2; }
+    .next { order: 3; }
+    .lightbox-content { order: 1; }
+    
+    .close { 
+        top: 15px; 
+        right: 15px; 
+        width: 45px; 
+        height: 45px; 
+        opacity: 0.6;
+    }
 }
