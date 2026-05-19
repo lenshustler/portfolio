@@ -130,12 +130,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     const searchInput = document.getElementById('search-input');
     const suggestionsBox = document.getElementById('search-suggestions');
     
+    // TWOJE DOMYŚLNE TAGI NA START (możesz wpisać tu dowolne słowa)
+    const defaultTags = ['street', 'portrety', 'abstrakcja']; 
+    
     if (searchInput) {
+        // Funkcja wyświetlająca domyślne tagi
+        const showDefaultSuggestions = () => {
+            if (!suggestionsBox) return;
+            suggestionsBox.innerHTML = defaultTags.map(tag => `<li>${tag}</li>`).join('');
+            suggestionsBox.style.display = "block";
+        };
+
+        // 1. Pokaż tagi od razu po kliknięciu w puste pole
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value.trim() === "") {
+                showDefaultSuggestions();
+            }
+        });
+
+        // 2. Obsługa wpisywania tekstu
         searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase().trim();
             const cards = document.querySelectorAll('.photo-card');
             
-            // 1. Zbieranie unikalnych kategorii z załadowanych zdjęć
+            // Zbieranie unikalnych kategorii z załadowanych zdjęć
             let allCategories = new Set();
             cards.forEach(card => {
                 const cats = card.getAttribute('data-category');
@@ -147,32 +165,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             const uniqueCategories = Array.from(allCategories);
 
-            // 2. Filtrowanie zdjęć na żywo (tylko słowa ZACZYNAJĄCE SIĘ od wpisanej frazy)
+            // Filtrowanie zdjęć w galerii
             cards.forEach(card => {
                 const catString = (card.getAttribute('data-category') || "").toLowerCase();
                 const catWords = catString.split(' '); 
 
                 if (term === "") {
-                    // Powrót do stanu początkowego (tylko Highlight)
+                    // Jeśli usunęliśmy tekst, wracamy do trybu Highlight
                     if (card.classList.contains('highlight')) {
                         card.classList.remove('hidden');
                     } else {
                         card.classList.add('hidden');
                     }
                 } else {
-                    // Szukamy, czy którekolwiek ze słów ZACZYNA SIĘ od wpisanej frazy
                     const isMatch = catWords.some(word => word.startsWith(term));
                     card.classList.toggle('hidden', !isMatch);
                 }
             });
 
-            // 3. Pokazywanie podpowiedzi (tylko te zaczynające się od frazy)
-            if (term === "" || !suggestionsBox) {
-                if (suggestionsBox) suggestionsBox.style.display = "none";
+            // Wyświetlanie podpowiedzi
+            if (term === "") {
+                showDefaultSuggestions(); // Jeśli pole jest puste, pokaż domyślne
             } else {
-                // Znajdź kategorie ZACZYNAJĄCE SIĘ od wpisanego tekstu
                 const matches = uniqueCategories.filter(c => c.startsWith(term) && c !== term);
-                
                 if (matches.length > 0) {
                     suggestionsBox.innerHTML = matches.map(match => `<li>${match}</li>`).join('');
                     suggestionsBox.style.display = "block";
@@ -182,21 +197,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // 4. Kliknięcie w podpowiedź
+        // 3. Kliknięcie w podpowiedź
         if (suggestionsBox) {
             suggestionsBox.addEventListener('click', (e) => {
                 if (e.target.tagName === 'LI') {
-                    // Wpisz klikniętą kategorię do inputa
                     searchInput.value = e.target.textContent;
                     suggestionsBox.style.display = "none";
-                    
-                    // Wymuś zdarzenie 'input', żeby galeria się odświeżyła
-                    searchInput.dispatchEvent(new Event('input'));
+                    searchInput.dispatchEvent(new Event('input')); // Wymusza filtrowanie galerii
                 }
             });
         }
 
-        // 5. Ukrywanie podpowiedzi po kliknięciu gdziekolwiek indziej
+        // 4. Ukrywanie podpowiedzi po kliknięciu gdziekolwiek indziej
         document.addEventListener('click', (e) => {
             if (e.target !== searchInput && e.target !== suggestionsBox) {
                 if (suggestionsBox) suggestionsBox.style.display = "none";
