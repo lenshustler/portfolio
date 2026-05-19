@@ -134,6 +134,13 @@ header {
     letter-spacing: 2px;
     cursor: pointer;
     border-bottom: 1px solid #f9f9f9;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* DODANE: CZARNE PODŚWIETLENIE PODPOWIEDZI WYSZUKIWARKI */
+.suggestions-list li:hover {
+    background-color: #000;
+    color: #fff;
 }
 
 /* ==========================================================================
@@ -314,7 +321,7 @@ footer {
         right: 2px !important; /* Maksymalnie do krawędzi */
         width: 30px !important; /* Jeszcze mniejsza */
         height: 30px !important;
-        opacity: 0.15 !important; /* Minimalnie bardziej czarna (Było 0.1) */
+        opacity: 0.15 !important; /* Minimalnie bardziej czarna */
         display: flex;
         justify-content: center;
         align-items: center;
