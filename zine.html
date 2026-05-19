@@ -5,43 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Zine - Alan Łysiak</title>
     
-    <link rel="stylesheet" href="style.css?v=52.0">
+    <link rel="stylesheet" href="style.css?v=54.0">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&display=swap" rel="stylesheet">
-    
-    <style>
-        .zine-index-list {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 50vh;
-            gap: 30px;
-            padding: 20px;
-        }
-        
-        .zine-index-list a {
-            text-decoration: none;
-            color: #555;
-            font-size: 1.1rem;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-        }
-        
-        .zine-index-list a:hover {
-            color: #000;
-            transform: scale(1.05); /* Delikatne powiększenie przy najechaniu */
-        }
-
-        /* Styl dla zine'ów, które jeszcze nie wyszły */
-        .zine-index-list .coming-soon {
-            color: #ccc;
-            pointer-events: none; /* Blokuje możliwość kliknięcia */
-        }
-    </style>
 </head>
 <body>
 
@@ -51,7 +19,7 @@
         </div>
         
         <ul class="header-links">
-            <li><a href="index.html">Portfolio</a></li>
+            <li><a href="index.html">Galeria</a></li>
             <li><a href="zine.html">Zine</a></li>
             <li><a href="kontakt.html">Kontakt</a></li>
             <li>
@@ -66,12 +34,19 @@
         </ul>
     </header>
 
-    <main class="zine-index-list">
-        
-        <a href="zine1.html">Zine #01: Flane"GR"yzm Vol.1</a>
+    <main style="width: 92%; max-width: 1000px; margin: 40px auto; display: flex; flex-direction: column; gap: 60px; align-items: center;">
 
-        <a href="#" class="coming-soon">Zine #02: Wkrótce</a>
-        
+        <a href="zine1.html" style="text-decoration: none; color: #000; text-align: center; transition: opacity 0.3s; display: block;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='1'">
+            <img src="images/link_do_odkladki_zine1.jpg" alt="Okładka Zine #01" style="width: 100%; max-width: 350px; height: auto; display: block; margin: 0 auto 15px auto; cursor: pointer;">
+            <span style="font-size: 1rem; letter-spacing: 4px; text-transform: uppercase;">Zine #01: Tytuł</span>
+        </a>
+
+        <div style="text-align: center; color: #ccc; pointer-events: none;">
+            <div style="width: 350px; height: 450px; background-color: #fafafa; border: 1px dashed #ccc; margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center;">
+                <span style="font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;">Brak okładki</span>
+            </div>
+            <span style="font-size: 1rem; letter-spacing: 4px; text-transform: uppercase;">Zine #02: Wkrótce</span>
+        </div>
 
     </main>
 
@@ -81,7 +56,7 @@
                 <span id="frame-count">...</span>
             </div>
         </div>
-        <div class="footer-name">Alan Łysiak </div>
+        <div class="footer-name">Alan Łysiak © 2024</div>
     </footer>
 
     <script>
