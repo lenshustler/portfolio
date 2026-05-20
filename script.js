@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const suggestionsBox = document.getElementById('search-suggestions');
     
     // TWOJE DOMYŚLNE TAGI NA START (możesz wpisać tu dowolne słowa)
-    const defaultTags = ['street', 'portret', 'abstract']; 
+    const defaultTags = ['street', 'portret', 'abstrakcja' , 'monochrome']; 
     
     if (searchInput) {
         // Funkcja wyświetlająca domyślne tagi
