@@ -11,8 +11,9 @@
     /* ========================================================
        1. STYLIZACJA EKRANOWA (RESPONSYWNA)
        ======================================================== */
-    body { font-family: 'Courier New', Courier, monospace; background: #f4f4f4; color: #000; margin: 0; padding: 0; }
+    body { font-family: 'Courier New', Courier, monospace; background: #f4f4f4; color: #000; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; }
     
+    /* Header/Footer z Twojego pliku kontakt */
     header { display: flex; justify-content: space-between; align-items: center; padding: 25px 40px; background: #fff; border-bottom: 1px solid #000; flex-wrap: wrap; }
     .header-branding { display: flex; align-items: center; gap: 15px; }
     .site-logo { height: 40px; width: auto; }
@@ -20,8 +21,9 @@
     
     .header-links { list-style: none; display: flex; gap: 35px; margin: 0; padding: 0; align-items: center; }
     .header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; display: flex; align-items: center; }
-    .ig-icon a { color: #000; }
+    .ig-icon a { color: #000; display: flex; align-items: center; }
 
+    /* Generator Styles */
     .setup-panel { background: #fff; padding: 20px; border-bottom: 2px solid #000; width: 90%; max-width: 900px; margin: 20px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
     .setup-panel h2 { margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
     .input-group { margin-bottom: 15px; }
@@ -58,13 +60,21 @@
 
     .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-transform: uppercase; z-index: 1000; }
 
+    /* Footer Styles */
+    footer { padding: 40px; text-align: center; }
+    .footer-links { list-style: none; display: flex; justify-content: center; gap: 35px; margin: 0 0 20px 0; padding: 0; text-transform: uppercase; font-size: 0.8rem; }
+    .footer-links a { text-decoration: none; color: #000; }
+    .pentax-counter { margin-top: 15px; }
+    .counter-frame { display: inline-block; padding: 5px 10px; border: 1px solid #000; font-family: monospace; }
+    .footer-name { margin-top: 20px; font-size: 0.8rem; }
+
     /* ========================================================
        3. NAPRAWIONY DRUK
        ======================================================== */
     @media print {
       @page { size: A4 landscape; margin: 0; }
       body { background: #fff; padding: 0; margin: 0; }
-      header, .setup-panel, .print-action-btn, #status-message { display: none !important; }
+      header, footer, .setup-panel, .print-action-btn, #status-message { display: none !important; }
       
       .zine-container { width: 297mm !important; margin: 0 !important; padding: 0 !important; }
       
@@ -85,15 +95,16 @@
   </style>
 </head>
 <body>
+
 <header>
     <div class="header-branding">
-        <img src="../images/logo.png" alt="Logo" class="site-logo">
-        <a href="../index.html" class="site-name">Alan Łysiak</a>
+        <img src="images/logo.png" alt="Logo" class="site-logo">
+        <a href="index.html" class="site-name">Alan Łysiak</a>
     </div>
     <ul class="header-links">
-        <li><a href="../index.html">Galeria</a></li>
-        <li><a href="../zine.html">Zine</a></li>
-        <li><a href="../kontakt.html">Kontakt</a></li>
+        <li><a href="index.html">Galeria</a></li>
+        <li><a href="zine.html">Zine</a></li>
+        <li><a href="kontakt.html">Kontakt</a></li>
         <li class="ig-icon">
             <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -106,50 +117,76 @@
     </ul>
 </header>
 
-<div class="setup-panel">
-    <h2>Generator archiwum</h2>
-    <p>Wgraj zdjęcia. Skrypt automatycznie je przeskaluje (optymalizacja PDF) i ułoży chronologicznie.</p>
-    
-    <div class="input-group">
-      <label for="title-input">Tytuł Projektu:</label>
-      <input type="text" id="title-input" value="GDYNIA_MAJ_2026">
+<main style="flex: 1;">
+    <div class="setup-panel">
+        <h2>Generator archiwum</h2>
+        <p>Wgraj zdjęcia. Skrypt automatycznie je przeskaluje (optymalizacja PDF) i ułoży chronologicznie.</p>
+        
+        <div class="input-group">
+          <label for="title-input">Tytuł Projektu:</label>
+          <input type="text" id="title-input" value="GDYNIA_MAJ_2026">
+        </div>
+
+        <div class="input-group">
+          <label for="author-input">Autor / Fotograf:</label>
+          <input type="text" id="author-input" value="ALAN ŁYSIAK">
+        </div>
+
+        <div class="input-group">
+          <label for="intro-input">Tekst wstępu:</label>
+          <textarea id="intro-input">Chronologiczne archiwum zdjęć wykonanych w maju 2026 roku w Gdyni.</textarea>
+        </div>
+
+        <label class="file-upload-btn">
+          <input type="file" id="file-selector" multiple accept="image/jpeg, image/jpg">
+          Wybierz pliki i generuj
+        </label>
+
+        <div id="status-message">Oczekiwanie na pliki...</div>
     </div>
 
-    <div class="input-group">
-      <label for="author-input">Autor / Fotograf:</label>
-      <input type="text" id="author-input" value="ALAN ŁYSIAK">
+    <div class="zine-container" id="zine-output" style="display: none;">
+        <section class="page cover-page">
+          <div>
+            <h1 id="render-title">TYTUŁ</h1>
+            <div id="render-author" style="font-size: 18px;">AUTORZY</div>
+            <div id="render-date" style="margin-top: 35px; font-weight: bold;">DATA</div>
+          </div>
+        </section>
+
+        <section class="page intro-page">
+          <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0;">O projekcie</h2>
+          <div id="render-intro-text"></div>
+        </section>
+
+        <div id="photos-stage"></div>
+        <div id="contact-stage"></div>
+    </div>
+</main>
+
+<footer id="contact">
+    <ul class="footer-links">
+        <li><a href="index.html">Galeria</a></li>
+        <li><a href="zine.html">Zine</a></li>
+        <li class="ig-icon">
+            <a href="https://instagram.com/lenshustler" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+            </a>
+        </li>
+    </ul>
+
+    <div class="pentax-counter">
+        <div class="counter-frame">
+            <span id="frame-count">00</span>
+        </div> 
     </div>
 
-    <div class="input-group">
-      <label for="intro-input">Tekst wstępu:</label>
-      <textarea id="intro-input">Chronologiczne archiwum zdjęć wykonanych w maju 2026 roku w Gdyni.</textarea>
-    </div>
-
-    <label class="file-upload-btn">
-      <input type="file" id="file-selector" multiple accept="image/jpeg, image/jpg">
-      Wybierz pliki i generuj
-    </label>
-
-    <div id="status-message">Oczekiwanie na pliki...</div>
-</div>
-
-<div class="zine-container" id="zine-output" style="display: none;">
-    <section class="page cover-page">
-      <div>
-        <h1 id="render-title">TYTUŁ</h1>
-        <div id="render-author" style="font-size: 18px;">AUTORZY</div>
-        <div id="render-date" style="margin-top: 35px; font-weight: bold;">DATA</div>
-      </div>
-    </section>
-
-    <section class="page intro-page">
-      <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0;">O projekcie</h2>
-      <div id="render-intro-text"></div>
-    </section>
-
-    <div id="photos-stage"></div>
-    <div id="contact-stage"></div>
-</div>
+    <p class="footer-name">&copy; Alan Łysiak</p>
+</footer>
 
 <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
 
@@ -221,7 +258,6 @@
       document.getElementById('render-author').innerText = authorVal;
       document.getElementById('render-intro-text').innerText = introVal;
       
-      // POPRAWKA: Zakres dat
       if (images.length > 0) {
         const firstDate = images[0].time.substring(0, 10);
         const lastDate = images[images.length - 1].time.substring(0, 10);
@@ -260,6 +296,6 @@
       zineOutput.style.display = 'block';
       printBtn.style.display = 'block';
     }
-  </script>
+</script>
 </body>
 </html>
