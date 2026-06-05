@@ -1,14 +1,3 @@
-/* Import nowoczesnego fontu maszynowego z Google Fonts — idealnie ostrego na ekranach */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap');
-
-@font-face {
-    font-family: 'Tektur';
-    src: url('fonts/Tektur-VariableFont_wdth,wght.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
 /* ==========================================================================
    1. RESET I PODSTAWY
    ========================================================================== */
@@ -21,15 +10,15 @@
 }
 
 body {
-    /* ZMIANA: Podmiana na font maszynowy + optymalizacja linii tekstu */
-    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    /* ZMIANA: Dokładnie ta sama czcionka co w generatorze zina */
+    font-family: 'Courier New', Courier, monospace;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: #ffffff;
     color: #000;
     -webkit-user-select: none;
     user-select: none;
-    line-height: 1.5; 
+    line-height: 1.6; /* Luźniejsza interlinia, idealna dla Couriera */
 }
 
 header {
@@ -39,10 +28,10 @@ header {
 
 .logo {
     font-size: 1.8rem;
-    letter-spacing: 6px; /* Delikatna korekta pod szerszy font maszynowy */
+    letter-spacing: 8px; /* Przywrócone oryginalne, szerokie rozstrzelenie */
     text-transform: uppercase;
     margin-bottom: 15px;
-    font-weight: 700; /* Mocniejszy akcent na logo */
+    font-weight: bold; /* Wyraźne zaznaczenie logo */
 }
 
 .logo a {
@@ -66,9 +55,9 @@ header {
 .header-links a, .footer-links a {
     text-decoration: none;
     color: #555;
-    font-size: 0.7rem;
+    font-size: 0.75rem; /* Subtelne powiększenie, bo Courier jest optycznie mniejszy */
     text-transform: uppercase;
-    letter-spacing: 2px; /* Dostosowanie rozstrzelenia pod monospace */
+    letter-spacing: 3px; /* Szeroki rozstaw pasujący do maszynopisu */
     transition: color 0.3s ease;
 }
 
@@ -101,9 +90,9 @@ header {
     border: none;
     border-bottom: 1px solid #ccc;
     color: #000;
-    /* ZMIANA: Spójny font w wyszukiwarce */
-    font-family: 'IBM Plex Mono', 'Courier New', monospace; 
-    font-size: 0.75rem; 
+    /* ZMIANA: Klasyczny Courier w wyszukiwarce */
+    font-family: 'Courier New', Courier, monospace; 
+    font-size: 0.8rem; 
     text-align: center;
     padding: 8px 0;
     letter-spacing: 2px;
@@ -117,9 +106,9 @@ header {
 
 .arnold-search::placeholder {
     color: #aaa;
-    /* ZMIANA: Spójny font w placeholderze */
-    font-family: 'IBM Plex Mono', 'Courier New', monospace;
-    font-size: 0.65rem;
+    /* ZMIANA: Klasyczny Courier w placeholderze */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -138,16 +127,15 @@ header {
 
 .suggestions-list li {
     padding: 12px 15px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 2px;
     cursor: pointer;
     border-bottom: 1px solid #f9f9f9;
     transition: background-color 0.2s, color 0.2s;
-    /* Dynamicznie dziedziczy font maszynowy z body */
 }
 
-/* DODANE: CZARNE PODŚWIETLENIE PODPOWIEDZI WYSZUKIWARKI */
+/* CZARNE PODŚWIETLENIE PODPOWIEDZI WYSZUKIWARKI */
 .suggestions-list li:hover {
     background-color: #000;
     color: #fff;
@@ -215,13 +203,13 @@ footer {
 }
 
 #frame-count {
-    font-family: 'IBM Plex Mono', 'Courier New', monospace;
+    font-family: 'Courier New', monospace;
     color: #fff;
     font-size: 0.8rem;
 }
 
 .footer-name {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     letter-spacing: 2px;
     text-transform: uppercase;
 }
@@ -325,13 +313,12 @@ footer {
 @media (max-width: 1100px) {
     .gallery-grid { column-count: 3; }
 
-    /* PRZESUNIĘCIE I ZMNIEJSZENIE STRZAŁKI DLA TABLETU I MOBILE */
     #back-to-top {
         bottom: 20px !important;
-        right: 2px !important; /* Maksymalnie do krawędzi */
-        width: 30px !important; /* Jeszcze mniejsza */
+        right: 2px !important;
+        width: 30px !important;
         height: 30px !important;
-        opacity: 0.15 !important; /* Minimalnie bardziej czarna */
+        opacity: 0.15 !important;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -339,9 +326,9 @@ footer {
     #back-to-top:after {
         width: 8px !important;
         height: 8px !important;
-        border-top-width: 1px !important; /* Cieńsza linia dla minimalizmu */
+        border-top-width: 1px !important;
         border-right-width: 1px !important;
-        margin: 0 !important; /* Wyśrodkowanie mniejszej strzałki */
+        margin: 0 !important;
     }
 }
 
@@ -353,7 +340,7 @@ footer {
     .lightbox-content {
         max-width: 95vw;
         max-height: 72vh; 
-        margin-top: -35px; /* Podniesienie zdjęcia wyżej */
+        margin-top: -35px;
     }
     .close { top: 15px; right: 15px; width: 40px; height: 40px; }
     .nav-arrow { position: absolute; bottom: 25px; top: auto; transform: none; width: 60px; height: 60px; opacity: 0.6; }
@@ -365,50 +352,40 @@ footer {
    9. LANDSCAPE (POZIOM) - CAŁKOWITY RE-UKŁAD DLA DUŻYCH ZDJĘĆ BEZ KOLIZJI
    ========================================================================== */
 @media (max-width: 950px) and (orientation: landscape) {
-    
-    /* 1. Mniejszy header, żeby nie zabierał miejsca w poziomie */
     header { padding: 10px 0 5px 0 !important; }
     .logo { font-size: 1.2rem !important; margin-bottom: 5px !important; letter-spacing: 4px !important; }
     .header-links { margin: 5px 0 !important; gap: 25px !important; }
 
-    /* 2. Galeria: Gęściej w poziomie */
     .gallery-grid { column-count: 4 !important; column-gap: 8px !important; }
     .photo-card { margin-bottom: 8px !important; }
 
-    /* 3. LIGHTBOX POZIOMY: CAŁKOWITY REMONT UKŁADU */
     .lightbox { 
-        justify-content: flex-start !important; /* Zaczynamy od góry */
+        justify-content: flex-start !important;
         align-items: center !important; 
-        padding-top: 10vh !important; /* Dajemy luźne miejsce na X */
-        flex-direction: column !important; /* Pionowy Flexbox pod obraz */
+        padding-top: 10vh !important;
+        flex-direction: column !important;
     }
     
     .lightbox-content {
         max-width: 98vw !important;
-        
-        /* Drastycznie ograniczona wysokość, by strzałki miały miejsce na dole */
         max-height: 55vh !important; 
-        
         object-fit: contain !important;
         margin-top: 0 !important; 
-        margin-bottom: 10px !important; /* Przerwa bezpieczeństwa */
+        margin-bottom: 10px !important;
     }
 
-    /* Iks (X) mniejszy i subtelniejszy w rogu */
     .close { top: 10px !important; right: 10px !important; width: 35px !important; height: 35px !important; }
 
-    /* Strzałki wylecą pod obraz obok siebie (position:static), żeby nie było kolizji */
     .nav-arrow { 
-        position: static !important; /* Wyłączamy fixed z boku */
+        position: static !important;
         top: auto !important;
         transform: none !important;
-        width: 50px !important; /* Subtelniejsze dotykowe */
+        width: 50px !important;
         height: 50px !important;
-        opacity: 0.8 !important; /* Większa widoczność, bo są pod klatką */
-        margin: 5px !important; /* Odstęp między strzałkami */
+        opacity: 0.8 !important;
+        margin: 5px !important;
     }
     
-    /* Układamy je pod zdjęciem za pomocą flex boxa .lightbox */
     .prev { order: 2; margin-top: -10px !important; }
     .next { order: 3; margin-top: -10px !important; }
     .lightbox-content { order: 1; }
