@@ -1,3 +1,6 @@
+/* Import nowoczesnego fontu maszynowego z Google Fonts — idealnie ostrego na ekranach */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap');
+
 @font-face {
     font-family: 'Tektur';
     src: url('fonts/Tektur-VariableFont_wdth,wght.ttf') format('truetype');
@@ -18,12 +21,15 @@
 }
 
 body {
-    font-family: 'Tenor Sans', sans-serif;
+    /* ZMIANA: Podmiana na font maszynowy + optymalizacja linii tekstu */
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     background-color: #ffffff;
     color: #000;
     -webkit-user-select: none;
     user-select: none;
+    line-height: 1.5; 
 }
 
 header {
@@ -33,9 +39,10 @@ header {
 
 .logo {
     font-size: 1.8rem;
-    letter-spacing: 8px;
+    letter-spacing: 6px; /* Delikatna korekta pod szerszy font maszynowy */
     text-transform: uppercase;
     margin-bottom: 15px;
+    font-weight: 700; /* Mocniejszy akcent na logo */
 }
 
 .logo a {
@@ -61,7 +68,7 @@ header {
     color: #555;
     font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 2px; /* Dostosowanie rozstrzelenia pod monospace */
     transition: color 0.3s ease;
 }
 
@@ -94,7 +101,8 @@ header {
     border: none;
     border-bottom: 1px solid #ccc;
     color: #000;
-    font-family: 'Tenor Sans', sans-serif; 
+    /* ZMIANA: Spójny font w wyszukiwarce */
+    font-family: 'IBM Plex Mono', 'Courier New', monospace; 
     font-size: 0.75rem; 
     text-align: center;
     padding: 8px 0;
@@ -109,7 +117,8 @@ header {
 
 .arnold-search::placeholder {
     color: #aaa;
-    font-family: 'Tenor Sans', sans-serif;
+    /* ZMIANA: Spójny font w placeholderze */
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
     font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -135,6 +144,7 @@ header {
     cursor: pointer;
     border-bottom: 1px solid #f9f9f9;
     transition: background-color 0.2s, color 0.2s;
+    /* Dynamicznie dziedziczy font maszynowy z body */
 }
 
 /* DODANE: CZARNE PODŚWIETLENIE PODPOWIEDZI WYSZUKIWARKI */
@@ -205,7 +215,7 @@ footer {
 }
 
 #frame-count {
-    font-family: 'Courier New', monospace;
+    font-family: 'IBM Plex Mono', 'Courier New', monospace;
     color: #fff;
     font-size: 0.8rem;
 }
