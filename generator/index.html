@@ -11,77 +11,38 @@
     /* ========================================================
        1. STYLIZACJA EKRANOWA
        ======================================================== */
-    body {
-      font-family: 'Courier New', Courier, monospace;
-      background: #f4f4f4;
-      color: #000;
-      margin: 0;
-      padding: 0;
-    }
-
-    /* Nagłówek z logo */
+    body { font-family: 'Courier New', Courier, monospace; background: #f4f4f4; color: #000; margin: 0; padding: 0; }
+    
     header { display: flex; justify-content: space-between; align-items: center; padding: 25px 40px; background: #fff; border-bottom: 1px solid #000; }
     .header-branding { display: flex; align-items: center; gap: 15px; }
     .site-logo { height: 40px; width: auto; }
     .site-name { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; text-decoration: none; color: #000; }
-    
     .header-links { list-style: none; display: flex; gap: 35px; margin: 0; padding: 0; }
     .header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; }
 
-    .setup-panel {
-      background: #fff;
-      padding: 30px;
-      border-bottom: 2px solid #000;
-      max-width: 900px;
-      margin: 20px auto;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-
+    .setup-panel { background: #fff; padding: 30px; border-bottom: 2px solid #000; max-width: 900px; margin: 20px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
     .setup-panel h2 { margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
     .input-group { margin-bottom: 15px; }
     .input-group label { display: block; font-weight: bold; margin-bottom: 5px; }
     .input-group input, .input-group textarea { width: 100%; padding: 10px; font-family: inherit; border: 1px solid #ccc; box-sizing: border-box; }
     .input-group textarea { height: 120px; resize: vertical; }
 
-    .file-upload-btn {
-      display: inline-block;
-      background: #000;
-      color: #fff;
-      padding: 12px 20px;
-      cursor: pointer;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin-top: 10px;
-    }
-
+    .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
     #file-selector { display: none; }
     #status-message { margin-top: 15px; font-weight: bold; color: #555; }
 
     /* ========================================================
-       2. UKŁAD STRONY — IDEALNE POZIOME A4
+       2. UKŁAD STRONY
        ======================================================== */
-    .zine-container {
-      width: 297mm;
-      margin: 40px auto;
-      box-sizing: border-box;
-    }
+    .zine-container { width: 297mm; margin: 40px auto; box-sizing: border-box; }
 
     .page, .zine-photo-item, .contact-sheet-page {
-      width: 297mm;
-      height: 210mm;
-      background: #fff;
-      box-sizing: border-box;
-      padding: 25mm;
-      border-bottom: 1px dashed #ccc;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      page-break-after: always;
-      break-after: page;
+      width: 297mm; height: 210mm; background: #fff; box-sizing: border-box; padding: 25mm;
+      border-bottom: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: space-between;
+      page-break-after: always; break-after: page;
     }
 
     .cover-page { justify-content: center; text-align: center; align-items: center; }
-    .cover-page h1 { font-size: 36px; letter-spacing: 2px; margin: 0 0 15px 0; }
     .intro-page { justify-content: flex-start; }
     
     #render-intro-text { white-space: pre-wrap; line-height: 1.6; font-size: 14px; margin-top: 25px; }
@@ -92,7 +53,6 @@
     .photo-meta { width: 100%; font-size: 13px; line-height: 1.4; border-top: 1px solid #000; padding-top: 10px; }
     .meta-bottom-row { display: flex; justify-content: space-between; margin-top: 5px; }
 
-    /* STYKÓWKA */
     .contact-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 15px; }
     .contact-thumb { display: flex; flex-direction: column; justify-content: space-between; align-items: center; height: 110px; box-sizing: border-box; }
     .contact-thumb .thumb-wrapper { width: 100%; height: 90px; display: flex; justify-content: center; align-items: center; }
@@ -103,10 +63,26 @@
 
     @media print {
       @page { size: A4 landscape; margin: 0; }
-      body { background: #fff; padding: 0; }
+      body { background: #fff; padding: 0; margin: 0; }
       header, .setup-panel, .print-action-btn, #status-message { display: none !important; }
-      .zine-container { box-shadow: none; padding: 0; margin: 0; width: 100%; }
-      .page, .zine-photo-item, .contact-sheet-page { border: none; margin: 0; padding: 25mm; width: 297mm; height: 210mm; display: flex; flex-direction: column; justify-content: space-between; }
+      
+      .zine-container { width: 297mm; margin: 0; padding: 0; }
+      
+      .page, .zine-photo-item, .contact-sheet-page {
+        border: none; margin: 0; padding: 25mm; width: 297mm; height: 210mm;
+        display: flex; flex-direction: column; justify-content: flex-start; /* Zmieniono na flex-start */
+      }
+      
+      /* Wymuszenie poprawnej kolejności dla stron z tekstem i stykówek */
+      .page.intro-page, .contact-sheet-page {
+        justify-content: flex-start !important;
+      }
+      
+      .zine-photo-item {
+        justify-content: space-between; /* Zdjęcia nadal mają być rozmieszczone */
+      }
+      
+      .cover-page { justify-content: center !important; }
     }
   </style>
 </head>
