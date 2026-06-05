@@ -3,28 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zine Generator</title>
+  <title>FLUX Zine Generator (Landscape)</title>
   
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
   <style>
     /* ========================================================
-       1. STYLIZACJA EKRANOWA (To, co widzisz w przeglądarce)
+       1. STYLIZACJA EKRANOWA (Panel zarządzania)
        ======================================================== */
     body {
-      font-family: 'Courier New', Courier, monospace; /* Surowy, reporterski klimat */
+      font-family: 'Courier New', Courier, monospace;
       background: #f4f4f4;
       color: #000;
       margin: 0;
       padding: 0;
     }
 
-    /* Panel sterowania u góry */
     .setup-panel {
       background: #fff;
       padding: 30px;
       border-bottom: 2px solid #000;
-      max-width: 800px;
+      max-width: 900px;
       margin: 20px auto;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
@@ -45,15 +44,19 @@
       margin-bottom: 5px;
     }
 
-    .input-group input {
+    .input-group input, .input-group textarea {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       font-family: inherit;
       border: 1px solid #ccc;
       box-sizing: border-box;
     }
 
-    /* Ładny przycisk do wgrywania plików */
+    .input-group textarea {
+      height: 120px;
+      resize: vertical;
+    }
+
     .file-upload-btn {
       display: inline-block;
       background: #000;
@@ -63,15 +66,10 @@
       font-weight: bold;
       text-transform: uppercase;
       margin-top: 10px;
-      transition: background 0.2s;
-    }
-
-    .file-upload-btn:hover {
-      background: #333;
     }
 
     #file-selector {
-      display: none; /* Ukrywamy brzydki systemowy input */
+      display: none;
     }
 
     #status-message {
@@ -80,86 +78,148 @@
       color: #555;
     }
 
-    /* Podgląd Zina na ekranie */
+    /* ========================================================
+       2. UKŁAD ZINA — DOMYŚLNIE W POZIOMIE (A4 Landscape)
+       ======================================================== */
     .zine-container {
-      max-width: 800px;
+      width: 297mm; /* Dokładny wymiar szerokości poziomego A4 */
       margin: 40px auto;
       background: #fff;
-      padding: 50px;
+      padding: 20px;
+      box-sizing: border-box;
       box-shadow: 0 0 20px rgba(0,0,0,0.05);
     }
 
+    /* Każda podstrona zinu zajmuje pełną wysokość proporcjonalną do szerokości A4 */
     .page {
-      margin-bottom: 60px;
+      height: 210mm; /* Wysokość poziomego A4 */
+      box-sizing: border-box;
+      padding: 20mm;
       border-bottom: 1px dashed #ccc;
-      padding-bottom: 60px;
-    }
-
-    .cover-page {
-      text-align: center;
-      padding: 100px 0;
-    }
-
-    .cover-page h1 {
-      font-size: 32px;
-      letter-spacing: 2px;
-    }
-
-    .intro-page h2 {
-      border-bottom: 1px solid #000;
-      padding-bottom: 10px;
-    }
-
-    .zine-photo-item {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      margin-bottom: 60px;
+      page-break-after: always;
+      break-after: page;
+    }
+
+    .cover-page {
+      justify-content: center;
+      text-align: center;
+    }
+
+    .cover-page h1 {
+      font-size: 36px;
+      letter-spacing: 2px;
+      margin: 0 0 20px 0;
+    }
+
+    .intro-page {
+      justify-content: flex-start;
+    }
+
+    #render-intro-text {
+      white-space: pre-wrap; /* Zachowuje entery z pola tekstowego */
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    /* Wygląd strony z pojedynczym zdjęciem */
+    .zine-photo-item {
+      height: 210mm;
+      box-sizing: border-box;
+      padding: 15mm 20mm;
+      border-bottom: 1px dashed #ccc;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      page-break-after: always;
+      break-after: page;
+    }
+
+    .zine-photo-item .img-wrapper {
+      width: 100%;
+      height: 150mm; /* Przestrzeń na zdjęcie */
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .zine-photo-item img {
-      width: 100%;
-      max-height: 65vh;
-      object-fit: contain;
-      /* Efekt czarno-białego, kontrastowego filmu analogowego */
-      filter: grayscale(100%) contrast(125%); 
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain; /* Brak ucinania kadru – bez względu na orientację oryginalną */
     }
 
     .photo-meta {
-      margin-top: 20px;
+      width: 100%;
       font-size: 13px;
-      line-height: 1.6;
+      line-height: 1.4;
+      border-top: 1px solid #000;
+      padding-top: 10px;
     }
 
-    /* Stykówka (Contact Sheet) */
+    .meta-bottom-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 5px;
+    }
+
+    /* STYKÓWKA (Contact Sheet) - Elastyczna siatka bez cropowania */
     .contact-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 15px;
       margin-top: 20px;
     }
 
     .contact-thumb {
-      text-align: center;
-      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      height: 140px; /* Stała wysokość sekcji miniatury */
+      box-sizing: border-box;
+    }
+
+    .contact-thumb .thumb-wrapper {
+      width: 100%;
+      height: 110px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .contact-thumb img {
-      width: 100%;
-      aspect-ratio: 3/2;
-      object-fit: cover;
-      filter: grayscale(100%);
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain; /* PIONOWE I POZIOME zdjęcia widać w całości! */
     }
 
-    /* Indeks na końcu */
+    .contact-thumb .thumb-number {
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    /* Indeks tekstowy na końcu */
     .index-list {
       list-style: none;
       padding: 0;
       font-size: 12px;
-      line-height: 1.8;
+      line-height: 1.6;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* Dwie kolumny, bo jesteśmy w poziomie */
+      gap: 10px;
     }
 
-    /* Pływający przycisk wywołania druku PDF */
+    .index-list li {
+      border-bottom: 1px dashed #eee;
+      padding-bottom: 5px;
+    }
+
+    /* Pływający przycisk zapisu */
     .print-action-btn {
       position: fixed;
       bottom: 30px;
@@ -177,7 +237,7 @@
     }
 
     /* ========================================================
-       2. STYLE DO WYDRUKU (To, co idzie bezpośrednio do PDF)
+       3. USTAWIENIA DRUKU DO PDF
        ======================================================== */
     @media print {
       body {
@@ -185,42 +245,27 @@
         padding: 0;
       }
 
-      /* Ukrywamy cały interfejs webowy i przyciski */
       .setup-panel, .print-action-btn, #status-message {
-        display: none !important;
+        display: none !important; /* Ukryj panel sterowania na wydruku */
       }
 
       .zine-container {
         box-shadow: none;
         padding: 0;
-        max-width: 100%;
         margin: 0;
+        width: 100%;
       }
 
-      /* Wymuszamy cięcie stron dokładnie w tych miejscach */
       .page, .zine-photo-item {
-        page-break-after: always;
-        break-after: page;
         border: none;
         margin: 0;
-        padding: 0;
-        height: 100vh; /* Każde zdjęcie / sekcja idealnie na całą stronę A4 */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-
-      .zine-photo-item img {
-        max-height: 75vh;
-      }
-
-      .contact-grid {
-        grid-template-columns: repeat(5, 1fr); /* Gęstsza stykówka w PDF */
+        padding: 15mm; /* Margines wewnętrzny strony w PDF */
+        height: 100vh; /* Wymuszenie idealnego pasowania do wysokości kartki */
       }
 
       @page {
-        size: A4 portrait; /* Układ pionowy książki */
-        margin: 15mm;       /* Margines drukarki */
+        size: A4 landscape; /* Wymuszamy układ poziomy w pliku PDF */
+        margin: 0; /* Marginesy systemowe zerujemy, kontrolujemy je paddingiem wyżej */
       }
     }
   </style>
@@ -228,22 +273,31 @@
 <body>
 
   <div class="setup-panel">
-    <h2>Generator</h2>
-    <p>Wgraj zdjęcia prosto z aparatu/telefonu. Skrypt automatycznie wyciągnie czas, współrzędne GPS i zamieni je na adresy, budując kompletny plik PDF (Zin + Stykówka + Indeks).</p>
+    <h2>Generator Zina (Układ Poziomy)</h2>
+    <p>Wgraj zdjęcia z komputera. Skrypt ułoży je chronologicznie na podstawie daty wykonania i wygeneruje czysty szablon gotowy do zapisu jako PDF.</p>
     
     <div class="input-group">
-      <label for="title-input">Tytuł Projektu / Ulica:</label>
+      <label for="title-input">Tytuł Projektu:</label>
       <input type="text" id="title-input" value="BROAD_STREET_IN_FLUX">
     </div>
 
     <div class="input-group">
-      <label for="author-input">Domyślny Autor (jeśli brak w EXIF):</label>
+      <label for="author-input">Autor / Fotograf:</label>
       <input type="text" id="author-input" value="Dante Sisofo / Dylan Stone">
+    </div>
+
+    <div class="input-group">
+      <label for="intro-input">Tekst wstępu (O projekcie):</label>
+      <textarea id="intro-input">Broad Street In Flux is a one-day chronological documentary archive of Philadelphia.
+
+Two photographers walked Broad Street, moving through the city in real time.
+
+Every photograph was made using the same visual system and embedded with metadata at the moment of capture.</textarea>
     </div>
 
     <label class="file-upload-btn">
       <input type="file" id="file-selector" multiple accept="image/jpeg, image/jpg">
-      Zatwierdź i generuj z plików
+      Wybierz pliki i generuj
     </label>
 
     <div id="status-message">Oczekiwanie na pliki...</div>
@@ -253,26 +307,24 @@
     
     <section class="page cover-page">
       <h1 id="render-title">TYTUŁ</h1>
-      <div id="render-date" style="margin: 20px 0;">DATA</div>
-      <div id="render-author">AUTORZY</div>
+      <div id="render-author" style="font-size: 18px;">AUTORZY</div>
+      <div id="render-date" style="margin-top: 30px; font-weight: bold;">DATA</div>
     </section>
 
     <section class="page intro-page">
-      <h2>WHAT IS THIS ARCHIVE?</h2>
-      <p>Niniejsza publikacja jest chronologicznym zapisem dokumentalnym wygenerowanym automatycznie.</p>
-      <p>Wszystkie fotografie zostały ułożone w czasie rzeczywistym na podstawie metadanych zapisanych w plikach w momencie naciśnięcia migawki (GPS + Timestamp).</p>
-      <p>System generuje publikację PDF, kompletną stykówkę (Contact Sheet) oraz tekstowy indeks topograficzny kadrów.</p>
+      <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0;">O projekcie</h2>
+      <div id="render-intro-text"></div>
     </section>
 
     <div id="photos-stage"></div>
 
-    <section class="page">
-      <h2>— CONTACT SHEET —</h2>
+    <section class="page" style="justify-content: flex-start;">
+      <h2 style="margin-top: 0; border-bottom: 1px solid #000; padding-bottom: 5px;">— CONTACT SHEET —</h2>
       <div id="contact-grid" class="contact-grid"></div>
     </section>
 
-    <section class="page">
-      <h2>— INDEX —</h2>
+    <section class="page" style="justify-content: flex-start;">
+      <h2 style="margin-top: 0; border-bottom: 1px solid #000; padding-bottom: 5px;">— INDEX —</h2>
       <ul id="index-list" class="index-list"></ul>
     </section>
 
@@ -292,7 +344,7 @@
       const files = Array.from(e.target.files);
       if(files.length === 0) return;
 
-      statusMessage.innerText = `Przetwarzanie i odczyt metadanych EXIF dla ${files.length} plików...`;
+      statusMessage.innerText = `Odczytywanie dat z ${files.length} plików...`;
       processedImages = [];
 
       for(let file of files) {
@@ -300,23 +352,22 @@
           const data = await extractData(file);
           processedImages.push(data);
         } catch(err) {
-          console.error("Pominięto plik z powodu błędu:", file.name, err);
+          console.error("Błąd pliku:", file.name, err);
         }
       }
 
       if(processedImages.length === 0) {
-        statusMessage.innerText = "Nie udało się poprawnie załadować żadnego zdjęcia.";
+        statusMessage.innerText = "Nie udało się załadować zdjęć.";
         return;
       }
 
-      // Sortowanie chronologiczne według daty wykonania zdjęcia
+      // Sortowanie chronologiczne według czasu wykonania
       processedImages.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
 
-      // Budowanie dokumentu
+      // Generowanie dokumentu
       renderZine(processedImages);
     });
 
-    // Funkcja wyciągająca dane za pomocą FileReader i EXIF.js
     function extractData(file) {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -325,43 +376,27 @@
           const img = new Image();
           img.src = base64Url;
           img.onload = function() {
-            EXIF.getData(img, async function() {
+            EXIF.getData(img, function() {
               
-              // 1. Czas wykonania zdjęcia
+              // Pobranie czasu z EXIF lub ostatecznie z modyfikacji pliku
               const dto = EXIF.getTag(this, "DateTimeOriginal");
               let formattedTime = "Brak danych o czasie";
               let rawDate = file.lastModified;
 
               if(dto) {
-                // Konwersja formatu aparatu YYYY:MM:DD na YYYY-MM-DD
                 formattedTime = dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3');
                 rawDate = formattedTime;
               }
 
-              // 2. Autor ze struktury EXIF
               const artist = EXIF.getTag(this, "Artist") || EXIF.getTag(this, "Copyright");
               const defaultAuthor = document.getElementById('author-input').value;
               const author = artist || defaultAuthor;
-
-              // 3. Pozycja GPS i zamiana na adres przez API OpenStreetMap
-              const lat = EXIF.getTag(this, "GPSLatitude");
-              const lon = EXIF.getTag(this, "GPSLongitude");
-              const latRef = EXIF.getTag(this, "GPSLatitudeRef");
-              const lonRef = EXIF.getTag(this, "GPSLongitudeRef");
-              let address = "Brak danych GPS";
-
-              if(lat && lon) {
-                const decLat = convertDMS(lat[0], lat[1], lat[2], latRef);
-                const decLon = convertDMS(lon[0], lon[1], lon[2], lonRef);
-                address = await getReverseGeocode(decLat, decLon);
-              }
 
               resolve({
                 url: base64Url,
                 time: formattedTime,
                 rawDate: rawDate,
-                author: author,
-                loc: address
+                author: author
               });
             });
           };
@@ -370,33 +405,16 @@
       });
     }
 
-    function convertDMS(deg, min, sec, ref) {
-      let dd = deg + min/60 + sec/3600;
-      if (ref === "S" || ref === "W") dd = dd * -1;
-      return dd;
-    }
-
-    // Odpytywanie darmowego API OpenStreetMap (Nominatim) o ludzki adres
-    async function getReverseGeocode(lat, lon) {
-      try {
-        // Dodajemy parametr user_agent, aby API przepuściło zapytanie z przeglądarki
-        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=17&addressdetails=1&user_agent=flux_zine_generator`);
-        const data = await res.json();
-        return data.display_name || `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
-      } catch {
-        return `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
-      }
-    }
-
-    // Renderowanie widoku
     function renderZine(images) {
       const titleVal = document.getElementById('title-input').value;
       const authorVal = document.getElementById('author-input').value;
+      const introVal = document.getElementById('intro-input').value;
 
       document.getElementById('render-title').innerText = titleVal;
       document.getElementById('render-author').innerText = authorVal;
+      document.getElementById('render-intro-text').innerText = introVal;
       
-      // Ustalamy datę publikacji na podstawie pierwszego zdjęcia w zinu
+      // Data na okładce brana z pierwszego zdjęcia
       if(images[0] && images[0].time !== "Brak danych o czasie") {
         document.getElementById('render-date').innerText = images[0].time.substring(0, 10);
       } else {
@@ -407,7 +425,6 @@
       const grid = document.getElementById('contact-grid');
       const list = document.getElementById('index-list');
 
-      // Czyszczenie poprzedniej sesji
       stage.innerHTML = "";
       grid.innerHTML = "";
       list.innerHTML = "";
@@ -415,38 +432,46 @@
       const total = images.length;
 
       images.forEach((img, index) => {
-        const num = String(index + 1).padStart(3, '0');
+        // Formatowanie numeracji stron np. 01/36, 02/36
+        const num = String(index + 1).padStart(2, '0');
+        const totalStr = String(total).padStart(2, '0');
+        const pageStatus = `${num}/${totalStr}`;
 
-        // A. Strona ze zdjęciem i metadanymi
+        // A. Główna strona ze zdjęciem pozioma
         const pageDiv = document.createElement('div');
         pageDiv.className = 'zine-photo-item';
         pageDiv.innerHTML = `
-          <img src="${img.url}">
+          <div class="img-wrapper">
+            <img src="${img.url}">
+          </div>
           <div class="photo-meta">
             <div><strong>TIME:</strong> ${img.time}</div>
-            <div><strong>LOCATION:</strong> ${img.loc}</div>
-            <div><strong>PHOTOGRAPHER:</strong> ${img.author}</div>
-            <div style="margin-top: 10px; border-top: 1px solid #000; padding-top: 5px; display: flex; justify-content: space-between;">
-              <span>${titleVal}</span>
-              <span>${num}/${String(total).padStart(3, '0')}</span>
+            <div class="meta-bottom-row">
+              <span><strong>PHOTOGRAPHER:</strong> ${img.author}</span>
+              <span><strong>${titleVal}</strong> &nbsp;&nbsp; ${pageStatus}</span>
             </div>
           </div>
         `;
         stage.appendChild(pageDiv);
 
-        // B. Kafelki stykówki
+        // B. Miniaturka na stykówce z zachowaniem proporcji i numerem
         const thumb = document.createElement('div');
         thumb.className = 'contact-thumb';
-        thumb.innerHTML = `<img src="${img.url}"><div>${num}</div>`;
+        thumb.innerHTML = `
+          <div class="thumb-wrapper">
+            <img src="${img.url}">
+          </div>
+          <div class="thumb-number">${pageStatus}</div>
+        `;
         grid.appendChild(thumb);
 
         // C. Wpis do indeksu
         const li = document.createElement('li');
-        li.innerHTML = `<strong>${num}</strong> — ${img.time} — ${img.author} <br><small style="color: #444;">${img.loc}</small><hr style="border:0; border-bottom: 1px dashed #eee;">`;
+        li.innerHTML = `<strong>${num}</strong> — ${img.time} — <small>${img.author}</small>`;
         list.appendChild(li);
       });
 
-      statusMessage.innerText = `Wygenerowano układ z ${total} zdjęć. Gotowy do zapisu!`;
+      statusMessage.innerText = `Gotowe! Zbudowano układ poziomy z ${total} zdjęć. Kliknij przycisk poniżej, aby zapisać.`;
       zineOutput.style.display = 'block';
       printBtn.style.display = 'block';
     }
