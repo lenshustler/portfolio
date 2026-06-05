@@ -40,7 +40,6 @@
 
     .page, .zine-photo-item, .contact-sheet-page {
       width: 100%; 
-      /* Używamy aspect-ratio, żeby zachować proporcje A4 przy zmianie szerokości */
       aspect-ratio: 297 / 210; 
       background: #fff; 
       box-sizing: border-box; 
@@ -172,9 +171,10 @@
       const files = Array.from(e.target.files);
       if(files.length === 0) return;
 
-      statusMessage.innerText = `Przetwarzanie i odczyt dat z ${files.length} plików...`;
+      statusMessage.innerText = `Przetwarzanie ${files.length} plików... (proszę czekać)`;
       processedImages = [];
 
+      // Przetwarzanie plików
       for(let file of files) {
         try {
           const data = await extractData(file);
@@ -195,36 +195,34 @@
 
     function extractData(file) {
       return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          const base64Url = event.target.result;
-          const img = new Image();
-          img.src = base64Url;
-          img.onload = function() {
-            EXIF.getData(img, function() {
-              const dto = EXIF.getTag(this, "DateTimeOriginal");
-              let formattedTime = "Brak danych o czasie";
-              let rawDate = file.lastModified;
+        // Używamy URL.createObjectURL - to jest klucz do uniknięcia crashu
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.src = objectUrl;
+        
+        img.onload = function() {
+          EXIF.getData(img, function() {
+            const dto = EXIF.getTag(this, "DateTimeOriginal");
+            let formattedTime = "Brak danych o czasie";
+            let rawDate = file.lastModified;
 
-              if(dto) {
-                formattedTime = dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3');
-                rawDate = formattedTime;
-              }
+            if(dto) {
+              formattedTime = dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3');
+              rawDate = formattedTime;
+            }
 
-              const artist = EXIF.getTag(this, "Artist") || EXIF.getTag(this, "Copyright");
-              const defaultAuthor = document.getElementById('author-input').value;
-              const author = artist || defaultAuthor;
+            const artist = EXIF.getTag(this, "Artist") || EXIF.getTag(this, "Copyright");
+            const defaultAuthor = document.getElementById('author-input').value;
+            const author = artist || defaultAuthor;
 
-              resolve({
-                url: base64Url,
-                time: formattedTime,
-                rawDate: rawDate,
-                author: author
-              });
+            resolve({
+              url: objectUrl, // Zwracamy wskaźnik do pliku
+              time: formattedTime,
+              rawDate: rawDate,
+              author: author
             });
-          };
+          });
         };
-        reader.readAsDataURL(file);
       });
     }
 
@@ -273,15 +271,13 @@
       });
 
       const itemsPerPage = 25; 
-      const totalContactPages = Math.ceil(images.length / itemsPerPage);
-
       for (let i = 0; i < images.length; i += itemsPerPage) {
         const chunk = images.slice(i, i + itemsPerPage);
         const currentPageNum = Math.floor(i / itemsPerPage) + 1;
+        const totalContactPages = Math.ceil(images.length / itemsPerPage);
         
         const sheetSection = document.createElement('section');
         sheetSection.className = 'contact-sheet-page';
-        
         const pageSuffix = totalContactPages > 1 ? ` — PAGE ${currentPageNum}/${totalContactPages}` : '';
         
         sheetSection.innerHTML = `
@@ -292,20 +288,15 @@
         `;
         
         const grid = sheetSection.querySelector('.contact-grid');
-        
         chunk.forEach((img, index) => {
           const globalIndex = i + index;
-          const num = String(globalIndex + 1).padStart(2, '0');
-          const totalStr = String(total).padStart(2, '0');
-          const pageStatus = `${num}/${totalStr}`;
-          
           const thumb = document.createElement('div');
           thumb.className = 'contact-thumb';
           thumb.innerHTML = `
             <div class="thumb-wrapper">
               <img src="${img.url}">
             </div>
-            <div class="thumb-number">${pageStatus}</div>
+            <div class="thumb-number">${String(globalIndex + 1).padStart(2, '0')}/${String(total).padStart(2, '0')}</div>
           `;
           grid.appendChild(thumb);
         });
@@ -313,7 +304,7 @@
         contactStage.appendChild(sheetSection);
       }
 
-      statusMessage.innerText = `Sukces! Gotowe do zapisu. Łącznie wgrano ${total} zdjęć.`;
+      statusMessage.innerText = `Sukces! Gotowe do zapisu. Wgrano ${total} zdjęć.`;
       zineOutput.style.display = 'block';
       printBtn.style.display = 'block';
     }
