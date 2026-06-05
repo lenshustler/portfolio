@@ -9,6 +9,10 @@
     outline: none !important;
 }
 
+html {
+    overflow-y: scroll; /* Zapobiega skakaniu galerii */
+}
+
 body {
     font-family: 'Courier New', Courier, monospace;
     -webkit-font-smoothing: antialiased;
@@ -30,21 +34,18 @@ header {
     border-bottom: 1px solid #000;
 }
 
-/* Nowy kontener na Logo + Nazwisko */
 .header-branding {
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 15px; /* Odstęp między logo a tekstem */
+    gap: 15px;
 }
 
-/* Styl logo (obrazka) */
 .site-logo {
-    height: 40px; /* Dopasuj wysokość logo, szerokość dopasuje się automatycznie */
+    height: 40px;
     width: auto;
 }
 
-/* Styl tekstu (nazwisko) */
 .site-name {
     font-size: 1.2rem;
     font-weight: bold;
@@ -179,9 +180,35 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
 /* ==========================================================================
    7. LIGHTBOX
    ========================================================================== */
-.lightbox { display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; background-color: #ffffff; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
-.lightbox.active { display: flex; opacity: 1 !important; pointer-events: auto !important; }
-.lightbox-content { max-width: 90vw; max-height: 85vh; object-fit: contain; }
+.lightbox { 
+    display: none; 
+    position: fixed; 
+    z-index: 999999; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: #ffffff; 
+    opacity: 0; 
+    transition: opacity 0.3s ease; 
+    pointer-events: none;
+    /* CENTROWANIE */
+    justify-content: center; 
+    align-items: center;
+}
+
+.lightbox.active { 
+    display: flex; /* Włączenie flexa przy aktywacji */
+    opacity: 1 !important; 
+    pointer-events: auto !important; 
+}
+
+.lightbox-content { 
+    max-width: 90vw; 
+    max-height: 85vh; 
+    object-fit: contain; 
+}
+
 .nav-arrow, .close { position: fixed; cursor: pointer; background: transparent; border: none; z-index: 1000000; display: flex; align-items: center; justify-content: center; }
 .nav-arrow:after { content: ''; width: 14px; height: 14px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; }
 .prev { left: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; }
