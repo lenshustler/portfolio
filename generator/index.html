@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generator archiwum</title>
   
+  <!-- Biblioteka do czytania metadanych EXIF (tylko do daty i czasu) -->
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
   <style>
@@ -79,7 +80,7 @@
     }
 
     /* ========================================================
-       2. UKŁAD ZINA — POZIOMY NA EKRANIE (A4 Landscape Podgląd)
+       2. UKŁAD STRONY — IDEALNE POZIOME A4 (Na ekranie i w PDF)
        ======================================================== */
     .zine-container {
       width: 297mm;
@@ -87,31 +88,16 @@
       box-sizing: border-box;
     }
 
-    .page, .zine-photo-item {
+    .page, .zine-photo-item, .contact-sheet-page {
       width: 297mm;
       height: 210mm;
       background: #fff;
       box-sizing: border-box;
-      padding: 25mm;
+      padding: 25mm; /* Albumowy bezpieczny margines wewnątrz strony */
       border-bottom: 1px dashed #ccc;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      page-break-after: always;
-      break-after: page;
-    }
-
-    /* Elastyczna stykówka na ekranie */
-    .contact-sheet-page {
-      width: 297mm;
-      min-height: 210mm;
-      background: #fff;
-      box-sizing: border-box;
-      padding: 25mm;
-      border-bottom: 1px dashed #ccc;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
       page-break-after: always;
       break-after: page;
     }
@@ -169,12 +155,12 @@
       margin-top: 5px;
     }
 
-    /* SIATKA STYKÓWKI */
+    /* SIATKA STYKÓWKI (Zoptymalizowana pod 36 miniatur na stronę: 6x6) */
     .contact-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 20px;
-      margin-top: 25px;
+      gap: 10px; /* Zmniejszony margines między fotkami, żeby zmieścić 6 wierszy */
+      margin-top: 15px;
     }
 
     .contact-thumb {
@@ -182,15 +168,13 @@
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      height: 130px;
+      height: 85px; /* Skrócona wysokość, by zmieścić 6 rzędów w pionie */
       box-sizing: border-box;
-      page-break-inside: avoid;
-      break-inside: avoid;
     }
 
     .contact-thumb .thumb-wrapper {
       width: 100%;
-      height: 105px;
+      height: 68px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -203,9 +187,9 @@
     }
 
     .contact-thumb .thumb-number {
-      font-size: 12px;
+      font-size: 10px;
       font-weight: bold;
-      margin-top: 5px;
+      margin-top: 2px;
     }
 
     /* Przycisk zapisu */
@@ -226,12 +210,12 @@
     }
 
     /* ========================================================
-       3. IDEALNE I BEZPIECZNE USTAWIENIA DRUKU PDF
+       3. USTAWIEŃ DRUKU PDF (UKRYWANIE NAGŁÓWKÓW PRZEGLĄDARKI)
        ======================================================== */
     @media print {
       @page {
         size: A4 landscape;
-        margin: 25mm; 
+        margin: 0; /* Usuwa adresy stron, daty i tytuły systemowe przeglądarki */
       }
 
       body {
@@ -250,12 +234,12 @@
         width: 100%;
       }
 
-      .page, .zine-photo-item {
+      .page, .zine-photo-item, .contact-sheet-page {
         border: none;
         margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100vh; 
+        padding: 25mm; /* Margines albumu w pełni kontrolowany wewnętrznie */
+        width: 297mm;
+        height: 210mm;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -266,23 +250,15 @@
         align-items: center !important;
       }
 
-      .page.intro-page {
+      .page.intro-page, .contact-sheet-page {
         justify-content: flex-start !important;
-      }
-
-      .contact-sheet-page {
-        border: none;
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: auto !important; 
-        display: block;
       }
     }
   </style>
 </head>
 <body>
 
+  <!-- PANEL KONFIGURACYJNY -->
   <div class="setup-panel">
     <h2>Generator archiwum</h2>
     <p>Wgraj zdjęcia z komputera. Skrypt ułoży je chronologicznie na podstawie daty wykonania i wygeneruje proste archiwum gotowe do zapisu jako PDF.</p>
@@ -310,8 +286,10 @@
     <div id="status-message">Oczekiwanie na pliki...</div>
   </div>
 
+  <!-- KONTENER FILMU / ZINA -->
   <div class="zine-container" id="zine-output" style="display: none;">
     
+    <!-- Okładka -->
     <section class="page cover-page">
       <div>
         <h1 id="render-title">TYTUŁ</h1>
@@ -320,20 +298,21 @@
       </div>
     </section>
 
+    <!-- Wstęp -->
     <section class="page intro-page">
       <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0;">O projekcie</h2>
       <div id="render-intro-text"></div>
     </section>
 
+    <!-- Scena głównych zdjęć -->
     <div id="photos-stage"></div>
 
-    <section class="contact-sheet-page">
-      <h2 id="contact-header" style="margin-top: 0; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">— CONTACT SHEET —</h2>
-      <div id="contact-grid" class="contact-grid"></div>
-    </section>
+    <!-- Scena stron stykówki -->
+    <div id="contact-stage"></div>
 
   </div>
 
+  <!-- Przycisk zapisu -->
   <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
 
   <script>
@@ -421,20 +400,18 @@
       }
 
       const total = images.length;
-      document.getElementById('contact-header').innerText = `${titleVal} — CONTACT SHEET — ${total} FRAMES`;
-
       const stage = document.getElementById('photos-stage');
-      const grid = document.getElementById('contact-grid');
+      const contactStage = document.getElementById('contact-stage');
 
       stage.innerHTML = "";
-      grid.innerHTML = "";
+      contactStage.innerHTML = "";
 
+      // 1. GENEROWANIE STRON ZE ZDJĘCIAMI
       images.forEach((img, index) => {
         const num = String(index + 1).padStart(2, '0');
         const totalStr = String(total).padStart(2, '0');
         const pageStatus = `${num}/${totalStr}`;
 
-        // A. Główna strona ze zdjęciem
         const pageDiv = document.createElement('div');
         pageDiv.className = 'zine-photo-item';
         pageDiv.innerHTML = `
@@ -450,18 +427,49 @@
           </div>
         `;
         stage.appendChild(pageDiv);
-
-        // B. Miniaturka na stykówce
-        const thumb = document.createElement('div');
-        thumb.className = 'contact-thumb';
-        thumb.innerHTML = `
-          <div class="thumb-wrapper">
-            <img src="${img.url}">
-          </div>
-          <div class="thumb-number">${pageStatus}</div>
-        `;
-        grid.appendChild(thumb);
       });
+
+      // 2. PODZIAŁ STYKÓWKI — TERAZ PO 36 ZDJĘĆ NA STRONĘ
+      const itemsPerPage = 36; 
+      const totalContactPages = Math.ceil(images.length / itemsPerPage);
+
+      for (let i = 0; i < images.length; i += itemsPerPage) {
+        const chunk = images.slice(i, i + itemsPerPage);
+        const currentPageNum = Math.floor(i / itemsPerPage) + 1;
+        
+        const sheetSection = document.createElement('section');
+        sheetSection.className = 'contact-sheet-page';
+        
+        const pageSuffix = totalContactPages > 1 ? ` — PAGE ${currentPageNum}/${totalContactPages}` : '';
+        
+        sheetSection.innerHTML = `
+          <h2 style="margin-top: 0; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">
+            ${titleVal} — CONTACT SHEET — ${total} FRAMES${pageSuffix}
+          </h2>
+          <div class="contact-grid"></div>
+        `;
+        
+        const grid = sheetSection.querySelector('.contact-grid');
+        
+        chunk.forEach((img, index) => {
+          const globalIndex = i + index;
+          const num = String(globalIndex + 1).padStart(2, '0');
+          const totalStr = String(total).padStart(2, '0');
+          const pageStatus = `${num}/${totalStr}`;
+          
+          const thumb = document.createElement('div');
+          thumb.className = 'contact-thumb';
+          thumb.innerHTML = `
+            <div class="thumb-wrapper">
+              <img src="${img.url}">
+            </div>
+            <div class="thumb-number">${pageStatus}</div>
+          `;
+          grid.appendChild(thumb);
+        });
+        
+        contactStage.appendChild(sheetSection);
+      }
 
       statusMessage.innerText = `Sukces! Gotowe do zapisu. Łącznie wgrano ${total} zdjęć.`;
       zineOutput.style.display = 'block';
