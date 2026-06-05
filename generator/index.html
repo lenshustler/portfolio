@@ -72,13 +72,12 @@
         width: 297mm !important; height: 210mm !important; padding: 15mm !important; box-sizing: border-box !important; border: none !important; margin: 0 !important; page-break-after: always !important; display: flex !important; flex-direction: column !important; justify-content: flex-start !important; overflow: hidden !important;
       }
 
-      /* Mniejszy padding dla arkusza stykow, by zmieścić więcej zdjęć */
       .contact-sheet-page {
         width: 297mm !important; height: 210mm !important; padding: 10mm !important; box-sizing: border-box !important; border: none !important; margin: 0 !important; page-break-after: always !important; overflow: hidden !important;
       }
 
       .contact-grid {
-        display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 8px !important; margin-top: 5px !important;
+        display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 15px !important; margin-top: 5px !important;
       }
 
       .contact-thumb { break-inside: avoid !important; }
@@ -234,8 +233,8 @@
         stage.appendChild(pageDiv);
       });
 
-      // ZMIANA: 20 zdjęć na stronę zamiast 25
-      const itemsPerPage = 20; 
+      // ZMIANA: 15 zdjęć na stronę
+      const itemsPerPage = 15; 
       for (let i = 0; i < images.length; i += itemsPerPage) {
         const chunk = images.slice(i, i + itemsPerPage);
         const sheetSection = document.createElement('section');
