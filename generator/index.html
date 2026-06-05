@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alan Łysiak | Generator archiwum</title>
-  
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
   <style>
@@ -13,37 +12,42 @@
        ======================================================== */
     body { font-family: 'Courier New', Courier, monospace; background: #f4f4f4; color: #000; margin: 0; padding: 0; }
     
-    header { display: flex; justify-content: space-between; align-items: center; padding: 25px 40px; background: #fff; border-bottom: 1px solid #000; flex-wrap: wrap; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 25px 40px; background: #fff; border-bottom: 1px solid #000; }
     .header-branding { display: flex; align-items: center; gap: 15px; }
-    .site-logo { height: 40px; width: auto; }
     .site-name { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; text-decoration: none; color: #000; }
     
-    .header-links { list-style: none; display: flex; gap: 35px; margin: 0; padding: 0; align-items: center; }
-    .header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; display: flex; align-items: center; }
-    
     .setup-panel { background: #fff; padding: 20px; border-bottom: 2px solid #000; width: 90%; max-width: 900px; margin: 20px auto; }
-    .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
+    .input-group { margin-bottom: 15px; }
+    .input-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+    .input-group input, .input-group textarea { width: 100%; padding: 10px; font-family: inherit; border: 1px solid #ccc; box-sizing: border-box; }
+    .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
     #file-selector { display: none; }
 
     /* ========================================================
-       2. UKŁAD STRONY
+       2. UKŁAD STRONY (Zine)
        ======================================================== */
     .zine-container { width: 95%; max-width: 297mm; margin: 40px auto; box-sizing: border-box; }
-
+    
     .page, .zine-photo-item, .contact-sheet-page {
-      width: 100%; aspect-ratio: 297 / 210; background: #fff; box-sizing: border-box; padding: 8%; border-bottom: 1px dashed #ccc; display: flex; flex-direction: column;
+      width: 100%; aspect-ratio: 297 / 210; background: #fff; box-sizing: border-box; padding: 8%; border-bottom: 1px dashed #ccc;
+      display: flex; flex-direction: column; justify-content: space-between; margin-bottom: 20px;
     }
 
-    .img-wrapper { width: 100%; flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    .cover-page { justify-content: center; text-align: center; }
+    .img-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; margin-bottom: 15px; }
     .img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    
+    .photo-meta { width: 100%; font-size: 13px; border-top: 1px solid #000; padding-top: 10px; }
+    .meta-bottom-row { display: flex; justify-content: space-between; margin-top: 5px; }
 
     .contact-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
     .contact-thumb { display: flex; flex-direction: column; align-items: center; aspect-ratio: 1; }
-    .contact-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .contact-thumb .thumb-wrapper { width: 100%; flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    .contact-thumb img { max-width: 100%; max-height: 100%; object-fit: cover; }
     .contact-thumb .thumb-number { font-size: 8px; margin-top: 2px; }
 
     /* ========================================================
-       3. DRUKOWANIE (PRINT)
+       3. DRUKOWANIE (PRINT) - NAPRAWIONE MARGINESY
        ======================================================== */
     @media print {
       @page { size: A4 landscape; margin: 0 !important; }
@@ -52,22 +56,25 @@
       
       .zine-container { width: 297mm !important; margin: 0 !important; padding: 0 !important; }
       
-      /* Wymuszamy identyczne marginesy dla każdej strony */
-      .page, .zine-photo-item, .contact-sheet-page {
-        width: 297mm !important;
-        height: 210mm !important;
-        padding: 15mm !important; /* Sztywny margines */
+      /* Wymuszamy sztywne wymiary i paddingi dla stron */
+      .page, .zine-photo-item {
+        width: 297mm !important; height: 210mm !important;
+        padding: 15mm !important; /* Tutaj kontrolujesz margines w PDF */
         border: none !important;
-        margin: 0 !important;
-        box-sizing: border-box !important;
         page-break-after: always !important;
-        break-after: page !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: flex-start !important; /* Wyrównanie do góry */
+        display: flex !important; flex-direction: column !important;
+        justify-content: flex-start !important;
       }
-
-      .contact-grid { margin-top: 0 !important; }
+      
+      .contact-sheet-page {
+        width: 297mm !important;
+        min-height: 210mm !important;
+        height: auto !important;
+        padding: 15mm !important;
+        border: none !important;
+        display: block !important;
+        page-break-after: always !important;
+      }
     }
   </style>
 </head>
@@ -81,6 +88,18 @@
 
   <div class="setup-panel">
     <h2>Generator archiwum</h2>
+    <div class="input-group">
+      <label>Tytuł Projektu:</label>
+      <input type="text" id="title-input" value="GDYNIA_MAJ_2026">
+    </div>
+    <div class="input-group">
+      <label>Autor:</label>
+      <input type="text" id="author-input" value="ALAN ŁYSIAK">
+    </div>
+    <div class="input-group">
+      <label>Tekst wstępu:</label>
+      <textarea id="intro-input">Chronologiczne archiwum zdjęć.</textarea>
+    </div>
     <label class="file-upload-btn">
       <input type="file" id="file-selector" multiple accept="image/jpeg">
       Wybierz pliki i generuj
@@ -89,6 +108,19 @@
   </div>
 
   <div class="zine-container" id="zine-output" style="display: none;">
+    <section class="page cover-page">
+      <div>
+        <h1 id="render-title"></h1>
+        <div id="render-author" style="font-size: 18px;"></div>
+        <div id="render-date" style="margin-top: 35px; font-weight: bold;"></div>
+      </div>
+    </section>
+
+    <section class="page intro-page">
+      <h2 style="border-bottom: 1px solid #000; padding-bottom: 10px;">O projekcie</h2>
+      <div id="render-intro-text"></div>
+    </section>
+
     <div id="photos-stage"></div>
     <div id="contact-stage"></div>
   </div>
@@ -97,26 +129,20 @@
 
   <script>
     const fileSelector = document.getElementById('file-selector');
-    const zineOutput = document.getElementById('zine-output');
-    const printBtn = document.getElementById('print-btn');
+    const statusMessage = document.getElementById('status-message');
 
     fileSelector.addEventListener('change', async (e) => {
       const files = Array.from(e.target.files);
-      if(files.length === 0) return;
-      
+      statusMessage.innerText = "Przetwarzanie...";
       const processedImages = [];
-      for(let file of files) {
-        const data = await extractData(file);
-        processedImages.push(data);
-      }
-      renderZine(processedImages);
+      for(let file of files) { processedImages.push(await extractData(file)); }
+      renderZine(processedImages.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate)));
     });
 
     function extractData(file) {
       return new Promise((resolve) => {
-        const objectUrl = URL.createObjectURL(file);
         const img = new Image();
-        img.src = objectUrl;
+        img.src = URL.createObjectURL(file);
         img.onload = () => {
           const canvas = document.createElement('canvas');
           const maxDim = 1500;
@@ -124,32 +150,53 @@
           if (w > maxDim) { h = (maxDim / w) * h; w = maxDim; }
           canvas.width = w; canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          canvas.toBlob((blob) => resolve({ url: URL.createObjectURL(blob) }), 'image/jpeg', 0.7);
+          canvas.toBlob((blob) => {
+            EXIF.getData(img, function() {
+              const dto = EXIF.getTag(this, "DateTimeOriginal") || file.lastModified;
+              resolve({
+                url: URL.createObjectURL(blob),
+                time: dto.toString().replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3'),
+                rawDate: dto,
+                author: EXIF.getTag(this, "Artist") || document.getElementById('author-input').value
+              });
+            });
+          }, 'image/jpeg', 0.7);
         };
       });
     }
 
     function renderZine(images) {
+      document.getElementById('render-title').innerText = document.getElementById('title-input').value;
+      document.getElementById('render-author').innerText = document.getElementById('author-input').value;
+      document.getElementById('render-intro-text').innerText = document.getElementById('intro-input').value;
+      document.getElementById('render-date').innerText = images[0]?.time.substring(0, 10);
+
       const stage = document.getElementById('photos-stage');
       const contactStage = document.getElementById('contact-stage');
-      stage.innerHTML = "";
-      contactStage.innerHTML = "";
+      stage.innerHTML = ""; contactStage.innerHTML = "";
 
-      // Contact Sheet
+      images.forEach((img, i) => {
+        const div = document.createElement('div');
+        div.className = 'zine-photo-item';
+        div.innerHTML = `<div class="img-wrapper"><img src="${img.url}"></div>
+          <div class="photo-meta"><div>DATA: ${img.time}</div><div class="meta-bottom-row"><span>AUTOR: ${img.author}</span><span>${i+1}/${images.length}</span></div></div>`;
+        stage.appendChild(div);
+      });
+
       const itemsPerPage = 25;
       for (let i = 0; i < images.length; i += itemsPerPage) {
-        const chunk = images.slice(i, i + itemsPerPage);
         const section = document.createElement('section');
         section.className = 'contact-sheet-page';
         section.innerHTML = `<h2>CONTACT SHEET</h2><div class="contact-grid"></div>`;
         const grid = section.querySelector('.contact-grid');
-        chunk.forEach(img => {
-          grid.innerHTML += `<div class="contact-thumb"><img src="${img.url}"></div>`;
+        images.slice(i, i + itemsPerPage).forEach((img, idx) => {
+          grid.innerHTML += `<div class="contact-thumb"><div class="thumb-wrapper"><img src="${img.url}"></div><div class="thumb-number">${i+idx+1}</div></div>`;
         });
         contactStage.appendChild(section);
       }
-      zineOutput.style.display = 'block';
-      printBtn.style.display = 'block';
+      document.getElementById('zine-output').style.display = 'block';
+      document.getElementById('print-btn').style.display = 'block';
+      statusMessage.innerText = "Gotowe!";
     }
   </script>
 </body>
