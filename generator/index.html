@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
   <style>
-    /* Izolacja panelu, aby nie psuł reszty layoutu (naprawa image_9a0244.png) */
+    /* Izolacja panelu */
     .generator-container { max-width: 900px; margin: 40px auto; padding: 20px; font-family: 'Tenor Sans', sans-serif; }
     .setup-panel { background: #fff; padding: 30px; border: 1px solid #000; }
     .setup-panel h2 { margin-top: 0; text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem; margin-bottom: 20px; }
@@ -24,9 +24,10 @@
     .zine-container { width: 297mm; margin: 40px auto; background: #fff; }
     .page, .zine-photo-item, .contact-sheet-page { width: 297mm; height: 210mm; padding: 25mm; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
     .cover-page { justify-content: center; text-align: center; }
-    #render-intro-text { white-space: pre-wrap; font-size: 14px; line-height: 1.6; }
+    #render-intro-text { white-space: pre-wrap; font-size: 14px; line-height: 1.6; margin-top: 25px; }
     .img-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; }
     .img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .photo-meta { width: 100%; font-size: 13px; border-top: 1px solid #000; padding-top: 10px; margin-top: 10px; }
     .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; }
     
     @media print { .setup-panel, .print-action-btn, #status-message, header, footer { display: none !important; } .zine-container { margin: 0; } }
@@ -40,6 +41,7 @@
         <input type="text" id="search-input" class="arnold-search" placeholder="wpisz czego szukasz" autocomplete="off">
     </nav>
     <ul class="header-links">
+        <li><a href="../index.html">Galeria</a></li>
         <li><a href="../zine.html">Zine</a></li>
         <li><a href="../kontakt.html">Kontakt</a></li>
     </ul>
@@ -51,6 +53,10 @@
         <div class="input-group">
           <label>Tytuł Projektu:</label>
           <input type="text" id="title-input" value="GDYNIA_MAJ_2026">
+        </div>
+        <div class="input-group">
+          <label>Autor / Fotograf:</label>
+          <input type="text" id="author-input" value="ALAN ŁYSIAK">
         </div>
         <div class="input-group">
           <label>Tekst wstępu:</label>
@@ -67,8 +73,10 @@
   <div class="zine-container" id="zine-output" style="display: none;">
     <section class="page cover-page">
         <h1 id="render-title">TYTUŁ</h1>
+        <div id="render-author" style="font-size: 18px; margin-top: 10px;"></div>
     </section>
     <section class="page">
+        <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px;">O projekcie</h2>
         <div id="render-intro-text"></div>
     </section>
     <div id="photos-stage"></div>
@@ -77,9 +85,7 @@
   <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
 
   <footer id="contact">
-    <div class="pentax-counter">
-        <div class="counter-frame"><span id="frame-count">00</span></div> 
-    </div>
+    <p class="footer-name">&copy; Alan Łysiak</p>
   </footer>
 
   <script>
@@ -87,12 +93,47 @@
     fileSelector.addEventListener('change', async (e) => {
         const files = Array.from(e.target.files);
         if(files.length === 0) return;
+        document.getElementById('status-message').innerText = "Przetwarzanie zdjęć...";
+        
+        let processedImages = [];
+        for(let file of files) {
+            await new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        EXIF.getData(img, function() {
+                            const dto = EXIF.getTag(this, "DateTimeOriginal");
+                            processedImages.push({
+                                url: event.target.result,
+                                time: dto ? dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3') : "Brak daty",
+                                rawDate: dto || file.lastModified
+                            });
+                            resolve();
+                        });
+                    };
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        processedImages.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
         
         document.getElementById('render-title').innerText = document.getElementById('title-input').value;
+        document.getElementById('render-author').innerText = document.getElementById('author-input').value;
         document.getElementById('render-intro-text').innerText = document.getElementById('intro-input').value;
-        document.getElementById('frame-count').innerText = String(files.length).padStart(2, '0');
+        
+        const stage = document.getElementById('photos-stage'); stage.innerHTML = "";
+        processedImages.forEach((img, i) => {
+            const div = document.createElement('div');
+            div.className = 'zine-photo-item';
+            div.innerHTML = `<div class="img-wrapper"><img src="${img.url}"></div><div class="photo-meta">TIME: ${img.time} | ${document.getElementById('title-input').value}</div>`;
+            stage.appendChild(div);
+        });
+        
         document.getElementById('zine-output').style.display = 'block';
         document.getElementById('print-btn').style.display = 'block';
+        document.getElementById('status-message').innerText = "Gotowe!";
     });
   </script>
 </body>
