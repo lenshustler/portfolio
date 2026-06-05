@@ -3,75 +3,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generator Zina | Alan Łysiak</title>
+  <title>Generator archiwum</title>
   
-  <link rel="stylesheet" href="../style.css?v=45.0">
+  <link rel="stylesheet" href="style.css?v=45.0">
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
   <style>
-    /* Stylizacja panelu, aby pasowała do Twojego minimalizmu */
-    .generator-main { max-width: 800px; margin: 60px auto; padding: 20px; }
-    .setup-panel { border: 1px solid #000; padding: 30px; margin-bottom: 40px; }
-    .input-group { margin-bottom: 20px; }
-    .input-group label { display: block; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 5px; color: #555; }
-    .input-group input, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; font-family: inherit; }
-    .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 25px; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; font-weight: bold; }
+    /* Zostawiam Twoje style w całości */
+    body { font-family: 'Courier New', Courier, monospace; background: #f4f4f4; color: #000; margin: 0; padding: 0; }
+    .setup-panel { background: #fff; padding: 30px; border-bottom: 2px solid #000; max-width: 900px; margin: 20px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .setup-panel h2 { margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+    .input-group { margin-bottom: 15px; }
+    .input-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+    .input-group input, .input-group textarea { width: 100%; padding: 10px; font-family: inherit; border: 1px solid #ccc; box-sizing: border-box; }
+    .input-group textarea { height: 120px; resize: vertical; }
+    .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
+    #file-selector { display: none; }
+    #status-message { margin-top: 15px; font-weight: bold; color: #555; }
     
-    /* Ukrywamy oryginalną stopkę z generatora, używamy Twojej z index.html */
-    #status-message { margin-top: 15px; font-size: 0.7rem; text-transform: uppercase; }
+    .zine-container { width: 297mm; margin: 40px auto; box-sizing: border-box; }
+    .page, .zine-photo-item, .contact-sheet-page { width: 297mm; height: 210mm; background: #fff; box-sizing: border-box; padding: 25mm; border-bottom: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; break-after: page; }
+    .cover-page { justify-content: center; text-align: center; align-items: center; }
+    .cover-page h1 { font-size: 36px; letter-spacing: 2px; margin: 0 0 15px 0; }
+    .intro-page { justify-content: flex-start; }
+    #render-intro-text { white-space: pre-wrap; line-height: 1.6; font-size: 14px; margin-top: 25px; }
+    .img-wrapper { width: 100%; flex: 1; min-height: 0; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; }
+    .img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .photo-meta { width: 100%; font-size: 13px; line-height: 1.4; border-top: 1px solid #000; padding-top: 10px; }
+    .meta-bottom-row { display: flex; justify-content: space-between; margin-top: 5px; }
+    .contact-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 15px; }
+    .contact-thumb { display: flex; flex-direction: column; justify-content: space-between; align-items: center; height: 85px; box-sizing: border-box; }
+    .contact-thumb .thumb-wrapper { width: 100%; height: 68px; display: flex; justify-content: center; align-items: center; }
+    .contact-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .contact-thumb .thumb-number { font-size: 10px; font-weight: bold; margin-top: 2px; }
+    .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-transform: uppercase; }
+    
+    @media print { @page { size: A4 landscape; margin: 0; } body { background: #fff; padding: 0; } .setup-panel, .print-action-btn, #status-message, header { display: none !important; } .zine-container { box-shadow: none; padding: 0; margin: 0; width: 100%; } }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="logo"><a href="../index.html">Alan Łysiak</a></div>
+    <div class="logo"><a href="index.html">Alan Łysiak</a></div>
     <nav class="search-nav">
         <input type="text" id="search-input" class="arnold-search" placeholder="wpisz czego szukasz" autocomplete="off">
         <ul id="search-suggestions" class="suggestions-list"></ul>
     </nav>
     <ul class="header-links">
-        <li><a href="../zine.html">Zine</a></li>
-        <li><a href="../kontakt.html">Kontakt</a></li>
+        <li><a href="zine.html">Zine</a></li>
+        <li><a href="kontakt.html">Kontakt</a></li>
     </ul>
   </header>
 
-  <main class="generator-main">
-    <div class="setup-panel">
-        <h2>GENERATOR ZINA</h2>
-        <div class="input-group">
-            <label>Tytuł Projektu:</label>
-            <input type="text" id="title-input" value="GDYNIA_MAJ_2026">
-        </div>
-        <div class="input-group">
-            <label>Autor:</label>
-            <input type="text" id="author-input" value="ALAN ŁYSIAK">
-        </div>
-        <label class="file-upload-btn">
-            <input type="file" id="file-selector" multiple accept="image/jpeg" style="display:none;">
-            Wybierz pliki i generuj
-        </label>
-        <div id="status-message">Oczekiwanie na pliki...</div>
+  <div class="setup-panel">
+    <h2>Generator archiwum</h2>
+    <div class="input-group">
+      <label for="title-input">Tytuł Projektu:</label>
+      <input type="text" id="title-input" value="GDYNIA_MAJ_2026">
     </div>
-
-    <div id="zine-output" style="display: none;"></div>
-  </main>
-
-  <footer id="contact">
-    <ul class="footer-links">
-        <li><a href="../zine.html">Zine</a></li>
-        <li><a href="../kontakt.html">Kontakt</a></li>
-    </ul>
-    <div class="pentax-counter">
-        <div class="counter-frame"><span id="frame-count">00</span></div> 
+    <div class="input-group">
+      <label for="author-input">Autor / Fotograf:</label>
+      <input type="text" id="author-input" value="ALAN ŁYSIAK">
     </div>
-    <p class="footer-name">&copy; Alan Łysiak</p>
-  </footer>
+    <div class="input-group">
+      <label for="intro-input">Tekst wstępu (O projekcie):</label>
+      <textarea id="intro-input">Chronologiczne archiwum zdjęć wykonanych w maju 2026 roku w Gdyni.</textarea>
+    </div>
+    <label class="file-upload-btn">
+      <input type="file" id="file-selector" multiple accept="image/jpeg, image/jpg">
+      Wybierz pliki i generuj
+    </label>
+    <div id="status-message">Oczekiwanie na pliki...</div>
+  </div>
+
+  <div class="zine-container" id="zine-output" style="display: none;">
+    <section class="page cover-page">
+      <div>
+        <h1 id="render-title">TYTUŁ</h1>
+        <div id="render-author" style="font-size: 18px;">AUTORZY</div>
+        <div id="render-date" style="margin-top: 35px; font-weight: bold;">DATA</div>
+      </div>
+    </section>
+    <section class="page intro-page">
+      <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0;">O projekcie</h2>
+      <div id="render-intro-text"></div>
+    </section>
+    <div id="photos-stage"></div>
+    <div id="contact-stage"></div>
+  </div>
+
+  <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
 
   <script>
-    /* TUTAJ WKLEJ SWOJE WCZEŚNIEJSZE FUNKCJE (extractData, renderZine itd.) */
-    
-    // Pamiętaj, żeby po każdej udanej generacji podmienić liczbę w stopce:
-    // document.getElementById('frame-count').innerText = String(total).padStart(2, '0');
+    /* Twoja oryginalna logika JS bez zmian */
+    const fileSelector = document.getElementById('file-selector');
+    const statusMessage = document.getElementById('status-message');
+    const zineOutput = document.getElementById('zine-output');
+    const printBtn = document.getElementById('print-btn');
+
+    let processedImages = [];
+    fileSelector.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      if(files.length === 0) return;
+      statusMessage.innerText = `Przetwarzanie ${files.length} plików...`;
+      processedImages = [];
+      for(let file of files) {
+        try {
+          const data = await extractData(file);
+          processedImages.push(data);
+        } catch(err) { console.error(err); }
+      }
+      processedImages.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
+      renderZine(processedImages);
+    });
+
+    function extractData(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const base64Url = event.target.result;
+          const img = new Image();
+          img.src = base64Url;
+          img.onload = function() {
+            EXIF.getData(img, function() {
+              const dto = EXIF.getTag(this, "DateTimeOriginal");
+              let formattedTime = "Brak danych";
+              let rawDate = file.lastModified;
+              if(dto) { formattedTime = dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3'); rawDate = formattedTime; }
+              const author = EXIF.getTag(this, "Artist") || document.getElementById('author-input').value;
+              resolve({ url: base64Url, time: formattedTime, rawDate: rawDate, author: author });
+            });
+          };
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderZine(images) {
+      document.getElementById('render-title').innerText = document.getElementById('title-input').value;
+      document.getElementById('render-author').innerText = document.getElementById('author-input').value;
+      document.getElementById('render-intro-text').innerText = document.getElementById('intro-input').value;
+      document.getElementById('render-date').innerText = images[0]?.time.substring(0, 10) || new Date().toISOString().substring(0, 10);
+      const total = images.length;
+      const stage = document.getElementById('photos-stage');
+      const contactStage = document.getElementById('contact-stage');
+      stage.innerHTML = ""; contactStage.innerHTML = "";
+      images.forEach((img, index) => {
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'zine-photo-item';
+        pageDiv.innerHTML = `<div class="img-wrapper"><img src="${img.url}"></div><div class="photo-meta"><div><strong>TIME:</strong> ${img.time}</div><div class="meta-bottom-row"><span><strong>PHOTOGRAPHER:</strong> ${img.author}</span><span><strong>${document.getElementById('title-input').value}</strong> &nbsp;&nbsp; ${String(index+1).padStart(2,'0')}/${String(total).padStart(2,'0')}</span></div></div>`;
+        stage.appendChild(pageDiv);
+      });
+      const itemsPerPage = 36;
+      for (let i = 0; i < images.length; i += itemsPerPage) {
+        const chunk = images.slice(i, i + itemsPerPage);
+        const sheetSection = document.createElement('section');
+        sheetSection.className = 'contact-sheet-page';
+        sheetSection.innerHTML = `<h2 style="margin-top:0; border-bottom:1px solid #000; padding-bottom:5px; text-transform:uppercase;">${document.getElementById('title-input').value} — CONTACT SHEET — ${total} FRAMES</h2><div class="contact-grid"></div>`;
+        const grid = sheetSection.querySelector('.contact-grid');
+        chunk.forEach((img, idx) => {
+            const thumb = document.createElement('div');
+            thumb.className = 'contact-thumb';
+            thumb.innerHTML = `<div class="thumb-wrapper"><img src="${img.url}"></div><div class="thumb-number">${String(i+idx+1).padStart(2,'0')}/${String(total).padStart(2,'0')}</div>`;
+            grid.appendChild(thumb);
+        });
+        contactStage.appendChild(sheetSection);
+      }
+      statusMessage.innerText = `Sukces! Wgrano ${total} zdjęć.`;
+      zineOutput.style.display = 'block';
+      printBtn.style.display = 'block';
+    }
   </script>
 </body>
 </html>
