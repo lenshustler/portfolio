@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // Obsługa kliknięcia w zdjęcie
     if (lightboxImg) {
         lightboxImg.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -95,18 +96,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (nextBtn) { nextBtn.onclick = (e) => { e.stopPropagation(); if (visibleImages.length > 0) { activeIdx = (activeIdx + 1) % visibleImages.length; updateLightbox(); } }; }
     if (prevBtn) { prevBtn.onclick = (e) => { e.stopPropagation(); if (visibleImages.length > 0) { activeIdx = (activeIdx - 1 + visibleImages.length) % visibleImages.length; updateLightbox(); } }; }
-    if (closeBtn) {
-        closeBtn.onclick = () => {
-            lightbox.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            lightboxImg.classList.remove('zoomed');
-            lightboxImg.style.transform = 'scale(1.0)';
-        };
-    }
-
+    if (closeBtn) { closeBtn.onclick = () => { lightbox.classList.remove('active'); document.body.style.overflow = 'auto'; lightboxImg.classList.remove('zoomed'); lightboxImg.style.transform = 'scale(1.0)'; }; }
     if (lightbox) { lightbox.onclick = (e) => { if (e.target === lightbox) closeBtn.onclick(); }; }
 
-    // Swipe
+    // Swipe i Klawiatura
     let touchStartX = 0;
     if (lightbox) {
         lightbox.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, { passive: true });
@@ -116,7 +109,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, { passive: true });
     }
 
-    // Klawiatura
     document.addEventListener('keydown', (e) => {
         if (!lightbox.classList.contains('active')) return;
         if (e.key === "ArrowRight") nextBtn.click();
@@ -124,10 +116,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.key === "Escape") closeBtn.onclick();
     });
 
-    // --- 3. WYSZUKIWARKA (POPRAWIONY SELEKTOR) ---
+    // --- 3. WYSZUKIWARKA (POPRAWIONA) ---
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.querySelector('.search-btn');
-    const suggestionsBox = document.querySelector('.suggestions-list'); // <--- TUTAJ BYŁ BŁĄD
+    const suggestionsBox = document.querySelector('.suggestions-list');
     const defaultTags = ['street', 'portret', 'abstrakcja', 'monochrome', 'generator'];
 
     const performSearch = () => {
@@ -142,30 +134,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (suggestionsBox) suggestionsBox.style.display = "none";
     };
 
-    if (searchInput) {
+    if (searchInput && suggestionsBox) {
+        // Kliknięcie w pole wyszukiwania otwiera listę
+        searchInput.addEventListener('click', () => {
+            if (searchInput.value.trim() === "") {
+                suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}</li>`).join('');
+                suggestionsBox.style.display = "block";
+            }
+        });
+
+        // Pisanie w polu wyszukiwania
         searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase().trim();
             if (term === "") {
-                if (suggestionsBox) {
-                    suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}</li>`).join('');
-                    suggestionsBox.style.display = "block";
-                }
+                suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}</li>`).join('');
+                suggestionsBox.style.display = "block";
             } else {
                 const cards = document.querySelectorAll('.photo-card');
                 let matches = new Set();
                 cards.forEach(c => c.getAttribute('data-category').split(' ').forEach(cat => {if(cat.startsWith(term)) matches.add(cat)}));
                 
-                if (suggestionsBox) {
-                    suggestionsBox.innerHTML = Array.from(matches).map(m => `<li>${m}</li>`).join('');
-                    suggestionsBox.style.display = matches.size > 0 ? "block" : "none";
-                }
+                suggestionsBox.innerHTML = Array.from(matches).map(m => `<li>${m}</li>`).join('');
+                suggestionsBox.style.display = matches.size > 0 ? "block" : "none";
+            }
+        });
+
+        // Kliknięcie w dowolne miejsce poza wyszukiwarką zamyka podpowiedzi
+        document.addEventListener('click', (e) => {
+            if (e.target !== searchInput && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.style.display = "none";
             }
         });
 
         if (searchBtn) searchBtn.addEventListener('click', performSearch);
         searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
         
-        if (suggestionsBox) suggestionsBox.addEventListener('click', (e) => {
+        suggestionsBox.addEventListener('click', (e) => {
             if (e.target.tagName === 'LI') {
                 searchInput.value = e.target.textContent;
                 performSearch();
