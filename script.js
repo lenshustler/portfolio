@@ -1,234 +1,405 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const PROJECT_ID = '6g67d261';
-    const DATASET = 'portfolio'; 
-    const grid = document.querySelector('.gallery-grid');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const prevBtn = document.querySelector('.prev');
-    const nextBtn = document.querySelector('.next');
-    const closeBtn = document.querySelector('.close');
-    let images = [];
-    let activeIdx = 0;
+@font-face {
+    font-family: 'Tektur';
+    src: url('fonts/Tektur-VariableFont_wdth,wght.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
 
-    // --- 1. POBIERANIE DANYCH Z SANITY ---
-    if (grid) {
-        try {
-            const QUERY = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, isHighlight, categories, "imageUrl": image.asset->url }`);
-            const URL = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${QUERY}`;
-            
-            const response = await fetch(URL);
-            const data = await response.json();
-            const photos = data.result;
+/* ==========================================================================
+   1. RESET I PODSTAWY
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent !important;
+    outline: none !important;
+}
 
-            if (!photos || photos.length === 0) {
-                grid.innerHTML = "<p style='color:black; text-align:center; grid-column: 1/-1;'>Baza danych jest pusta.</p>";
-            } else {
-                photos.sort(() => Math.random() - 0.5);
-                grid.innerHTML = "";
+body {
+    font-family: 'Tenor Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-color: #ffffff;
+    color: #000;
+    -webkit-user-select: none;
+    user-select: none;
+}
 
-                photos.forEach((photo, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'photo-card'; 
-                    
-                    if (photo.isHighlight === true) {
-                        card.classList.add('highlight');
-                    } else {
-                        card.classList.add('hidden');
-                    }
+header {
+    padding: 35px 0 10px 0; /* POPRAWKA: Minimalne marginesy */
+    text-align: center;
+}
 
-                    card.setAttribute('data-category', (photo.categories || []).join(' '));
-                    const img = document.createElement('img');
-                    img.src = photo.imageUrl + "?auto=format";
-                    img.setAttribute('draggable', 'false');
-                    img.onclick = () => showImage(index);
-                    
-                    card.appendChild(img);
-                    grid.appendChild(card);
-                    images.push(img);
-                });
-                grid.style.opacity = "1";
-            }
-        } catch (e) { console.error("Błąd połączenia z Sanity:", e); }
-    }
+.logo {
+    font-size: 1.8rem;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
 
-    // --- 2. LOGIKA LIGHTBOXA I GESTÓW (SWIPE) ---
-    let touchStartX = 0;
-    let touchEndX = 0;
+.logo a {
+    text-decoration: none;
+    color: #000;
+}
 
-    function handleSwipe() {
-        const swipeThreshold = 50; 
-        if (touchEndX < touchStartX - swipeThreshold) {
-            nextBtn.click(); 
-        }
-        if (touchEndX > touchStartX + swipeThreshold) {
-            prevBtn.click(); 
-        }
-    }
+/* ==========================================================================
+   2. NAWIGACJA (GÓRA I DÓŁ)
+   ========================================================================== */
+.header-links, .footer-links {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 35px;
+    margin: 12px 0 8px 0; /* Zacieśniona nawigacja */
+    padding: 0;
+}
 
-    if (lightbox) {
-        lightbox.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
+.header-links a, .footer-links a {
+    text-decoration: none;
+    color: #555;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    transition: color 0.3s ease;
+}
 
-        lightbox.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, { passive: true });
-    }
+.header-links a:hover, .footer-links a:hover {
+    color: #000;
+}
 
-    function showImage(index) {
-        const visible = Array.from(document.querySelectorAll('.photo-card:not(.hidden) img'));
-        if (visible.length === 0) return;
-        
-        activeIdx = visible.findIndex(img => img.src === images[index].src);
-        if (activeIdx === -1) activeIdx = 0;
+.ig-icon svg {
+    display: block;
+    color: #555;
+}
 
-        const updateLightbox = () => {
-            lightboxImg.src = visible[activeIdx].src;
-        };
+/* ==========================================================================
+   3. WYSZUKIWARKA
+   ========================================================================== */
+.search-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 5px auto 5px auto; 
+    padding: 0 20px;
+    position: relative;
+}
 
-        updateLightbox();
-        lightbox.classList.add('active');
-        document.body.style.overflow = 'hidden';
+.arnold-search {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    color: #000;
+    font-family: 'Tenor Sans', sans-serif; 
+    font-size: 0.75rem; 
+    text-align: center;
+    padding: 8px 0;
+    letter-spacing: 2px;
+    outline: none;
+    text-transform: uppercase; 
+}
 
-        nextBtn.onclick = (e) => {
-            e.stopPropagation();
-            activeIdx = (activeIdx + 1) % visible.length;
-            updateLightbox();
-        };
-        prevBtn.onclick = (e) => {
-            e.stopPropagation();
-            activeIdx = (activeIdx - 1 + visible.length) % visible.length;
-            updateLightbox();
-        };
-    }
+.arnold-search:focus {
+    border-bottom-color: #000;
+}
 
-    if (closeBtn) closeBtn.onclick = () => {
-        lightbox.classList.remove('active');
-        document.body.style.overflow = 'auto';
-    };
+.arnold-search::placeholder {
+    color: #aaa;
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
-    if (lightbox) lightbox.onclick = (e) => { 
-        if (e.target === lightbox || e.target === lightboxImg) {
-            closeBtn.onclick();
-        }
-    };
+.suggestions-list {
+    position: absolute;
+    top: 100%;
+    left: 20px;
+    right: 20px;
+    background-color: #fff;
+    list-style: none;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
 
-    document.addEventListener('keydown', (e) => {
-        if (lightbox && lightbox.classList.contains('active')) {
-            if (e.key === "ArrowRight") nextBtn.click();
-            if (e.key === "ArrowLeft") prevBtn.click();
-            if (e.key === "Escape") closeBtn.onclick();
-        }
-    });
+.suggestions-list li {
+    padding: 12px 15px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border-bottom: 1px solid #f9f9f9;
+    transition: background-color 0.2s, color 0.2s;
+}
 
-    document.addEventListener('contextmenu', (e) => { 
-        if (e.target.tagName === 'IMG') e.preventDefault(); 
-    });
+/* DODANE: CZARNE PODŚWIETLENIE PODPOWIEDZI WYSZUKIWARKI */
+.suggestions-list li:hover {
+    background-color: #000;
+    color: #fff;
+}
 
-    // --- 3. WYSZUKIWARKA I PODPOWIEDZI ---
-    const searchInput = document.getElementById('search-input');
-    const suggestionsBox = document.getElementById('search-suggestions');
-    
-    // TWOJE DOMYŚLNE TAGI NA START (możesz wpisać tu dowolne słowa)
-    const defaultTags = ['street', 'portret', 'abstrakcja' , 'monochrome']; 
-    
-    if (searchInput) {
-        // Funkcja wyświetlająca domyślne tagi
-        const showDefaultSuggestions = () => {
-            if (!suggestionsBox) return;
-            suggestionsBox.innerHTML = defaultTags.map(tag => `<li>${tag}</li>`).join('');
-            suggestionsBox.style.display = "block";
-        };
+/* ==========================================================================
+   4. GALERIA (Z POPRAWKĄ UKRYWANIA DLA WYSZUKIWARKI)
+   ========================================================================== */
+.gallery-section {
+    width: 92%; 
+    max-width: 1700px;
+    margin: 5px auto 40px auto; 
+}
 
-        // 1. Pokaż tagi od razu po kliknięciu w puste pole
-        searchInput.addEventListener('focus', () => {
-            if (searchInput.value.trim() === "") {
-                showDefaultSuggestions();
-            }
-        });
+.gallery-grid {
+    column-count: 5;
+    column-gap: 15px;
+}
 
-        // 2. Obsługa wpisywania tekstu
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase().trim();
-            const cards = document.querySelectorAll('.photo-card');
-            
-            // Zbieranie unikalnych kategorii z załadowanych zdjęć
-            let allCategories = new Set();
-            cards.forEach(card => {
-                const cats = card.getAttribute('data-category');
-                if (cats) {
-                    cats.split(' ').forEach(c => {
-                        if(c) allCategories.add(c.toLowerCase());
-                    });
-                }
-            });
-            const uniqueCategories = Array.from(allCategories);
+.photo-card {
+    display: inline-block; 
+    width: 100%;
+    margin-bottom: 15px;
+    break-inside: avoid;
+    overflow: hidden;
+}
 
-            // Filtrowanie zdjęć w galerii
-            cards.forEach(card => {
-                const catString = (card.getAttribute('data-category') || "").toLowerCase();
-                const catWords = catString.split(' '); 
+/* KLUCZOWA LINIA DLA HIGHLIGHTÓW/WYSZUKIWARKI */
+.photo-card.hidden { 
+    display: none !important; 
+}
 
-                if (term === "") {
-                    // Jeśli usunęliśmy tekst, wracamy do trybu Highlight
-                    if (card.classList.contains('highlight')) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
-                } else {
-                    const isMatch = catWords.some(word => word.startsWith(term));
-                    card.classList.toggle('hidden', !isMatch);
-                }
-            });
+.photo-card img {
+    width: 100%;
+    height: auto; 
+    display: block;
+    cursor: pointer;
+    transition: transform 0.3s ease; 
+}
 
-            // Wyświetlanie podpowiedzi
-            if (term === "") {
-                showDefaultSuggestions(); // Jeśli pole jest puste, pokaż domyślne
-            } else {
-                const matches = uniqueCategories.filter(c => c.startsWith(term) && c !== term);
-                if (matches.length > 0) {
-                    suggestionsBox.innerHTML = matches.map(match => `<li>${match}</li>`).join('');
-                    suggestionsBox.style.display = "block";
-                } else {
-                    suggestionsBox.style.display = "none";
-                }
-            }
-        });
+.photo-card:hover img { transform: scale(1.03); }
 
-        // 3. Kliknięcie w podpowiedź
-        if (suggestionsBox) {
-            suggestionsBox.addEventListener('click', (e) => {
-                if (e.target.tagName === 'LI') {
-                    searchInput.value = e.target.textContent;
-                    suggestionsBox.style.display = "none";
-                    searchInput.dispatchEvent(new Event('input')); // Wymusza filtrowanie galerii
-                }
-            });
-        }
+/* ==========================================================================
+   5. STOPKA & LICZNIK
+   ========================================================================== */
+footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 0 30px 0;
+}
 
-        // 4. Ukrywanie podpowiedzi po kliknięciu gdziekolwiek indziej
-        document.addEventListener('click', (e) => {
-            if (e.target !== searchInput && e.target !== suggestionsBox) {
-                if (suggestionsBox) suggestionsBox.style.display = "none";
-            }
-        });
-    }
+.pentax-counter {
+    margin-bottom: 30px; 
+}
 
-    // --- 4. DODATKI (STRZAŁKA I LICZNIK) ---
-    const btt = document.getElementById('back-to-top');
-    window.onscroll = () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; };
-    if (btt) btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+.counter-frame {
+    width: 30px; height: 20px;
+    background-color: #000;
+    border: 1.5px solid #888; 
+    border-radius: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-    const counterEl = document.getElementById('frame-count');
-    try {
-        fetch('https://abacus.jasoncameron.dev/hit/alan_lysiak_portfolio/pentax_v1')
-        .then(r => r.json())
-        .then(d => { 
-            if (counterEl) counterEl.innerText = (200 + (d.value || 0)).toString().padStart(2, '0'); 
-        });
-    } catch (e) { 
-        if (counterEl) counterEl.innerText = "200"; 
-    }
-});
+#frame-count {
+    font-family: 'Courier New', monospace;
+    color: #fff;
+    font-size: 0.8rem;
+}
+
+.footer-name {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* ==========================================================================
+   6. STRZAŁKA BACK TO TOP (DESKTOP)
+   ========================================================================== */
+#back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    display: none;
+    z-index: 1000;
+    opacity: 0.3;
+    transition: all 0.3s;
+}
+
+#back-to-top:hover { opacity: 1; }
+
+#back-to-top:after {
+    content: '';
+    width: 12px; height: 12px;
+    border-top: 1.5px solid #000;
+    border-right: 1.5px solid #000;
+    display: block;
+    transform: rotate(-45deg);
+    margin: 20px auto 0 auto;
+}
+
+/* ==========================================================================
+   7. LIGHTBOX (DESKTOP)
+   ========================================================================== */
+.lightbox {
+    display: none; 
+    position: fixed;
+    z-index: 999999;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: #ffffff; 
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+.lightbox.active {
+    display: flex !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+.lightbox-content {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+}
+
+.nav-arrow, .close {
+    position: fixed;
+    cursor: pointer;
+    opacity: 0.3;
+    background: transparent;
+    border: none;
+    z-index: 1000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-arrow:hover, .close:hover { opacity: 1; }
+
+.nav-arrow:after {
+    content: '';
+    width: 14px; height: 14px;
+    border-top: 1.5px solid #000;
+    border-right: 1.5px solid #000;
+    display: block;
+}
+
+.prev { left: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; }
+.prev:after { transform: rotate(-135deg); margin-left: 6px; }
+
+.next { right: 20px; top: 50%; transform: translateY(-50%); width: 70px; height: 70px; }
+.next:after { transform: rotate(45deg); margin-right: 6px; }
+
+.close { top: 30px; right: 30px; width: 55px; height: 55px; }
+.close:before, .close:after { content: ''; position: absolute; width: 22px; height: 1.5px; background-color: #000; }
+.close:before { transform: rotate(45deg); }
+.close:after { transform: rotate(-45deg); }
+
+/* ==========================================================================
+   8. RESPONSIVE (TABLET I MOBILE) - POPRAWKI STRZAŁKI
+   ========================================================================== */
+@media (max-width: 1100px) {
+    .gallery-grid { column-count: 3; }
+
+    /* PRZESUNIĘCIE I ZMNIEJSZENIE STRZAŁKI DLA TABLETU I MOBILE */
+    #back-to-top {
+        bottom: 20px !important;
+        right: 2px !important; /* Maksymalnie do krawędzi */
+        width: 30px !important; /* Jeszcze mniejsza */
+        height: 30px !important;
+        opacity: 0.15 !important; /* Minimalnie bardziej czarna */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #back-to-top:after {
+        width: 8px !important;
+        height: 8px !important;
+        border-top-width: 1px !important; /* Cieńsza linia dla minimalizmu */
+        border-right-width: 1px !important;
+        margin: 0 !important; /* Wyśrodkowanie mniejszej strzałki */
+    }
+}
+
+@media (max-width: 768px) {
+    .header-links, .footer-links { gap: 20px; }
+    .gallery-grid { column-count: 2; column-gap: 10px; }
+
+    .lightbox { flex-direction: column; }
+    .lightbox-content {
+        max-width: 95vw;
+        max-height: 72vh; 
+        margin-top: -35px; /* Podniesienie zdjęcia wyżej */
+    }
+    .close { top: 15px; right: 15px; width: 40px; height: 40px; }
+    .nav-arrow { position: absolute; bottom: 25px; top: auto; transform: none; width: 60px; height: 60px; opacity: 0.6; }
+    .prev { left: 25%; }
+    .next { right: 25%; }
+}
+
+/* ==========================================================================
+   9. LANDSCAPE (POZIOM) - CAŁKOWITY RE-UKŁAD DLA DUŻYCH ZDJĘĆ BEZ KOLIZJI
+   ========================================================================== */
+@media (max-width: 950px) and (orientation: landscape) {
+    
+    /* 1. Mniejszy header, żeby nie zabierał miejsca w poziomie */
+    header { padding: 10px 0 5px 0 !important; }
+    .logo { font-size: 1.2rem !important; margin-bottom: 5px !important; letter-spacing: 4px !important; }
+    .header-links { margin: 5px 0 !important; gap: 25px !important; }
+
+    /* 2. Galeria: Gęściej w poziomie */
+    .gallery-grid { column-count: 4 !important; column-gap: 8px !important; }
+    .photo-card { margin-bottom: 8px !important; }
+
+    /* 3. LIGHTBOX POZIOMY: CAŁKOWITY REMONT UKŁADU */
+    .lightbox { 
+        justify-content: flex-start !important; /* Zaczynamy od góry */
+        align-items: center !important; 
+        padding-top: 10vh !important; /* Dajemy luźne miejsce na X */
+        flex-direction: column !important; /* Pionowy Flexbox pod obraz */
+    }
+    
+    .lightbox-content {
+        max-width: 98vw !important;
+        
+        /* Drastycznie ograniczona wysokość, by strzałki miały miejsce na dole */
+        max-height: 55vh !important; 
+        
+        object-fit: contain !important;
+        margin-top: 0 !important; 
+        margin-bottom: 10px !important; /* Przerwa bezpieczeństwa */
+    }
+
+    /* Iks (X) mniejszy i subtelniejszy w rogu */
+    .close { top: 10px !important; right: 10px !important; width: 35px !important; height: 35px !important; }
+
+    /* Strzałki wylecą pod obraz obok siebie (position:static), żeby nie było kolizji */
+    .nav-arrow { 
+        position: static !important; /* Wyłączamy fixed z boku */
+        top: auto !important;
+        transform: none !important;
+        width: 50px !important; /* Subtelniejsze dotykowe */
+        height: 50px !important;
+        opacity: 0.8 !important; /* Większa widoczność, bo są pod klatką */
+        margin: 5px !important; /* Odstęp między strzałkami */
+    }
+    
+    /* Układamy je pod zdjęciem za pomocą flex boxa .lightbox */
+    .prev { order: 2; margin-top: -10px !important; }
+    .next { order: 3; margin-top: -10px !important; }
+    .lightbox-content { order: 1; }
+}
