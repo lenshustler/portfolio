@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zine Generator</title>
   
+  <!-- Biblioteka do czytania metadanych EXIF (tylko do daty i czasu) -->
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
   <style>
@@ -79,10 +80,10 @@
     }
 
     /* ========================================================
-       2. UKŁAD ZINA — DOMYŚLNIE W POZIOMIE (A4 Landscape)
+       2. UKŁAD ZINA — POZIOMY (A4 Landscape)
        ======================================================== */
     .zine-container {
-      width: 297mm; /* Dokładny wymiar szerokości poziomego A4 */
+      width: 297mm;
       margin: 40px auto;
       background: #fff;
       padding: 20px;
@@ -90,15 +91,29 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.05);
     }
 
-    /* Każda podstrona zinu zajmuje pełną wysokość proporcjonalną do szerokości A4 */
+    /* Standardowa strona (Okładka, Wstęp, Zdjęcia) ma sztywną wysokość A4 */
     .page {
-      height: 210mm; /* Wysokość poziomego A4 */
+      height: 210mm;
       box-sizing: border-box;
       padding: 20mm;
       border-bottom: 1px dashed #ccc;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      page-break-after: always;
+      break-after: page;
+    }
+
+    /* SPECJALNA KLASA DLA STYKÓWKI: Pozwala na elastyczne rozciąganie na wiele stron przy 80+ zdjęciach */
+    .contact-sheet-page {
+      height: auto !important; 
+      min-height: 210mm;
+      box-sizing: border-box;
+      padding: 20mm;
+      border-bottom: 1px dashed #ccc;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
       page-break-after: always;
       break-after: page;
     }
@@ -119,12 +134,11 @@
     }
 
     #render-intro-text {
-      white-space: pre-wrap; /* Zachowuje entery z pola tekstowego */
+      white-space: pre-wrap;
       line-height: 1.6;
       font-size: 14px;
     }
 
-    /* Wygląd strony z pojedynczym zdjęciem */
     .zine-photo-item {
       height: 210mm;
       box-sizing: border-box;
@@ -140,7 +154,7 @@
 
     .zine-photo-item .img-wrapper {
       width: 100%;
-      height: 150mm; /* Przestrzeń na zdjęcie */
+      height: 150mm;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -149,7 +163,7 @@
     .zine-photo-item img {
       max-width: 100%;
       max-height: 100%;
-      object-fit: contain; /* Brak ucinania kadru – bez względu na orientację oryginalną */
+      object-fit: contain;
     }
 
     .photo-meta {
@@ -166,7 +180,7 @@
       margin-top: 5px;
     }
 
-    /* STYKÓWKA (Contact Sheet) - Elastyczna siatka bez cropowania */
+    /* SIATKA STYKÓWKI */
     .contact-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -179,8 +193,11 @@
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      height: 140px; /* Stała wysokość sekcji miniatury */
+      height: 140px;
       box-sizing: border-box;
+      /* Zapobiega brzydkiemu przecinaniu miniaturki na przełomie stron PDF */
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     .contact-thumb .thumb-wrapper {
@@ -194,29 +211,13 @@
     .contact-thumb img {
       max-width: 100%;
       max-height: 100%;
-      object-fit: contain; /* PIONOWE I POZIOME zdjęcia widać w całości! */
+      object-fit: contain; /* Pełne kadry pionowe i poziome bez ucinania boków */
     }
 
     .contact-thumb .thumb-number {
       font-size: 12px;
       font-weight: bold;
       margin-top: 5px;
-    }
-
-    /* Indeks tekstowy na końcu */
-    .index-list {
-      list-style: none;
-      padding: 0;
-      font-size: 12px;
-      line-height: 1.6;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr); /* Dwie kolumny, bo jesteśmy w poziomie */
-      gap: 10px;
-    }
-
-    .index-list li {
-      border-bottom: 1px dashed #eee;
-      padding-bottom: 5px;
     }
 
     /* Pływający przycisk zapisu */
@@ -246,7 +247,7 @@
       }
 
       .setup-panel, .print-action-btn, #status-message {
-        display: none !important; /* Ukryj panel sterowania na wydruku */
+        display: none !important;
       }
 
       .zine-container {
@@ -256,24 +257,32 @@
         width: 100%;
       }
 
-      .page, .zine-photo-item {
+      .page {
         border: none;
         margin: 0;
-        padding: 15mm; /* Margines wewnętrzny strony w PDF */
-        height: 100vh; /* Wymuszenie idealnego pasowania do wysokości kartki */
+        padding: 15mm;
+        height: 100vh;
+      }
+
+      .contact-sheet-page {
+        border: none;
+        margin: 0;
+        padding: 15mm;
+        height: auto !important; /* Pozwalamy drukarce naturalnie tworzyć kolejne strony stykówki */
       }
 
       @page {
-        size: A4 landscape; /* Wymuszamy układ poziomy w pliku PDF */
-        margin: 0; /* Marginesy systemowe zerujemy, kontrolujemy je paddingiem wyżej */
+        size: A4 landscape;
+        margin: 0;
       }
     }
   </style>
 </head>
 <body>
 
+  <!-- PANEL KONFIGURACYJNY (Widoczny tylko na ekranie) -->
   <div class="setup-panel">
-    <h2>Generator Zina </h2>
+    <h2>Generator Zina</h2>
     <p>Wgraj zdjęcia z komputera. Skrypt ułoży je chronologicznie na podstawie daty wykonania i wygeneruje prosty zine gotowy do zapisu jako PDF.</p>
     
     <div class="input-group">
@@ -288,9 +297,7 @@
 
     <div class="input-group">
       <label for="intro-input">Tekst wstępu (O projekcie):</label>
-      <textarea id="intro-input">Chronologiczne archiwum zdjęc wykonanych w maju 2026 roku w Gdyni.
-
-</textarea>
+      <textarea id="intro-input">Chronologiczne archiwum zdjęć wykonanych w maju 2026 roku w Gdyni.</textarea>
     </div>
 
     <label class="file-upload-btn">
@@ -301,33 +308,34 @@
     <div id="status-message">Oczekiwanie na pliki...</div>
   </div>
 
+  <!-- KONTENER FILMU / ZINA -->
   <div class="zine-container" id="zine-output" style="display: none;">
     
+    <!-- Strona 1: Okładka -->
     <section class="page cover-page">
       <h1 id="render-title">TYTUŁ</h1>
       <div id="render-author" style="font-size: 18px;">AUTORZY</div>
       <div id="render-date" style="margin-top: 30px; font-weight: bold;">DATA</div>
     </section>
 
+    <!-- Strona 2: Wstęp tekstowy -->
     <section class="page intro-page">
       <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0;">O projekcie</h2>
       <div id="render-intro-text"></div>
     </section>
 
+    <!-- Strony ze zdjęciami wpadną tutaj dynamicznie -->
     <div id="photos-stage"></div>
 
-    <section class="page" style="justify-content: flex-start;">
-      <h2 style="margin-top: 0; border-bottom: 1px solid #000; padding-bottom: 5px;">— CONTACT SHEET —</h2>
+    <!-- Strona końcowa: Elastyczna Stykówka (Contact Sheet) -->
+    <section class="contact-sheet-page">
+      <h2 id="contact-header" style="margin-top: 0; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">— CONTACT SHEET —</h2>
       <div id="contact-grid" class="contact-grid"></div>
-    </section>
-
-    <section class="page" style="justify-content: flex-start;">
-      <h2 style="margin-top: 0; border-bottom: 1px solid #000; padding-bottom: 5px;">— INDEX —</h2>
-      <ul id="index-list" class="index-list"></ul>
     </section>
 
   </div>
 
+  <!-- Przycisk zapisu -->
   <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
 
   <script>
@@ -342,7 +350,7 @@
       const files = Array.from(e.target.files);
       if(files.length === 0) return;
 
-      statusMessage.innerText = `Odczytywanie dat z ${files.length} plików...`;
+      statusMessage.innerText = `Przetwarzanie i odczyt dat z ${files.length} plików...`;
       processedImages = [];
 
       for(let file of files) {
@@ -376,7 +384,6 @@
           img.onload = function() {
             EXIF.getData(img, function() {
               
-              // Pobranie czasu z EXIF lub ostatecznie z modyfikacji pliku
               const dto = EXIF.getTag(this, "DateTimeOriginal");
               let formattedTime = "Brak danych o czasie";
               let rawDate = file.lastModified;
@@ -412,30 +419,28 @@
       document.getElementById('render-author').innerText = authorVal;
       document.getElementById('render-intro-text').innerText = introVal;
       
-      // Data na okładce brana z pierwszego zdjęcia
       if(images[0] && images[0].time !== "Brak danych o czasie") {
         document.getElementById('render-date').innerText = images[0].time.substring(0, 10);
       } else {
         document.getElementById('render-date').innerText = new Date().toISOString().substring(0, 10);
       }
 
+      // Dynamiczne ustawienie nowego nagłówka stykówki według Twojego wzoru
+      const total = images.length;
+      document.getElementById('contact-header').innerText = `${titleVal} — CONTACT SHEET — ${total} FRAMES`;
+
       const stage = document.getElementById('photos-stage');
       const grid = document.getElementById('contact-grid');
-      const list = document.getElementById('index-list');
 
       stage.innerHTML = "";
       grid.innerHTML = "";
-      list.innerHTML = "";
-
-      const total = images.length;
 
       images.forEach((img, index) => {
-        // Formatowanie numeracji stron np. 01/36, 02/36
         const num = String(index + 1).padStart(2, '0');
         const totalStr = String(total).padStart(2, '0');
         const pageStatus = `${num}/${totalStr}`;
 
-        // A. Główna strona ze zdjęciem pozioma
+        // A. Główna strona ze zdjęciem
         const pageDiv = document.createElement('div');
         pageDiv.className = 'zine-photo-item';
         pageDiv.innerHTML = `
@@ -452,7 +457,7 @@
         `;
         stage.appendChild(pageDiv);
 
-        // B. Miniaturka na stykówce z zachowaniem proporcji i numerem
+        // B. Miniaturka na stykówce (Zdjęcia pionowe i poziome widać w całości)
         const thumb = document.createElement('div');
         thumb.className = 'contact-thumb';
         thumb.innerHTML = `
@@ -462,14 +467,9 @@
           <div class="thumb-number">${pageStatus}</div>
         `;
         grid.appendChild(thumb);
-
-        // C. Wpis do indeksu
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${num}</strong> — ${img.time} — <small>${img.author}</small>`;
-        list.appendChild(li);
       });
 
-      statusMessage.innerText = `Gotowe! Zbudowano układ poziomy z ${total} zdjęć. Kliknij przycisk poniżej, aby zapisać.`;
+      statusMessage.innerText = `Sukces! Przygotowano układ z ${total} zdjęć. Możesz zapisać plik.`;
       zineOutput.style.display = 'block';
       printBtn.style.display = 'block';
     }
