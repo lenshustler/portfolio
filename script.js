@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 photos.sort(() => Math.random() - 0.5);
                 grid.innerHTML = "";
 
-                photos.forEach((photo, index) => {
+                photos.forEach((photo) => {
                     const card = document.createElement('div');
                     card.className = 'photo-card';
                     card.classList.add(photo.isHighlight ? 'highlight' : 'hidden');
@@ -61,26 +61,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.body.style.overflow = 'hidden';
     }
 
-    // POPRAWIONA FUNKCJA - eliminacja skakania
     function updateLightbox() {
         if (visibleImages.length > 0) {
-            // Wyłączamy animację na moment zmiany źródła obrazka
             lightboxImg.style.transition = 'none';
-            
             lightboxImg.src = visibleImages[activeIdx].src;
-            
-            // Reset zoomu
             lightboxImg.classList.remove('zoomed');
             lightboxImg.style.transform = 'scale(1.0)';
             
-            // Wymuszamy na przeglądarce odświeżenie i włączamy płynne przejście z powrotem
             requestAnimationFrame(() => {
                 lightboxImg.style.transition = 'transform 0.3s ease';
             });
         }
     }
 
-    // Obsługa kliknięcia w zdjęcie
     if (lightboxImg) {
         lightboxImg.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -100,24 +93,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    if (nextBtn) {
-        nextBtn.onclick = (e) => {
-            e.stopPropagation();
-            if (visibleImages.length === 0) return;
-            activeIdx = (activeIdx + 1) % visibleImages.length;
-            updateLightbox();
-        };
-    }
-    
-    if (prevBtn) {
-        prevBtn.onclick = (e) => {
-            e.stopPropagation();
-            if (visibleImages.length === 0) return;
-            activeIdx = (activeIdx - 1 + visibleImages.length) % visibleImages.length;
-            updateLightbox();
-        };
-    }
-
+    if (nextBtn) { nextBtn.onclick = (e) => { e.stopPropagation(); if (visibleImages.length > 0) { activeIdx = (activeIdx + 1) % visibleImages.length; updateLightbox(); } }; }
+    if (prevBtn) { prevBtn.onclick = (e) => { e.stopPropagation(); if (visibleImages.length > 0) { activeIdx = (activeIdx - 1 + visibleImages.length) % visibleImages.length; updateLightbox(); } }; }
     if (closeBtn) {
         closeBtn.onclick = () => {
             lightbox.classList.remove('active');
@@ -127,11 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
-    if (lightbox) {
-        lightbox.onclick = (e) => {
-            if (e.target === lightbox) closeBtn.onclick();
-        };
-    }
+    if (lightbox) { lightbox.onclick = (e) => { if (e.target === lightbox) closeBtn.onclick(); }; }
 
     // Swipe
     let touchStartX = 0;
@@ -139,7 +112,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         lightbox.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, { passive: true });
         lightbox.addEventListener('touchend', e => {
             const diff = e.changedTouches[0].screenX - touchStartX;
-            // Zwiększamy próg na 30, żeby było czulsze, ale stabilne
             if (Math.abs(diff) > 30) diff > 0 ? prevBtn.click() : nextBtn.click();
         }, { passive: true });
     }
@@ -152,14 +124,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.key === "Escape") closeBtn.onclick();
     });
 
-    document.addEventListener('contextmenu', (e) => {
-        if (e.target.tagName === 'IMG') e.preventDefault();
-    });
-
-    // --- 3. WYSZUKIWARKA ---
+    // --- 3. WYSZUKIWARKA (POPRAWIONY SELEKTOR) ---
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.querySelector('.search-btn');
-    const suggestionsBox = document.getElementById('search-suggestions');
+    const suggestionsBox = document.querySelector('.suggestions-list'); // <--- TUTAJ BYŁ BŁĄD
     const defaultTags = ['street', 'portret', 'abstrakcja', 'monochrome', 'generator'];
 
     const performSearch = () => {
