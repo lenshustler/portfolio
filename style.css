@@ -2,40 +2,26 @@
    1. RESET I PODSTAWY
    ========================================================================== */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent !important;
-    outline: none !important;
+    margin: 0; padding: 0; box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent !important; outline: none !important;
 }
-
 html { overflow-y: scroll; }
-
 body {
     font-family: 'Courier New', Courier, monospace;
-    -webkit-font-smoothing: antialiased;
-    background-color: #ffffff;
-    color: #000;
-    -webkit-user-select: none;
-    user-select: none;
+    -webkit-font-smoothing: antialiased; background-color: #ffffff;
+    color: #000; -webkit-user-select: none; user-select: none;
 }
 
 /* ==========================================================================
    2. NAGŁÓWEK (LOGO + WYSZUKIWARKA + LINKI)
    ========================================================================== */
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 35px 40px;
-    width: 100%;
-    border-bottom: 1px solid #000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 35px 40px; width: 100%; border-bottom: 1px solid #000;
 }
-
 .header-branding { flex: 1; display: flex; align-items: center; gap: 15px; }
 .site-logo { height: 40px; width: auto; }
 .site-name { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; text-decoration: none; color: #000; }
-
 .search-nav { flex: 1; display: flex; justify-content: center; gap: 8px; padding: 0 20px; position: relative; }
 .header-links { flex: 1; list-style: none; display: flex; justify-content: flex-end; align-items: center; gap: 35px; padding: 0; }
 .header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; transition: color 0.3s ease; }
@@ -52,14 +38,12 @@ header {
 }
 .arnold-search:focus { border: 1px solid #000; }
 .arnold-search::placeholder { color: #000; font-family: 'Courier New', Courier, monospace; font-size: 0.7rem; text-transform: uppercase; }
-
 .search-btn {
     border: 1px solid #000; background: transparent; padding: 8px 25px;
     font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; text-transform: uppercase;
     cursor: pointer; color: #000; transition: all 0.2s; font-weight: bold;
 }
 .search-btn:hover { background-color: #000; color: #fff; }
-
 .suggestions-list {
     position: absolute; top: 100%; width: 100%; max-width: 450px;
     margin: 0 auto; background-color: #fff; list-style: none; z-index: 1000;
@@ -79,23 +63,13 @@ header {
 .photo-card:hover img { transform: scale(1.03); }
 
 /* ==========================================================================
-   5. STOPKA & LICZNIK (Naprawiono licznik)
+   5. STOPKA & LICZNIK
    ========================================================================== */
 footer { display: flex; flex-direction: column; align-items: center; padding: 40px 0 30px 0; }
 .footer-links { list-style: none; display: flex; justify-content: center; gap: 35px; margin: 12px 0 8px 0; padding: 0; }
 .footer-links a { text-decoration: none; color: #000; font-size: 0.7rem; text-transform: uppercase; }
-
 .pentax-counter { margin-bottom: 30px; }
-.counter-frame { 
-    min-width: 40px; /* Zwiększona szerokość dla większych liczb */
-    padding: 0 8px; /* Dodatkowe miejsce dla cyfr */
-    height: 25px; 
-    background-color: #000; 
-    border: 1.5px solid #000; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-}
+.counter-frame { min-width: 40px; padding: 0 8px; height: 25px; background-color: #000; border: 1.5px solid #000; display: flex; justify-content: center; align-items: center; }
 #frame-count { font-family: 'Courier New', monospace; color: #fff; font-size: 0.8rem; white-space: nowrap; }
 .footer-name { font-size: 0.6rem; text-transform: uppercase; font-family: 'Courier New', Courier, monospace; }
 
@@ -106,44 +80,62 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
 #back-to-top:after { content: ''; width: 12px; height: 12px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; transform: rotate(-45deg); margin: 20px auto 0 auto; }
 
 /* ==========================================================================
-   7. LIGHTBOX (Poprawione przyciski)
+   7. LIGHTBOX (Overlay - Poprawiony układ)
    ========================================================================== */
 .lightbox { 
     display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; 
-    background-color: #ffffff; opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
-    flex-direction: column; justify-content: center; align-items: center;
+    background-color: #ffffff; opacity: 0; transition: opacity 0.3s ease;
+    justify-content: center; align-items: center;
 }
-.lightbox.active { display: flex; opacity: 1 !important; pointer-events: auto !important; }
+.lightbox.active { display: flex; opacity: 1 !important; }
 
+/* Zdjęcie wypełnia tyle ekranu, ile się da */
 .lightbox-content { 
-    max-width: 90vw; max-height: 75vh; object-fit: contain;
+    max-width: 95vw; max-height: 95vh; object-fit: contain;
     transition: transform 0.3s ease; cursor: default;
 }
 .lightbox-content.zoomed { transform: scale(2.0); cursor: move; }
 
-/* Nowy kontener na przyciski */
-.lightbox-controls { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
-
-/* Styl przycisków */
-.nav-arrow, .close { 
-    cursor: pointer; background: transparent; border: none; 
-    display: flex; align-items: center; justify-content: center; 
-    width: 50px; height: 50px; position: static; 
+/* Kontener na przyciski jako przezroczysta nakładka */
+.lightbox-controls { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    pointer-events: none; /* Kluczowe: pozwala klikać przez ten kontener w zdjęcie */
+    z-index: 100;
 }
+
+/* Przyciski */
+.nav-arrow, .close { 
+    position: absolute; cursor: pointer; background: transparent; border: none; 
+    display: flex; align-items: center; justify-content: center; 
+    width: 60px; height: 60px; pointer-events: auto; /* Kluczowe: przywraca klikalność przycisków */
+    z-index: 101;
+}
+
+/* Ułożenie */
+.prev { left: 20px; top: 50%; transform: translateY(-50%); }
+.next { right: 20px; top: 50%; transform: translateY(-50%); }
+.close { top: 20px; right: 20px; }
+
+/* Wygląd strzałek */
 .nav-arrow:after { content: ''; width: 14px; height: 14px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; }
 .prev:after { transform: rotate(-135deg); margin-left: 6px; }
 .next:after { transform: rotate(45deg); margin-right: 6px; }
+
+/* Wygląd X */
 .close:before, .close:after { content: ''; position: absolute; width: 22px; height: 1.5px; background-color: #000; }
 .close:before { transform: rotate(45deg); }
 .close:after { transform: rotate(-45deg); }
 
-/* ==========================================================================
-   8. RESPONSIVE
-   ========================================================================== */
+/* RESPONSYWNOŚĆ */
 @media (max-width: 1100px) { .gallery-grid { column-count: 3; } }
-
 @media (max-width: 768px) {
     header { flex-direction: column; padding: 20px; gap: 20px; }
     .header-branding, .search-nav, .header-links { width: 100%; justify-content: center; flex: none; }
     .gallery-grid { column-count: 2; column-gap: 10px; }
+    
+    /* Mniejsze przyciski na mobile */
+    .nav-arrow, .close { width: 40px; height: 40px; }
+    .close { top: 10px; right: 10px; }
+    .prev { left: 5px; }
+    .next { right: 5px; }
 }
