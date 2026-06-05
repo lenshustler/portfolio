@@ -9,11 +9,16 @@
 
   <style>
     /* ========================================================
-       1. STYLIZACJA EKRANOWA (RESPONSYWNA)
+       GLOBALNE STYLE (ZGODNE Z RESZTĄ STRONY)
        ======================================================== */
-    body { font-family: 'Courier New', Courier, monospace; background: #f4f4f4; color: #000; margin: 0; padding: 0; }
+    body { font-family: 'Courier New', Courier, monospace; background: #fff; color: #000; margin: 0; padding: 0; min-height: 100vh; }
     
-    header { display: flex; justify-content: space-between; align-items: center; padding: 25px 40px; background: #fff; border-bottom: 1px solid #000; flex-wrap: wrap; }
+    header { 
+        display: flex; justify-content: space-between; align-items: center; 
+        padding: 30px 50px; /* Zwiększony padding, aby header był szerszy */
+        background: #fff; border-bottom: 1px solid #000; 
+    }
+    
     .header-branding { display: flex; align-items: center; gap: 15px; }
     .site-logo { height: 40px; width: auto; }
     .site-name { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; text-decoration: none; color: #000; }
@@ -22,7 +27,8 @@
     .header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; display: flex; align-items: center; }
     .ig-icon a { color: #000; }
 
-    .setup-panel { background: #fff; padding: 20px; border-bottom: 2px solid #000; width: 90%; max-width: 900px; margin: 20px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    /* PANEL KONFIGURACYJNY */
+    .setup-panel { background: #fff; padding: 40px; border-bottom: 2px solid #000; width: 90%; max-width: 900px; margin: 20px auto; }
     .setup-panel h2 { margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
     .input-group { margin-bottom: 15px; }
     .input-group label { display: block; font-weight: bold; margin-bottom: 5px; }
@@ -33,12 +39,11 @@
     #file-selector { display: none; }
     #status-message { margin-top: 15px; font-weight: bold; color: #555; }
 
-    .zine-container { width: 95%; max-width: 297mm; margin: 40px auto; box-sizing: border-box; }
-
+    /* ZINE CONTENT */
+    .zine-container { width: 95%; max-width: 297mm; margin: 40px auto; background: #fff; }
     .page, .zine-photo-item {
       width: 100%; aspect-ratio: 297 / 210; background: #fff; box-sizing: border-box; padding: 8%; border-bottom: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: space-between;
     }
-
     .contact-sheet-page { width: 100%; background: #fff; box-sizing: border-box; padding: 8%; border-bottom: 1px dashed #ccc; }
     .cover-page { justify-content: center; text-align: center; align-items: center; }
     .intro-page { justify-content: flex-start; }
@@ -56,46 +61,33 @@
     .contact-thumb img { max-width: 100%; max-height: 100%; object-fit: cover; }
     .contact-thumb .thumb-number { font-size: 9px; font-weight: bold; margin-top: 2px; }
 
-    .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-transform: uppercase; z-index: 1000; }
+    .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 1000; text-transform: uppercase; }
 
-    /* ========================================================
-       3. NAPRAWIONY DRUK
-       ======================================================== */
+    /* DRUK */
     @media print {
       @page { size: A4 landscape; margin: 0; }
-      body { background: #fff; padding: 0; margin: 0; }
+      body { background: #fff; }
       header, .setup-panel, .print-action-btn, #status-message { display: none !important; }
-      
-      .zine-container { width: 297mm !important; margin: 0 !important; padding: 0 !important; }
-      
-      .page, .zine-photo-item {
-        width: 297mm !important; height: 210mm !important; padding: 15mm !important; box-sizing: border-box !important; border: none !important; margin: 0 !important; page-break-after: always !important; display: flex !important; flex-direction: column !important; justify-content: flex-start !important; overflow: hidden !important;
+      .zine-container { width: 297mm !important; margin: 0 !important; }
+      .page, .zine-photo-item, .contact-sheet-page {
+        width: 297mm !important; height: 210mm !important; padding: 15mm !important; border: none !important; page-break-after: always !important;
       }
-
-      .contact-sheet-page {
-        width: 297mm !important; height: 210mm !important; padding: 10mm !important; box-sizing: border-box !important; border: none !important; margin: 0 !important; page-break-after: always !important; overflow: hidden !important;
-      }
-
-      .contact-grid {
-        display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 15px !important; margin-top: 5px !important;
-      }
-
-      .contact-thumb { break-inside: avoid !important; }
+      .contact-grid { display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 15px !important; }
     }
   </style>
 </head>
 <body>
+
 <header>
     <div class="header-branding">
-        <img src="../images/logo.png" alt="Logo" class="site-logo">
-        <a href="../index.html" class="site-name">Alan Łysiak</a>
+        <img src="images/logo.png" alt="Logo" class="site-logo">
+        <a href="index.html" class="site-name">Alan Łysiak</a>
     </div>
     <ul class="header-links">
-        <li><a href="../index.html">Galeria</a></li>
-        <li><a href="../zine.html">Zine</a></li>
-        <li><a href="../kontakt.html">Kontakt</a></li>
+        <li><a href="index.html">Galeria</a></li>
+        <li><a href="zine.html">Zine</a></li>
         <li class="ig-icon">
-            <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
+            <a href="https://instagram.com/lenshustler" target="_blank">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
@@ -108,7 +100,7 @@
 
 <div class="setup-panel">
     <h2>Generator archiwum</h2>
-    <p>Wgraj zdjęcia. Skrypt automatycznie je przeskaluje (optymalizacja PDF) i ułoży chronologicznie.</p>
+    <p>Wgraj zdjęcia. Skrypt automatycznie je przeskaluje i ułoży chronologicznie.</p>
     
     <div class="input-group">
       <label for="title-input">Tytuł Projektu:</label>
@@ -172,9 +164,7 @@
         try {
           const data = await extractData(file);
           processedImages.push(data);
-        } catch(err) {
-          console.error("Błąd:", err);
-        }
+        } catch(err) { console.error("Błąd:", err); }
       }
 
       processedImages.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
@@ -214,20 +204,12 @@
     }
 
     function renderZine(images) {
-      const titleVal = document.getElementById('title-input').value;
-      const authorVal = document.getElementById('author-input').value;
-      const introVal = document.getElementById('intro-input').value;
-      document.getElementById('render-title').innerText = titleVal;
-      document.getElementById('render-author').innerText = authorVal;
-      document.getElementById('render-intro-text').innerText = introVal;
+      document.getElementById('render-title').innerText = document.getElementById('title-input').value;
+      document.getElementById('render-author').innerText = document.getElementById('author-input').value;
+      document.getElementById('render-intro-text').innerText = document.getElementById('intro-input').value;
       
-      // POPRAWKA: Zakres dat
       if (images.length > 0) {
-        const firstDate = images[0].time.substring(0, 10);
-        const lastDate = images[images.length - 1].time.substring(0, 10);
-        document.getElementById('render-date').innerText = `${firstDate} – ${lastDate}`;
-      } else {
-        document.getElementById('render-date').innerText = "Brak daty";
+        document.getElementById('render-date').innerText = `${images[0].time.substring(0, 10)} – ${images[images.length - 1].time.substring(0, 10)}`;
       }
 
       const stage = document.getElementById('photos-stage');
@@ -237,7 +219,7 @@
       images.forEach((img, index) => {
         const pageDiv = document.createElement('div');
         pageDiv.className = 'zine-photo-item';
-        pageDiv.innerHTML = `<div class="img-wrapper"><img src="${img.url}"></div><div class="photo-meta"><div><strong>DATA:</strong> ${img.time}</div><div class="meta-bottom-row"><span><strong>FOTOGRAF:</strong> ${img.author}</span><span><strong>${titleVal}</strong> ${index + 1}/${images.length}</span></div></div>`;
+        pageDiv.innerHTML = `<div class="img-wrapper"><img src="${img.url}"></div><div class="photo-meta"><div><strong>DATA:</strong> ${img.time}</div><div class="meta-bottom-row"><span><strong>FOTOGRAF:</strong> ${img.author}</span><span><strong>${document.getElementById('title-input').value}</strong> ${index + 1}/${images.length}</span></div></div>`;
         stage.appendChild(pageDiv);
       });
 
@@ -246,7 +228,7 @@
         const chunk = images.slice(i, i + itemsPerPage);
         const sheetSection = document.createElement('section');
         sheetSection.className = 'contact-sheet-page';
-        sheetSection.innerHTML = `<h2 style="margin-top:0; border-bottom:1px solid #000; padding-bottom:5px; text-transform:uppercase;">${titleVal} — CONTACT SHEET</h2><div class="contact-grid"></div>`;
+        sheetSection.innerHTML = `<h2 style="margin-top:0; border-bottom:1px solid #000; padding-bottom:5px; text-transform:uppercase;">${document.getElementById('title-input').value} — CONTACT SHEET</h2><div class="contact-grid"></div>`;
         const grid = sheetSection.querySelector('.contact-grid');
         chunk.forEach((img, idx) => {
           const thumb = document.createElement('div');
