@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let images = []; 
     let visibleImages = []; 
     let activeIdx = 0;
-    let clickTimer = null; // Do obsługi dwukliku
+    let clickTimer = null; 
 
     // --- 1. POBIERANIE DANYCH ---
     if (grid) {
@@ -61,16 +61,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.body.style.overflow = 'hidden';
     }
 
+    // POPRAWIONA FUNKCJA - eliminacja skakania
     function updateLightbox() {
         if (visibleImages.length > 0) {
+            // Wyłączamy animację na moment zmiany źródła obrazka
+            lightboxImg.style.transition = 'none';
+            
             lightboxImg.src = visibleImages[activeIdx].src;
-            // Reset zoomu przy zmianie zdjęcia
+            
+            // Reset zoomu
             lightboxImg.classList.remove('zoomed');
             lightboxImg.style.transform = 'scale(1.0)';
+            
+            // Wymuszamy na przeglądarce odświeżenie i włączamy płynne przejście z powrotem
+            requestAnimationFrame(() => {
+                lightboxImg.style.transition = 'transform 0.3s ease';
+            });
         }
     }
 
-    // Obsługa kliknięcia w zdjęcie (Single click = Zamknij, Double click = Zoom)
+    // Obsługa kliknięcia w zdjęcie
     if (lightboxImg) {
         lightboxImg.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -90,7 +100,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Przyciski nawigacji
     if (nextBtn) {
         nextBtn.onclick = (e) => {
             e.stopPropagation();
@@ -113,14 +122,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         closeBtn.onclick = () => {
             lightbox.classList.remove('active');
             document.body.style.overflow = 'auto';
-            lightboxImg.classList.remove('zoomed'); // Reset zoomu
+            lightboxImg.classList.remove('zoomed');
             lightboxImg.style.transform = 'scale(1.0)';
         };
     }
 
     if (lightbox) {
         lightbox.onclick = (e) => {
-            // Zamykaj tylko jeśli kliknięto w tło (nie w obrazek lub przyciski)
             if (e.target === lightbox) closeBtn.onclick();
         };
     }
@@ -131,7 +139,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         lightbox.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, { passive: true });
         lightbox.addEventListener('touchend', e => {
             const diff = e.changedTouches[0].screenX - touchStartX;
-            if (Math.abs(diff) > 50) diff > 0 ? prevBtn.click() : nextBtn.click();
+            // Zwiększamy próg na 30, żeby było czulsze, ale stabilne
+            if (Math.abs(diff) > 30) diff > 0 ? prevBtn.click() : nextBtn.click();
         }, { passive: true });
     }
 
