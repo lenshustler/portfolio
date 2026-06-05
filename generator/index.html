@@ -5,40 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alan Łysiak | Generator archiwum</title>
     
-    <!-- Link do Twojego głównego arkusza stylów, żeby wszystko wyglądało tak samo -->
-    <link rel="stylesheet" href="style.css?v=46.0"> 
+    <link rel="stylesheet" href="style.css?v=46.0">
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
     <style>
-        /* Nadpisanie stylu tylko dla generatora, aby tło było białe */
-        body { background: #fff !important; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
-        
-        /* Generator Content Styles */
-        .setup-panel { padding: 40px; max-width: 900px; margin: 0 auto; }
+        /* Nadpisanie/uzupełnienie stylu tylko dla elementów generatora */
+        .setup-panel { background: #fff; padding: 20px; border: 1px solid #ccc; width: 90%; max-width: 900px; margin: 20px auto; }
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-weight: bold; margin-bottom: 5px; }
-        .input-group input, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #000; box-sizing: border-box; }
+        .input-group input, .input-group textarea { width: 100%; padding: 10px; font-family: 'Courier New', Courier, monospace; border: 1px solid #ccc; box-sizing: border-box; }
         .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
         #file-selector { display: none; }
+        #status-message { margin-top: 15px; font-weight: bold; color: #555; }
 
-        .zine-container { max-width: 297mm; margin: 40px auto; }
-        .page, .zine-photo-item { width: 100%; aspect-ratio: 297 / 210; background: #fff; padding: 8%; border-bottom: 1px dashed #ccc; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; }
-        .contact-sheet-page { width: 100%; padding: 8%; border-bottom: 1px dashed #ccc; box-sizing: border-box; }
-        .img-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; margin-bottom: 15px; }
+        .zine-container { width: 95%; max-width: 297mm; margin: 40px auto; box-sizing: border-box; }
+        .page, .zine-photo-item { width: 100%; aspect-ratio: 297 / 210; background: #fff; box-sizing: border-box; padding: 8%; border-bottom: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: space-between; }
+        .contact-sheet-page { width: 100%; background: #fff; box-sizing: border-box; padding: 8%; border-bottom: 1px dashed #ccc; }
+        .img-wrapper { width: 100%; flex: 1; min-height: 0; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; overflow: hidden; }
         .img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .photo-meta { width: 100%; font-size: 13px; border-top: 1px solid #000; padding-top: 10px; }
         .contact-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
-        .contact-thumb { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; }
-        .thumb-wrapper { flex: 1; display: flex; align-items: center; overflow: hidden; }
-        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .contact-thumb { aspect-ratio: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+        .thumb-wrapper { width: 100%; flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .thumb-wrapper img { max-width: 100%; max-height: 100%; object-fit: cover; }
         
-        .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; padding: 15px 30px; cursor: pointer; text-transform: uppercase; border: none; }
+        .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; cursor: pointer; font-family: monospace; text-transform: uppercase; z-index: 1000; }
+        
+        @media print {
+            header, footer, .setup-panel, .print-action-btn, #status-message { display: none !important; }
+            .zine-container { width: 297mm !important; margin: 0 !important; }
+        }
     </style>
 </head>
-<body>
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
 
     <header>
         <div class="header-branding">
-            <!-- Ścieżka z "Kontakt" -->
             <img src="images/logo.png" alt="Logo" class="site-logo">
             <a href="index.html" class="site-name">Alan Łysiak</a>
         </div>
@@ -58,7 +60,7 @@
         </ul>
     </header>
 
-    <main>
+    <main style="flex: 1;">
         <div class="setup-panel">
             <h2>Generator archiwum</h2>
             <div class="input-group">
@@ -69,29 +71,32 @@
                 <label>Autor:</label>
                 <input type="text" id="author-input" value="ALAN ŁYSIAK">
             </div>
-            <div class="input-group">
-                <label>Tekst wstępu:</label>
-                <textarea id="intro-input">Chronologiczne archiwum zdjęć.</textarea>
-            </div>
             <label class="file-upload-btn">
                 <input type="file" id="file-selector" multiple accept="image/jpeg, image/jpg">
                 Wybierz pliki
             </label>
-            <div id="status-message">Oczekiwanie na pliki...</div>
+            <div id="status-message">Wybierz pliki, aby rozpocząć...</div>
         </div>
 
         <div class="zine-container" id="zine-output" style="display: none;">
             <section class="page">
-                <div>
-                    <h1 id="render-title"></h1>
-                    <div id="render-author"></div>
-                    <div id="render-date"></div>
-                </div>
+                <h1 id="render-title"></h1>
+                <div id="render-author"></div>
+                <div id="render-date"></div>
             </section>
             <div id="photos-stage"></div>
             <div id="contact-stage"></div>
         </div>
     </main>
+
+    <footer id="contact">
+        <ul class="footer-links">
+            <li><a href="index.html">Galeria</a></li>
+            <li><a href="zine.html">Zine</a></li>
+            <li><a href="kontakt.html">Kontakt</a></li>
+        </ul>
+        <p class="footer-name">&copy; Alan Łysiak</p>
+    </footer>
 
     <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
 
@@ -105,6 +110,7 @@
             const files = Array.from(e.target.files);
             if(files.length === 0) return;
             statusMessage.innerText = `Przetwarzanie ${files.length} plików...`;
+            
             let processedImages = [];
             for(let file of files) {
                 processedImages.push(await extractData(file));
@@ -134,14 +140,15 @@
         function renderZine(images) {
             document.getElementById('render-title').innerText = document.getElementById('title-input').value;
             document.getElementById('render-author').innerText = document.getElementById('author-input').value;
+            
             const stage = document.getElementById('photos-stage');
             const contactStage = document.getElementById('contact-stage');
             stage.innerHTML = ""; contactStage.innerHTML = "";
 
-            images.forEach((img) => {
+            images.forEach((img, index) => {
                 const div = document.createElement('div');
                 div.className = 'zine-photo-item';
-                div.innerHTML = `<div class="img-wrapper"><img src="${img.url}"></div><div>DATA: ${img.time}</div>`;
+                div.innerHTML = `<div class="img-wrapper"><img src="${img.url}"></div><div class="photo-meta">DATA: ${img.time}</div>`;
                 stage.appendChild(div);
             });
             
