@@ -8,9 +8,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nextBtn = document.querySelector('.next');
     const closeBtn = document.querySelector('.close');
     
-    let images = []; // Wszystkie zdjęcia w galerii
-    let visibleImages = []; // Zdjęcia aktualnie przefiltrowane
+    let images = []; 
+    let visibleImages = []; 
     let activeIdx = 0;
+    let clickTimer = null; // Do obsługi dwukliku
 
     // --- 1. POBIERANIE DANYCH ---
     if (grid) {
@@ -38,7 +39,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     img.src = photo.imageUrl + "?auto=format";
                     img.setAttribute('draggable', 'false');
                     
-                    // Przypisanie zdarzenia otwarcia
                     img.onclick = () => openLightboxFromImage(img);
                     
                     card.appendChild(img);
@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- 2. LOGIKA LIGHTBOXA ---
     function openLightboxFromImage(clickedImg) {
-        // Aktualizujemy listę widocznych zdjęć (bez tych z klasą hidden)
         visibleImages = Array.from(document.querySelectorAll('.photo-card:not(.hidden) img'));
         activeIdx = visibleImages.indexOf(clickedImg);
         
@@ -65,10 +64,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateLightbox() {
         if (visibleImages.length > 0) {
             lightboxImg.src = visibleImages[activeIdx].src;
+            // Reset zoomu przy zmianie zdjęcia
+            lightboxImg.classList.remove('zoomed');
+            lightboxImg.style.transform = 'scale(1.0)';
         }
     }
 
-    // Przyciski nawigacji (Zdefiniowane raz, poza funkcjami)
+    // Obsługa kliknięcia w zdjęcie (Single click = Zamknij, Double click = Zoom)
+    if (lightboxImg) {
+        lightboxImg.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (clickTimer) {
+                clearTimeout(clickTimer);
+                clickTimer = null;
+                lightboxImg.classList.toggle('zoomed');
+                lightboxImg.style.transform = lightboxImg.classList.contains('zoomed') ? 'scale(2.0)' : 'scale(1.0)';
+            } else {
+                clickTimer = setTimeout(() => {
+                    clickTimer = null;
+                    if (!lightboxImg.classList.contains('zoomed')) {
+                        closeBtn.onclick();
+                    }
+                }, 250);
+            }
+        });
+    }
+
+    // Przyciski nawigacji
     if (nextBtn) {
         nextBtn.onclick = (e) => {
             e.stopPropagation();
@@ -91,16 +113,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         closeBtn.onclick = () => {
             lightbox.classList.remove('active');
             document.body.style.overflow = 'auto';
+            lightboxImg.classList.remove('zoomed'); // Reset zoomu
+            lightboxImg.style.transform = 'scale(1.0)';
         };
     }
 
     if (lightbox) {
         lightbox.onclick = (e) => {
+            // Zamykaj tylko jeśli kliknięto w tło (nie w obrazek lub przyciski)
             if (e.target === lightbox) closeBtn.onclick();
         };
     }
 
-    // Gest Swipe
+    // Swipe
     let touchStartX = 0;
     if (lightbox) {
         lightbox.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, { passive: true });
@@ -110,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, { passive: true });
     }
 
-    // Klawiatura i Zabezpieczenia
+    // Klawiatura
     document.addEventListener('keydown', (e) => {
         if (!lightbox.classList.contains('active')) return;
         if (e.key === "ArrowRight") nextBtn.click();
@@ -149,7 +174,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     suggestionsBox.style.display = "block";
                 }
             } else {
-                // Logika podpowiedzi
                 const cards = document.querySelectorAll('.photo-card');
                 let matches = new Set();
                 cards.forEach(c => c.getAttribute('data-category').split(' ').forEach(cat => {if(cat.startsWith(term)) matches.add(cat)}));
