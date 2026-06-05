@@ -1,30 +1,99 @@
-<style>
-    /* 1. Kontener izolujący generator od reszty strony */
-    .generator-container { 
-        max-width: 800px; 
-        margin: 40px auto; 
-        padding: 20px;
-        font-family: 'Tenor Sans', sans-serif; /* Wymuszenie poprawnej czcionki */
-    }
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator archiwum | Alan Łysiak</title>
+  <link rel="stylesheet" href="../style.css?v=45.0">
+  <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
-    /* 2. Stylizacja elementów wewnątrz kontenera */
-    .generator-container .setup-panel { border: 1px solid #000; padding: 30px; }
-    .generator-container h2 { font-size: 1.2rem; margin-bottom: 20px; text-transform: uppercase; }
-    .generator-container .input-group { margin-bottom: 20px; }
-    .generator-container .input-group label { display: block; font-size: 0.7rem; margin-bottom: 5px; text-transform: uppercase; }
-    .generator-container .input-group input, 
-    .generator-container .input-group textarea { 
-        width: 100%; padding: 10px; border: 1px solid #ccc; font-family: inherit; font-size: 0.9rem;
-    }
-    .generator-container .file-upload-btn { 
-        background: #000; color: #fff; padding: 12px 20px; cursor: pointer; 
-        display: inline-block; text-transform: uppercase; font-size: 0.7rem; font-weight: bold;
-    }
-</style>
+  <style>
+    /* Izolacja panelu, aby nie psuł reszty layoutu (naprawa image_9a0244.png) */
+    .generator-container { max-width: 900px; margin: 40px auto; padding: 20px; font-family: 'Tenor Sans', sans-serif; }
+    .setup-panel { background: #fff; padding: 30px; border: 1px solid #000; }
+    .setup-panel h2 { margin-top: 0; text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem; margin-bottom: 20px; }
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-size: 0.7rem; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+    .input-group input, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; }
+    .input-group textarea { height: 120px; }
+    .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 25px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; }
+    #file-selector { display: none; }
+    #status-message { margin-top: 15px; font-size: 0.7rem; text-transform: uppercase; color: #555; }
 
-<!-- W HTMLu zmień klasę diva z panelem na: -->
-<div class="generator-container">
+    /* Układ Zina */
+    .zine-container { width: 297mm; margin: 40px auto; background: #fff; }
+    .page, .zine-photo-item, .contact-sheet-page { width: 297mm; height: 210mm; padding: 25mm; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
+    .cover-page { justify-content: center; text-align: center; }
+    #render-intro-text { white-space: pre-wrap; font-size: 14px; line-height: 1.6; }
+    .img-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; }
+    .img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; }
+    
+    @media print { .setup-panel, .print-action-btn, #status-message, header, footer { display: none !important; } .zine-container { margin: 0; } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><a href="../index.html">Alan Łysiak</a></div>
+    <nav class="search-nav">
+        <input type="text" id="search-input" class="arnold-search" placeholder="wpisz czego szukasz" autocomplete="off">
+    </nav>
+    <ul class="header-links">
+        <li><a href="../zine.html">Zine</a></li>
+        <li><a href="../kontakt.html">Kontakt</a></li>
+    </ul>
+  </header>
+
+  <div class="generator-container">
     <div class="setup-panel">
-        <!-- reszta Twojego kodu... -->
+        <h2>Generator archiwum</h2>
+        <div class="input-group">
+          <label>Tytuł Projektu:</label>
+          <input type="text" id="title-input" value="GDYNIA_MAJ_2026">
+        </div>
+        <div class="input-group">
+          <label>Tekst wstępu:</label>
+          <textarea id="intro-input">Chronologiczne archiwum zdjęć wykonanych w maju 2026 roku w Gdyni.</textarea>
+        </div>
+        <label class="file-upload-btn">
+          <input type="file" id="file-selector" multiple accept="image/jpeg">
+          Wybierz pliki i generuj
+        </label>
+        <div id="status-message">Oczekiwanie na pliki...</div>
     </div>
-</div>
+  </div>
+
+  <div class="zine-container" id="zine-output" style="display: none;">
+    <section class="page cover-page">
+        <h1 id="render-title">TYTUŁ</h1>
+    </section>
+    <section class="page">
+        <div id="render-intro-text"></div>
+    </section>
+    <div id="photos-stage"></div>
+  </div>
+
+  <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
+
+  <footer id="contact">
+    <div class="pentax-counter">
+        <div class="counter-frame"><span id="frame-count">00</span></div> 
+    </div>
+  </footer>
+
+  <script>
+    const fileSelector = document.getElementById('file-selector');
+    fileSelector.addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files);
+        if(files.length === 0) return;
+        
+        document.getElementById('render-title').innerText = document.getElementById('title-input').value;
+        document.getElementById('render-intro-text').innerText = document.getElementById('intro-input').value;
+        document.getElementById('frame-count').innerText = String(files.length).padStart(2, '0');
+        document.getElementById('zine-output').style.display = 'block';
+        document.getElementById('print-btn').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
