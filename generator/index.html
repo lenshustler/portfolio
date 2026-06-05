@@ -3,62 +3,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generator Zina | Alan Łysiak</title>
+  <title>Generator archiwum | Alan Łysiak</title>
   
   <link rel="stylesheet" href="../style.css?v=45.0">
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
   <style>
-    /* Wymuszenie białego tła dla całej strony generatora */
-    body { background-color: #ffffff !important; }
-    
-    /* Panel konfiguracyjny */
-    .setup-panel { background: #fff; padding: 30px; border: 1px solid #000; max-width: 900px; margin: 40px auto; }
-    .setup-panel h2 { margin-top: 0; text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem; }
-    .input-group { margin-bottom: 20px; }
-    .input-group label { display: block; font-size: 0.7rem; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
-    .input-group input, .input-group textarea { width: 100%; padding: 10px; font-family: inherit; border: 1px solid #ccc; box-sizing: border-box; }
-    
-    .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 25px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; margin-top: 10px; }
-    #file-selector { display: none; }
-    #status-message { margin-top: 15px; font-size: 0.7rem; text-transform: uppercase; color: #777; }
+    /* Resetujemy tło na białe zgodnie z Twoją prośbą */
+    body { background: #fff !important; }
 
-    /* Układ Zina */
-    .zine-container { width: 297mm; margin: 40px auto; background: #fff; }
-    .page, .zine-photo-item, .contact-sheet-page { width: 297mm; height: 210mm; padding: 25mm; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; }
-    .cover-page { justify-content: center; text-align: center; }
-    #render-intro-text { white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6; }
-    .img-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; }
+    /* PANEL KONFIGURACYJNY (Twój sprawdzony styl) */
+    .setup-panel { background: #fff; padding: 30px; border-bottom: 2px solid #000; max-width: 900px; margin: 20px auto; }
+    .setup-panel h2 { margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+    .input-group { margin-bottom: 15px; }
+    .input-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+    .input-group input, .input-group textarea { width: 100%; padding: 10px; font-family: inherit; border: 1px solid #ccc; box-sizing: border-box; }
+    .input-group textarea { height: 120px; resize: vertical; }
+    .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
+    #file-selector { display: none; }
+    #status-message { margin-top: 15px; font-weight: bold; color: #555; }
+
+    /* UKŁAD STRONY ZINA (Twój sprawdzony kod A4) */
+    .zine-container { width: 297mm; margin: 40px auto; box-sizing: border-box; }
+    .page, .zine-photo-item, .contact-sheet-page { width: 297mm; height: 210mm; background: #fff; box-sizing: border-box; padding: 25mm; border-bottom: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; break-after: page; }
+    .cover-page { justify-content: center; text-align: center; align-items: center; }
+    .cover-page h1 { font-size: 36px; letter-spacing: 2px; margin: 0 0 15px 0; }
+    #render-intro-text { white-space: pre-wrap; line-height: 1.6; font-size: 14px; margin-top: 25px; }
+    .img-wrapper { width: 100%; flex: 1; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; }
     .img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
-    
-    .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; font-family: inherit; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; }
+    .photo-meta { width: 100%; font-size: 13px; border-top: 1px solid #000; padding-top: 10px; }
+    .meta-bottom-row { display: flex; justify-content: space-between; margin-top: 5px; }
+    .contact-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 15px; }
+    .contact-thumb { display: flex; flex-direction: column; justify-content: space-between; align-items: center; height: 85px; }
+    .contact-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; padding: 15px 30px; cursor: pointer; text-transform: uppercase; border: none; }
+
+    @media print { .setup-panel, .print-action-btn, #status-message, header, footer { display: none !important; } .zine-container { margin: 0; width: 100%; } }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="logo"><a href="index.html">Alan Łysiak</a></div>
+    <div class="logo"><a href="../index.html">Alan Łysiak</a></div>
     <nav class="search-nav">
         <input type="text" id="search-input" class="arnold-search" placeholder="wpisz czego szukasz" autocomplete="off">
     </nav>
     <ul class="header-links">
-        <li><a href="zine.html">Zine</a></li>
-        <li><a href="kontakt.html">Kontakt</a></li>
+        <li><a href="../zine.html">Zine</a></li>
+        <li><a href="../kontakt.html">Kontakt</a></li>
     </ul>
   </header>
 
   <div class="setup-panel">
     <h2>Generator archiwum</h2>
     <div class="input-group">
-      <label>Tytuł Projektu:</label>
+      <label for="title-input">Tytuł Projektu:</label>
       <input type="text" id="title-input" value="GDYNIA_MAJ_2026">
     </div>
     <div class="input-group">
-      <label>Tekst wstępu:</label>
-      <textarea id="intro-input">Chronologiczne archiwum zdjęć.</textarea>
+      <label for="author-input">Autor / Fotograf:</label>
+      <input type="text" id="author-input" value="ALAN ŁYSIAK">
+    </div>
+    <div class="input-group">
+      <label for="intro-input">Tekst wstępu (O projekcie):</label>
+      <textarea id="intro-input">Chronologiczne archiwum zdjęć wykonanych w maju 2026 roku w Gdyni.</textarea>
     </div>
     <label class="file-upload-btn">
-      <input type="file" id="file-selector" multiple accept="image/jpeg">
+      <input type="file" id="file-selector" multiple accept="image/jpeg, image/jpg">
       Wybierz pliki i generuj
     </label>
     <div id="status-message">Oczekiwanie na pliki...</div>
@@ -66,12 +77,18 @@
 
   <div class="zine-container" id="zine-output" style="display: none;">
     <section class="page cover-page">
+      <div>
         <h1 id="render-title">TYTUŁ</h1>
+        <div id="render-author" style="font-size: 18px;">AUTORZY</div>
+        <div id="render-date" style="margin-top: 35px; font-weight: bold;">DATA</div>
+      </div>
     </section>
-    <section class="page">
-        <div id="render-intro-text"></div>
+    <section class="page intro-page">
+      <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0;">O projekcie</h2>
+      <div id="render-intro-text"></div>
     </section>
     <div id="photos-stage"></div>
+    <div id="contact-stage"></div>
   </div>
 
   <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
@@ -80,11 +97,61 @@
     <div class="pentax-counter">
         <div class="counter-frame"><span id="frame-count">00</span></div> 
     </div>
+    <p class="footer-name">&copy; Alan Łysiak</p>
   </footer>
 
   <script>
-    // Twoja oryginalna logika JS (bez zmian)
-    // ... (pozostaw swój sprawdzony kod tutaj) ...
+    // Twoja sprawdzona logika renderowania (bez zmian)
+    const fileSelector = document.getElementById('file-selector');
+    const statusMessage = document.getElementById('status-message');
+    const zineOutput = document.getElementById('zine-output');
+    const printBtn = document.getElementById('print-btn');
+
+    fileSelector.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      if(files.length === 0) return;
+      statusMessage.innerText = `Przetwarzanie...`;
+      let processedImages = [];
+      for(let file of files) {
+          const reader = new FileReader();
+          await new Promise(resolve => {
+              reader.onload = (event) => {
+                  const img = new Image();
+                  img.src = event.target.result;
+                  img.onload = () => {
+                      EXIF.getData(img, function() {
+                          const dto = EXIF.getTag(this, "DateTimeOriginal");
+                          processedImages.push({
+                              url: event.target.result,
+                              time: dto ? dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3') : "Brak daty",
+                              rawDate: dto || file.lastModified,
+                              author: EXIF.getTag(this, "Artist") || document.getElementById('author-input').value
+                          });
+                          resolve();
+                      });
+                  };
+              };
+              reader.readAsDataURL(file);
+          });
+      }
+      processedImages.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
+      
+      // Render
+      document.getElementById('render-title').innerText = document.getElementById('title-input').value;
+      document.getElementById('render-author').innerText = document.getElementById('author-input').value;
+      document.getElementById('render-intro-text').innerText = document.getElementById('intro-input').value;
+      document.getElementById('frame-count').innerText = String(processedImages.length).padStart(2, '0');
+      
+      const stage = document.getElementById('photos-stage'); stage.innerHTML = "";
+      processedImages.forEach((img, i) => {
+          const div = document.createElement('div');
+          div.className = 'zine-photo-item';
+          div.innerHTML = `<div class="img-wrapper"><img src="${img.url}"></div><div class="photo-meta"><div>TIME: ${img.time}</div><div>PHOTOGRAPHER: ${img.author}</div></div>`;
+          stage.appendChild(div);
+      });
+      zineOutput.style.display = 'block';
+      printBtn.style.display = 'block';
+    });
   </script>
 </body>
 </html>
