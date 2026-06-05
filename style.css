@@ -47,6 +47,7 @@ header {
     flex: 1;
     display: flex;
     justify-content: center;
+    gap: 8px; /* Odstęp między inputem a przyciskiem */
     padding: 0 20px;
     position: relative;
 }
@@ -73,11 +74,11 @@ header {
 .ig-icon svg { display: block; color: #000; }
 
 /* ==========================================================================
-   3. WYSZUKIWARKA (SZEROKIE OKIENKO)
+   3. WYSZUKIWARKA (SZEROKIE OKIENKO + PRZYCISK)
    ========================================================================== */
 .arnold-search {
     width: 100%;
-    max-width: 450px; /* Dopasowano szerokość */
+    max-width: 350px; /* Nieco zmniejszone, aby zrobić miejsce na przycisk */
     background: transparent;
     border: 1px solid #ccc;
     color: #000;
@@ -99,11 +100,26 @@ header {
     text-transform: uppercase;
 }
 
+.search-btn {
+    border: 1px solid #000;
+    background: transparent;
+    padding: 8px 25px; /* Zwiększona szerokość przycisku */
+    font-family: 'Courier New', Courier, monospace; /* Maszynowa czcionka */
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: #000;
+    transition: all 0.2s;
+    font-weight: bold;
+}
+
+.search-btn:hover { background-color: #000; color: #fff; }
+
 .suggestions-list {
     position: absolute;
     top: 100%;
     width: 100%;
-    max-width: 450px; /* Zgodnie z szerokością wyszukiwarki */
+    max-width: 450px;
     margin: 0 auto;
     background-color: #fff;
     list-style: none;
