@@ -1,4 +1,13 @@
-<style>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alan Łysiak | Generator archiwum</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
+  <style>
     /* ========================================================
        1. STYLIZACJA EKRANOWA (RESPONSYWNA)
        ======================================================== */
@@ -25,7 +34,7 @@
     #status-message { margin-top: 15px; font-weight: bold; color: #555; }
 
     /* ========================================================
-       2. UKŁAD STRONY (FIXED FOR MOBILE)
+       2. UKŁAD STRONY (RESPONSYWNY)
        ======================================================== */
     .zine-container { width: 95%; max-width: 297mm; margin: 40px auto; box-sizing: border-box; }
 
@@ -35,7 +44,7 @@
       aspect-ratio: 297 / 210; 
       background: #fff; 
       box-sizing: border-box; 
-      padding: 8%; /* Procentowy padding zamiast sztywnego mm */
+      padding: 8%; 
       border-bottom: 1px dashed #ccc; 
       display: flex; 
       flex-direction: column; 
@@ -61,7 +70,7 @@
 
     .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-transform: uppercase; z-index: 1000; }
 
-    /* Druk zachowujemy bez zmian */
+    /* Druk zachowujemy bez zmian, wymuszamy 297mm */
     @media print {
       @page { size: A4 landscape; margin: 0; }
       body { background: #fff; padding: 0; margin: 0; }
@@ -72,7 +81,7 @@
       .page, .zine-photo-item, .contact-sheet-page {
         border: none; margin: 0; padding: 25mm; width: 297mm; height: 210mm;
         display: flex; flex-direction: column; justify-content: flex-start;
-        aspect-ratio: auto; /* Wyłączamy aspect-ratio przy druku */
+        aspect-ratio: auto;
       }
       
       .page.intro-page, .contact-sheet-page { justify-content: flex-start !important; }
@@ -80,3 +89,234 @@
       .cover-page { justify-content: center !important; }
     }
   </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-branding">
+        <img src="../images/logo.png" alt="Logo" class="site-logo">
+        <a href="../index.html" class="site-name">Alan Łysiak</a>
+    </div>
+    <ul class="header-links">
+        <li><a href="../index.html">Galeria</a></li>
+        <li><a href="../zine.html">Zine</a></li>
+        <li><a href="../kontakt.html">Kontakt</a></li>
+        <li class="ig-icon">
+            <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+            </a>
+        </li>
+    </ul>
+  </header>
+
+  <div class="setup-panel">
+    <h2>Generator archiwum</h2>
+    <p>Wgraj zdjęcia z komputera. Skrypt ułoży je chronologicznie na podstawie daty wykonania i wygeneruje proste archiwum gotowe do zapisu jako PDF.</p>
+    
+    <div class="input-group">
+      <label for="title-input">Tytuł Projektu:</label>
+      <input type="text" id="title-input" value="GDYNIA_MAJ_2026">
+    </div>
+
+    <div class="input-group">
+      <label for="author-input">Autor / Fotograf:</label>
+      <input type="text" id="author-input" value="ALAN ŁYSIAK">
+    </div>
+
+    <div class="input-group">
+      <label for="intro-input">Tekst wstępu (O projekcie):</label>
+      <textarea id="intro-input">Chronologiczne archiwum zdjęć wykonanych w maju 2026 roku w Gdyni.</textarea>
+    </div>
+
+    <label class="file-upload-btn">
+      <input type="file" id="file-selector" multiple accept="image/jpeg, image/jpg">
+      Wybierz pliki i generuj
+    </label>
+
+    <div id="status-message">Oczekiwanie na pliki...</div>
+  </div>
+
+  <div class="zine-container" id="zine-output" style="display: none;">
+    <section class="page cover-page">
+      <div>
+        <h1 id="render-title">TYTUŁ</h1>
+        <div id="render-author" style="font-size: 18px;">AUTORZY</div>
+        <div id="render-date" style="margin-top: 35px; font-weight: bold;">DATA</div>
+      </div>
+    </section>
+
+    <section class="page intro-page">
+      <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0;">O projekcie</h2>
+      <div id="render-intro-text"></div>
+    </section>
+
+    <div id="photos-stage"></div>
+    <div id="contact-stage"></div>
+  </div>
+
+  <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
+
+  <script>
+    const fileSelector = document.getElementById('file-selector');
+    const statusMessage = document.getElementById('status-message');
+    const zineOutput = document.getElementById('zine-output');
+    const printBtn = document.getElementById('print-btn');
+
+    let processedImages = [];
+
+    fileSelector.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      if(files.length === 0) return;
+
+      statusMessage.innerText = `Przetwarzanie i odczyt dat z ${files.length} plików...`;
+      processedImages = [];
+
+      for(let file of files) {
+        try {
+          const data = await extractData(file);
+          processedImages.push(data);
+        } catch(err) {
+          console.error("Błąd pliku:", file.name, err);
+        }
+      }
+
+      if(processedImages.length === 0) {
+        statusMessage.innerText = "Nie udało się załadować zdjęć.";
+        return;
+      }
+
+      processedImages.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
+      renderZine(processedImages);
+    });
+
+    function extractData(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const base64Url = event.target.result;
+          const img = new Image();
+          img.src = base64Url;
+          img.onload = function() {
+            EXIF.getData(img, function() {
+              const dto = EXIF.getTag(this, "DateTimeOriginal");
+              let formattedTime = "Brak danych o czasie";
+              let rawDate = file.lastModified;
+
+              if(dto) {
+                formattedTime = dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3');
+                rawDate = formattedTime;
+              }
+
+              const artist = EXIF.getTag(this, "Artist") || EXIF.getTag(this, "Copyright");
+              const defaultAuthor = document.getElementById('author-input').value;
+              const author = artist || defaultAuthor;
+
+              resolve({
+                url: base64Url,
+                time: formattedTime,
+                rawDate: rawDate,
+                author: author
+              });
+            });
+          };
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderZine(images) {
+      const titleVal = document.getElementById('title-input').value;
+      const authorVal = document.getElementById('author-input').value;
+      const introVal = document.getElementById('intro-input').value;
+
+      document.getElementById('render-title').innerText = titleVal;
+      document.getElementById('render-author').innerText = authorVal;
+      document.getElementById('render-intro-text').innerText = introVal;
+      
+      if(images[0] && images[0].time !== "Brak danych o czasie") {
+        document.getElementById('render-date').innerText = images[0].time.substring(0, 10);
+      } else {
+        document.getElementById('render-date').innerText = new Date().toISOString().substring(0, 10);
+      }
+
+      const total = images.length;
+      const stage = document.getElementById('photos-stage');
+      const contactStage = document.getElementById('contact-stage');
+
+      stage.innerHTML = "";
+      contactStage.innerHTML = "";
+
+      images.forEach((img, index) => {
+        const num = String(index + 1).padStart(2, '0');
+        const totalStr = String(total).padStart(2, '0');
+        const pageStatus = `${num}/${totalStr}`;
+
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'zine-photo-item';
+        pageDiv.innerHTML = `
+          <div class="img-wrapper">
+            <img src="${img.url}">
+          </div>
+          <div class="photo-meta">
+            <div><strong>TIME:</strong> ${img.time}</div>
+            <div class="meta-bottom-row">
+              <span><strong>PHOTOGRAPHER:</strong> ${img.author}</span>
+              <span><strong>${titleVal}</strong> &nbsp;&nbsp; ${pageStatus}</span>
+            </div>
+          </div>
+        `;
+        stage.appendChild(pageDiv);
+      });
+
+      const itemsPerPage = 25; 
+      const totalContactPages = Math.ceil(images.length / itemsPerPage);
+
+      for (let i = 0; i < images.length; i += itemsPerPage) {
+        const chunk = images.slice(i, i + itemsPerPage);
+        const currentPageNum = Math.floor(i / itemsPerPage) + 1;
+        
+        const sheetSection = document.createElement('section');
+        sheetSection.className = 'contact-sheet-page';
+        
+        const pageSuffix = totalContactPages > 1 ? ` — PAGE ${currentPageNum}/${totalContactPages}` : '';
+        
+        sheetSection.innerHTML = `
+          <h2 style="margin-top: 0; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">
+            ${titleVal} — CONTACT SHEET — ${total} FRAMES${pageSuffix}
+          </h2>
+          <div class="contact-grid"></div>
+        `;
+        
+        const grid = sheetSection.querySelector('.contact-grid');
+        
+        chunk.forEach((img, index) => {
+          const globalIndex = i + index;
+          const num = String(globalIndex + 1).padStart(2, '0');
+          const totalStr = String(total).padStart(2, '0');
+          const pageStatus = `${num}/${totalStr}`;
+          
+          const thumb = document.createElement('div');
+          thumb.className = 'contact-thumb';
+          thumb.innerHTML = `
+            <div class="thumb-wrapper">
+              <img src="${img.url}">
+            </div>
+            <div class="thumb-number">${pageStatus}</div>
+          `;
+          grid.appendChild(thumb);
+        });
+        
+        contactStage.appendChild(sheetSection);
+      }
+
+      statusMessage.innerText = `Sukces! Gotowe do zapisu. Łącznie wgrano ${total} zdjęć.`;
+      zineOutput.style.display = 'block';
+      printBtn.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
