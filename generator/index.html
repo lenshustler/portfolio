@@ -1,94 +1,77 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Zina | Alan Łysiak</title>
-    <link rel="stylesheet" href="../style.css?v=45.0">
-    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
-    <style>
-        /* Wymuszamy, aby panel generatora dobrze siedział w Twoim layoutcie */
-        .generator-box {
-            max-width: 800px;
-            margin: 60px auto;
-            padding: 20px;
-        }
-        .generator-controls {
-            border: 1px solid #000;
-            padding: 30px;
-            text-align: center;
-        }
-        .generator-controls input {
-            display: block;
-            width: 100%;
-            margin: 10px 0;
-            padding: 10px;
-            font-family: inherit;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator Zina | Alan Łysiak</title>
+  
+  <link rel="stylesheet" href="../style.css?v=45.0">
+  <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
+  <style>
+    /* Stylizacja panelu, aby pasowała do Twojego minimalizmu */
+    .generator-main { max-width: 800px; margin: 60px auto; padding: 20px; }
+    .setup-panel { border: 1px solid #000; padding: 30px; margin-bottom: 40px; }
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 5px; color: #555; }
+    .input-group input, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; font-family: inherit; }
+    .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 25px; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; font-weight: bold; }
+    
+    /* Ukrywamy oryginalną stopkę z generatora, używamy Twojej z index.html */
+    #status-message { margin-top: 15px; font-size: 0.7rem; text-transform: uppercase; }
+  </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo"><a href="../index.html">Alan Łysiak</a></div>
-        
-        <nav class="search-nav">
-            <input type="text" id="search-input" class="arnold-search" placeholder="wpisz czego szukasz (np. street, portret)" autocomplete="off">
-            <ul id="search-suggestions" class="suggestions-list"></ul>
-        </nav>
+  <header>
+    <div class="logo"><a href="../index.html">Alan Łysiak</a></div>
+    <nav class="search-nav">
+        <input type="text" id="search-input" class="arnold-search" placeholder="wpisz czego szukasz" autocomplete="off">
+        <ul id="search-suggestions" class="suggestions-list"></ul>
+    </nav>
+    <ul class="header-links">
+        <li><a href="../zine.html">Zine</a></li>
+        <li><a href="../kontakt.html">Kontakt</a></li>
+    </ul>
+  </header>
 
-        <ul class="header-links">
-            <li><a href="../zine.html">Zine</a></li>
-            <li><a href="../kontakt.html">Kontakt</a></li>
-            <li class="ig-icon">
-                <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                    </svg>
-                </a>
-            </li>
-        </ul>
-    </header>
-
-    <main class="generator-box">
-        <div class="generator-controls">
-            <h2>GENERATOR ZINA</h2>
-            <input type="text" id="zine-title" placeholder="Tytuł zina">
-            <button onclick="document.getElementById('file-input').click()">WYBIERZ ZDJĘCIA</button>
-            <input type="file" id="file-input" multiple style="display:none;">
+  <main class="generator-main">
+    <div class="setup-panel">
+        <h2>GENERATOR ZINA</h2>
+        <div class="input-group">
+            <label>Tytuł Projektu:</label>
+            <input type="text" id="title-input" value="GDYNIA_MAJ_2026">
         </div>
-        <div id="zine-preview"></div>
-    </main>
-
-    <footer id="contact">
-        <ul class="footer-links">
-            <li><a href="../zine.html">Zine</a></li>
-            <li><a href="../kontakt.html">Kontakt</a></li>
-            <li class="ig-icon">
-                <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                    </svg>
-                </a>
-            </li>
-        </ul>
-
-        <div class="pentax-counter">
-            <div class="counter-frame">
-                <span id="frame-count">00</span>
-            </div> 
+        <div class="input-group">
+            <label>Autor:</label>
+            <input type="text" id="author-input" value="ALAN ŁYSIAK">
         </div>
+        <label class="file-upload-btn">
+            <input type="file" id="file-selector" multiple accept="image/jpeg" style="display:none;">
+            Wybierz pliki i generuj
+        </label>
+        <div id="status-message">Oczekiwanie na pliki...</div>
+    </div>
 
-        <p class="footer-name">&copy; Alan Łysiak</p>
-    </footer>
+    <div id="zine-output" style="display: none;"></div>
+  </main>
 
-    <script src="../script.js?v=45.0"></script>
-    <script>
-        // Tutaj dodasz swoją logikę generowania zina
-    </script>
+  <footer id="contact">
+    <ul class="footer-links">
+        <li><a href="../zine.html">Zine</a></li>
+        <li><a href="../kontakt.html">Kontakt</a></li>
+    </ul>
+    <div class="pentax-counter">
+        <div class="counter-frame"><span id="frame-count">00</span></div> 
+    </div>
+    <p class="footer-name">&copy; Alan Łysiak</p>
+  </footer>
+
+  <script>
+    /* TUTAJ WKLEJ SWOJE WCZEŚNIEJSZE FUNKCJE (extractData, renderZine itd.) */
+    
+    // Pamiętaj, żeby po każdej udanej generacji podmienić liczbę w stopce:
+    // document.getElementById('frame-count').innerText = String(total).padStart(2, '0');
+  </script>
 </body>
 </html>
