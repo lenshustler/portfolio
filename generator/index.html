@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zine Generator</title>
+  <title>Generator archiwum</title>
   
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
@@ -79,22 +79,20 @@
     }
 
     /* ========================================================
-       2. UKŁAD ZINA — POZIOMY (A4 Landscape)
+       2. UKŁAD ZINA — POZIOMY NA EKRANIE (A4 Landscape Podgląd)
        ======================================================== */
     .zine-container {
       width: 297mm;
       margin: 40px auto;
-      background: #fff;
-      padding: 25mm; /* Zwiększony margines również na podglądzie ekranowym */
       box-sizing: border-box;
-      box-shadow: 0 0 20px rgba(0,0,0,0.05);
     }
 
-    /* Standardowa strona (Okładka, Wstęp, Zdjęcia) */
-    .page {
+    .page, .zine-photo-item {
+      width: 297mm;
       height: 210mm;
+      background: #fff;
       box-sizing: border-box;
-      padding: 10mm 0;
+      padding: 25mm; /* Margines widoczny na ekranie */
       border-bottom: 1px dashed #ccc;
       display: flex;
       flex-direction: column;
@@ -103,12 +101,13 @@
       break-after: page;
     }
 
-    /* Sekcja stykówki: Automatyczna wysokość na wiele stron */
+    /* Elastyczna stykówka na ekranie */
     .contact-sheet-page {
-      height: auto !important; 
+      width: 297mm;
       min-height: 210mm;
+      background: #fff;
       box-sizing: border-box;
-      padding: 10mm 0;
+      padding: 25mm;
       border-bottom: 1px dashed #ccc;
       display: flex;
       flex-direction: column;
@@ -138,28 +137,18 @@
       font-size: 14px;
     }
 
-    .zine-photo-item {
-      height: 210mm;
-      box-sizing: border-box;
-      padding: 10mm 0;
-      border-bottom: 1px dashed #ccc;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      page-break-after: always;
-      break-after: page;
-    }
-
-    .zine-photo-item .img-wrapper {
+    /* KLUCZOWA ZMIANA: Kontener na zdjęcie dynamicznie dopasowuje się do reszty strony */
+    .img-wrapper {
       width: 100%;
-      height: 145mm; /* Dopasowana przestrzeń, aby uwzględnić większe marginesy kartki */
+      flex: 1; 
+      min-height: 0; /* Zapobiega wypychaniu zawartości */
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-bottom: 15px;
     }
 
-    .zine-photo-item img {
+    .img-wrapper img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
@@ -218,7 +207,7 @@
       margin-top: 5px;
     }
 
-    /* Pływający przycisk zapisu */
+    /* Przycisk */
     .print-action-btn {
       position: fixed;
       bottom: 30px;
@@ -236,9 +225,14 @@
     }
 
     /* ========================================================
-       3. USTAWIENIA DRUKU DO PDF (Bezpieczne, duże marginesy)
+       3. IDEALNE I BEZPIECZNE USTAWIENIA DRUKU PDF
        ======================================================== */
     @media print {
+      @page {
+        size: A4 landscape;
+        margin: 25mm; /* Przeglądarka sama tworzy idealny margines 25mm wokół każdej kartki */
+      }
+
       body {
         background: #fff;
         padding: 0;
@@ -255,31 +249,25 @@
         width: 100%;
       }
 
-      /* Wymuszenie bezpiecznego, szerokiego marginesu 25mm z każdej strony kartki formatu A4 */
-      .page {
+      /* Resetujemy paddingi elementów, bo marginesem steruje już @page */
+      .page, .zine-photo-item {
         border: none;
         margin: 0;
-        padding: 25mm; 
-        height: 100vh;
+        padding: 0;
+        width: 100%;
+        height: 100vh; /* Zajmuje dokładnie obszar wewnątrz marginesów 25mm */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
 
       .contact-sheet-page {
         border: none;
         margin: 0;
-        padding: 25mm; 
-        height: auto !important; 
-      }
-
-      .zine-photo-item {
-        border: none;
-        margin: 0;
-        padding: 25mm;
-        height: 100vh;
-      }
-
-      @page {
-        size: A4 landscape;
-        margin: 0; /* Zerujemy margines systemowy, bo kontrolujemy go precyzyjnie przez padding: 25mm */
+        padding: 0;
+        width: 100%;
+        height: auto !important; /* Pozwala stykówce swobodnie płynąć na kolejne strony */
+        display: block;
       }
     }
   </style>
@@ -287,7 +275,7 @@
 <body>
 
   <div class="setup-panel">
-    <h2>Generator Zina</h2>
+    <h2>Generator Archiwum</h2>
     <p>Wgraj zdjęcia z komputera. Skrypt ułoży je chronologicznie na podstawie daty wykonania i wygeneruje prosty zine gotowy do zapisu jako PDF.</p>
     
     <div class="input-group">
@@ -366,10 +354,7 @@
         return;
       }
 
-      // Sortowanie chronologiczne według czasu wykonania
       processedImages.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
-
-      // Generowanie dokumentu
       renderZine(processedImages);
     });
 
@@ -467,7 +452,7 @@
         grid.appendChild(thumb);
       });
 
-      statusMessage.innerText = `Sukces! Przygotowano układ z ${total} zdjęć. Marginesy zostały wyrównane.`;
+      statusMessage.innerText = `Sukces! Naprawiono błąd układu stron. Możesz zapisać plik z ${total} zdjęciami.`;
       zineOutput.style.display = 'block';
       printBtn.style.display = 'block';
     }
