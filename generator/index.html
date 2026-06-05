@@ -220,7 +220,15 @@
       document.getElementById('render-title').innerText = titleVal;
       document.getElementById('render-author').innerText = authorVal;
       document.getElementById('render-intro-text').innerText = introVal;
-      document.getElementById('render-date').innerText = images[0]?.time.substring(0, 10) || "Brak daty";
+      
+      // POPRAWKA: Zakres dat
+      if (images.length > 0) {
+        const firstDate = images[0].time.substring(0, 10);
+        const lastDate = images[images.length - 1].time.substring(0, 10);
+        document.getElementById('render-date').innerText = `${firstDate} – ${lastDate}`;
+      } else {
+        document.getElementById('render-date').innerText = "Brak daty";
+      }
 
       const stage = document.getElementById('photos-stage');
       const contactStage = document.getElementById('contact-stage');
@@ -233,7 +241,6 @@
         stage.appendChild(pageDiv);
       });
 
-      // ZMIANA: 15 zdjęć na stronę
       const itemsPerPage = 15; 
       for (let i = 0; i < images.length; i += itemsPerPage) {
         const chunk = images.slice(i, i + itemsPerPage);
