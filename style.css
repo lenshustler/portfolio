@@ -47,7 +47,7 @@ header {
     flex: 1;
     display: flex;
     justify-content: center;
-    gap: 0; /* Doklejone */
+    gap: 8px; /* Odstęp między inputem a przyciskiem */
     padding: 0 20px;
     position: relative;
 }
@@ -74,14 +74,13 @@ header {
 .ig-icon svg { display: block; color: #000; }
 
 /* ==========================================================================
-   3. WYSZUKIWARKA (SZEROKIE OKIENKO + DOKLEJONY PRZYCISK)
+   3. WYSZUKIWARKA (SZEROKIE OKIENKO + PRZYCISK)
    ========================================================================== */
 .arnold-search {
     width: 100%;
-    max-width: 350px;
+    max-width: 350px; /* Nieco zmniejszone, aby zrobić miejsce na przycisk */
     background: transparent;
-    border: 1px solid #000; /* Solidna ramka */
-    border-right: none;    /* Brak prawej ramki, żeby łączyło się z przyciskiem */
+    border: 1px solid #ccc;
     color: #000;
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.8rem;
@@ -92,7 +91,7 @@ header {
     transition: border 0.3s ease;
 }
 
-.arnold-search:focus { border: 1px solid #000; border-right: none; }
+.arnold-search:focus { border: 1px solid #000; }
 
 .arnold-search::placeholder {
     color: #000;
@@ -104,8 +103,8 @@ header {
 .search-btn {
     border: 1px solid #000;
     background: transparent;
-    padding: 8px 40px; /* Szerszy przycisk */
-    font-family: 'Courier New', Courier, monospace;
+    padding: 8px 25px; /* Zwiększona szerokość przycisku */
+    font-family: 'Courier New', Courier, monospace; /* Maszynowa czcionka */
     font-size: 0.8rem;
     text-transform: uppercase;
     cursor: pointer;
