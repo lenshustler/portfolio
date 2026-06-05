@@ -128,64 +128,60 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- 3. WYSZUKIWARKA I PODPOWIEDZI ---
     const searchInput = document.getElementById('search-input');
+    const searchBtn = document.querySelector('.search-btn'); // Pobrany przycisk
     const suggestionsBox = document.getElementById('search-suggestions');
-    
-    // TWOJE DOMYŚLNE TAGI NA START (możesz wpisać tu dowolne słowa)
     const defaultTags = ['street', 'portret', 'abstrakcja' , 'monochrome']; 
-    
+
+    // GŁÓWNA FUNKCJA FILTRUJĄCA (wywoływana przyciskiem lub Enterem)
+    const performSearch = () => {
+        const term = searchInput.value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.photo-card');
+
+        cards.forEach(card => {
+            const catString = (card.getAttribute('data-category') || "").toLowerCase();
+            const catWords = catString.split(' '); 
+
+            if (term === "") {
+                if (card.classList.contains('highlight')) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            } else {
+                const isMatch = catWords.some(word => word.startsWith(term));
+                card.classList.toggle('hidden', !isMatch);
+            }
+        });
+        if (suggestionsBox) suggestionsBox.style.display = "none";
+    };
+
     if (searchInput) {
-        // Funkcja wyświetlająca domyślne tagi
         const showDefaultSuggestions = () => {
             if (!suggestionsBox) return;
             suggestionsBox.innerHTML = defaultTags.map(tag => `<li>${tag}</li>`).join('');
             suggestionsBox.style.display = "block";
         };
 
-        // 1. Pokaż tagi od razu po kliknięciu w puste pole
         searchInput.addEventListener('focus', () => {
-            if (searchInput.value.trim() === "") {
-                showDefaultSuggestions();
-            }
+            if (searchInput.value.trim() === "") showDefaultSuggestions();
         });
 
-        // 2. Obsługa wpisywania tekstu
+        // 1. Obsługa pisania (TYLKO podpowiedzi, brak filtrowania galerii w locie)
         searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase().trim();
             const cards = document.querySelectorAll('.photo-card');
             
-            // Zbieranie unikalnych kategorii z załadowanych zdjęć
             let allCategories = new Set();
             cards.forEach(card => {
                 const cats = card.getAttribute('data-category');
                 if (cats) {
-                    cats.split(' ').forEach(c => {
-                        if(c) allCategories.add(c.toLowerCase());
-                    });
+                    cats.split(' ').forEach(c => { if(c) allCategories.add(c.toLowerCase()); });
                 }
             });
             const uniqueCategories = Array.from(allCategories);
 
-            // Filtrowanie zdjęć w galerii
-            cards.forEach(card => {
-                const catString = (card.getAttribute('data-category') || "").toLowerCase();
-                const catWords = catString.split(' '); 
-
-                if (term === "") {
-                    // Jeśli usunęliśmy tekst, wracamy do trybu Highlight
-                    if (card.classList.contains('highlight')) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
-                } else {
-                    const isMatch = catWords.some(word => word.startsWith(term));
-                    card.classList.toggle('hidden', !isMatch);
-                }
-            });
-
-            // Wyświetlanie podpowiedzi
             if (term === "") {
-                showDefaultSuggestions(); // Jeśli pole jest puste, pokaż domyślne
+                showDefaultSuggestions();
             } else {
                 const matches = uniqueCategories.filter(c => c.startsWith(term) && c !== term);
                 if (matches.length > 0) {
@@ -197,20 +193,33 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // 3. Kliknięcie w podpowiedź
+        // 2. Obsługa przycisku Search
+        if (searchBtn) {
+            searchBtn.addEventListener('click', performSearch);
+        }
+
+        // 3. Obsługa klawisza Enter
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+                searchInput.blur(); // Zamyka klawiaturę na mobilkach
+            }
+        });
+
+        // 4. Kliknięcie w podpowiedź
         if (suggestionsBox) {
             suggestionsBox.addEventListener('click', (e) => {
                 if (e.target.tagName === 'LI') {
                     searchInput.value = e.target.textContent;
                     suggestionsBox.style.display = "none";
-                    searchInput.dispatchEvent(new Event('input')); // Wymusza filtrowanie galerii
+                    performSearch(); // Szukamy od razu po wybraniu podpowiedzi
                 }
             });
         }
 
-        // 4. Ukrywanie podpowiedzi po kliknięciu gdziekolwiek indziej
+        // 5. Ukrywanie podpowiedzi
         document.addEventListener('click', (e) => {
-            if (e.target !== searchInput && e.target !== suggestionsBox) {
+            if (e.target !== searchInput && e.target !== suggestionsBox && e.target !== searchBtn) {
                 if (suggestionsBox) suggestionsBox.style.display = "none";
             }
         });
