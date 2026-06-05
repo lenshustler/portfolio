@@ -3,231 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generator archiwum</title>
+  <title>Alan Łysiak | Generator archiwum</title>
   
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+  <!-- Link do globalnego CSS, jeśli jest w folderze wyżej -->
+  <link rel="stylesheet" href="../style.css?v=55.0">
 
   <style>
     /* ========================================================
-       1. STYLIZACJA EKRANOWA (Panel zarządzania)
+       1. DODATKOWE STYLE DLA NAGŁÓWKA/STOPKI (Dla spójności)
        ======================================================== */
-    body {
-      font-family: 'Courier New', Courier, monospace;
-      background: #f4f4f4;
-      color: #000;
-      margin: 0;
-      padding: 0;
-    }
+    .header-branding { display: flex; align-items: center; gap: 15px; }
+    .site-logo { height: 40px; width: auto; }
+    .site-name { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; text-decoration: none; color: #000; }
+    
+    /* ========================================================
+       2. STYLIZACJA EKRANOWA (Panel zarządzania)
+       ======================================================== */
+    body { font-family: 'Courier New', Courier, monospace; background: #f4f4f4; color: #000; margin: 0; padding: 0; }
 
-    /* Nawigacja dodana na górze */
-    header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: #fff; border-bottom: 1px solid #000; }
-    .logo a { font-weight: bold; text-decoration: none; color: #000; font-size: 1.2rem; }
-    .header-links { list-style: none; display: flex; gap: 20px; margin: 0; padding: 0; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 35px 40px; background: #fff; border-bottom: 1px solid #000; }
+    .header-links { list-style: none; display: flex; gap: 35px; margin: 0; padding: 0; }
     .header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; }
 
-    .setup-panel {
-      background: #fff;
-      padding: 30px;
-      border-bottom: 2px solid #000;
-      max-width: 900px;
-      margin: 20px auto;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-
-    .setup-panel h2 {
-      margin-top: 0;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .input-group {
-      margin-bottom: 15px;
-    }
-
-    .input-group label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .input-group input, .input-group textarea {
-      width: 100%;
-      padding: 10px;
-      font-family: inherit;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-
-    .input-group textarea {
-      height: 120px;
-      resize: vertical;
-    }
-
-    .file-upload-btn {
-      display: inline-block;
-      background: #000;
-      color: #fff;
-      padding: 12px 20px;
-      cursor: pointer;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin-top: 10px;
-    }
-
-    #file-selector {
-      display: none;
-    }
-
-    #status-message {
-      margin-top: 15px;
-      font-weight: bold;
-      color: #555;
-    }
+    .setup-panel { background: #fff; padding: 30px; border-bottom: 2px solid #000; max-width: 900px; margin: 20px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .setup-panel h2 { margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+    .input-group { margin-bottom: 15px; }
+    .input-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+    .input-group input, .input-group textarea { width: 100%; padding: 10px; font-family: inherit; border: 1px solid #ccc; box-sizing: border-box; }
+    .input-group textarea { height: 120px; resize: vertical; }
+    .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
+    #file-selector { display: none; }
+    #status-message { margin-top: 15px; font-weight: bold; color: #555; }
 
     /* ========================================================
-       2. UKŁAD STRONY — IDEALNE POZIOME A4
+       3. UKŁAD STRONY — IDEALNE POZIOME A4
        ======================================================== */
-    .zine-container {
-      width: 297mm;
-      margin: 40px auto;
-      box-sizing: border-box;
-    }
+    .zine-container { width: 297mm; margin: 40px auto; box-sizing: border-box; }
+    .page, .zine-photo-item, .contact-sheet-page { width: 297mm; height: 210mm; background: #fff; box-sizing: border-box; padding: 25mm; border-bottom: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: space-between; page-break-after: always; break-after: page; }
+    .cover-page { justify-content: center; text-align: center; align-items: center; }
+    .cover-page h1 { font-size: 36px; letter-spacing: 2px; margin: 0 0 15px 0; }
+    .intro-page { justify-content: flex-start; }
+    #render-intro-text { white-space: pre-wrap; line-height: 1.6; font-size: 14px; margin-top: 25px; }
+    .img-wrapper { width: 100%; flex: 1; min-height: 0; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; }
+    .img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .photo-meta { width: 100%; font-size: 13px; line-height: 1.4; border-top: 1px solid #000; padding-top: 10px; }
+    .meta-bottom-row { display: flex; justify-content: space-between; margin-top: 5px; }
+    .contact-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 15px; }
+    .contact-thumb { display: flex; flex-direction: column; justify-content: space-between; align-items: center; height: 110px; box-sizing: border-box; }
+    .contact-thumb .thumb-wrapper { width: 100%; height: 90px; display: flex; justify-content: center; align-items: center; }
+    .contact-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .contact-thumb .thumb-number { font-size: 10px; font-weight: bold; margin-top: 2px; }
+    .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-transform: uppercase; }
 
-    .page, .zine-photo-item, .contact-sheet-page {
-      width: 297mm;
-      height: 210mm;
-      background: #fff;
-      box-sizing: border-box;
-      padding: 25mm;
-      border-bottom: 1px dashed #ccc;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      page-break-after: always;
-      break-after: page;
-    }
-
-    .cover-page {
-      justify-content: center;
-      text-align: center;
-      align-items: center;
-    }
-
-    .cover-page h1 {
-      font-size: 36px;
-      letter-spacing: 2px;
-      margin: 0 0 15px 0;
-    }
-
-    .intro-page {
-      justify-content: flex-start;
-    }
-
-    #render-intro-text {
-      white-space: pre-wrap;
-      line-height: 1.6;
-      font-size: 14px;
-      margin-top: 25px;
-    }
-
-    .img-wrapper {
-      width: 100%;
-      flex: 1; 
-      min-height: 0; 
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .img-wrapper img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-
-    .photo-meta {
-      width: 100%;
-      font-size: 13px;
-      line-height: 1.4;
-      border-top: 1px solid #000;
-      padding-top: 10px;
-    }
-
-    .meta-bottom-row {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 5px;
-    }
-
-    /* POWIĘKSZONA STYKÓWKA (5 kolumn zamiast 6) */
-    .contact-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 15px;
-      margin-top: 15px;
-    }
-
-    .contact-thumb {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      height: 110px;
-      box-sizing: border-box;
-    }
-
-    .contact-thumb .thumb-wrapper {
-      width: 100%;
-      height: 90px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .contact-thumb img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-
-    .contact-thumb .thumb-number {
-      font-size: 10px;
-      font-weight: bold;
-      margin-top: 2px;
-    }
-
-    .print-action-btn {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background: #000;
-      color: #fff;
-      border: none;
-      padding: 15px 30px;
-      font-family: inherit;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      text-transform: uppercase;
-    }
+    /* Stopka */
+    footer { display: flex; flex-direction: column; align-items: center; padding: 40px 0 30px 0; }
+    .footer-links { list-style: none; display: flex; justify-content: center; gap: 35px; margin: 12px 0 8px 0; padding: 0; }
+    .footer-links a { text-decoration: none; color: #000; font-size: 0.7rem; text-transform: uppercase; }
+    .pentax-counter { margin-bottom: 30px; }
+    .counter-frame { width: 30px; height: 20px; background-color: #000; border: 1.5px solid #000; display: flex; justify-content: center; align-items: center; }
+    #frame-count { font-family: 'Courier New', monospace; color: #fff; font-size: 0.8rem; }
+    .footer-name { font-size: 0.6rem; text-transform: uppercase; font-family: 'Courier New', Courier, monospace; }
 
     @media print {
       @page { size: A4 landscape; margin: 0; }
       body { background: #fff; padding: 0; }
-      header, .setup-panel, .print-action-btn, #status-message { display: none !important; }
+      header, .setup-panel, .print-action-btn, #status-message, footer { display: none !important; }
       .zine-container { box-shadow: none; padding: 0; margin: 0; width: 100%; }
-      .page, .zine-photo-item, .contact-sheet-page { border: none; margin: 0; padding: 25mm; width: 297mm; height: 210mm; display: flex; flex-direction: column; justify-content: space-between; }
-      .page.cover-page { justify-content: center !important; align-items: center !important; }
-      .page.intro-page, .contact-sheet-page { justify-content: flex-start !important; }
+      .page, .zine-photo-item, .contact-sheet-page { border: none; margin: 0; padding: 25mm; width: 297mm; height: 210mm; }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="logo"><a href="../index.html">Alan Łysiak</a></div>
+    <div class="header-branding">
+        <img src="../images/logo.png" alt="Logo" class="site-logo">
+        <a href="../index.html" class="site-name">Alan Łysiak</a>
+    </div>
     <ul class="header-links">
         <li><a href="../index.html">Galeria</a></li>
         <li><a href="../zine.html">Zine</a></li>
@@ -279,6 +132,18 @@
     <div id="photos-stage"></div>
     <div id="contact-stage"></div>
   </div>
+
+  <footer id="contact">
+      <ul class="footer-links">
+          <li><a href="../index.html">Galeria</a></li>
+          <li><a href="../zine.html">Zine</a></li>
+          <li><a href="../kontakt.html">Kontakt</a></li>
+      </ul>
+      <div class="pentax-counter">
+          <div class="counter-frame"><span id="frame-count">00</span></div> 
+      </div>
+      <p class="footer-name">&copy; Alan Łysiak</p>
+  </footer>
 
   <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
 
@@ -394,7 +259,7 @@
         stage.appendChild(pageDiv);
       });
 
-      const itemsPerPage = 25; // Zmieniono na 25 (5x5) po zwiększeniu miniatur
+      const itemsPerPage = 25; 
       const totalContactPages = Math.ceil(images.length / itemsPerPage);
 
       for (let i = 0; i < images.length; i += itemsPerPage) {
