@@ -73,24 +73,25 @@ header {
 .ig-icon svg { display: block; color: #000; }
 
 /* ==========================================================================
-   3. WYSZUKIWARKA
+   3. WYSZUKIWARKA (STYL PROSTOKĄTNEGO OKIENKA)
    ========================================================================== */
 .arnold-search {
     width: 100%;
-    max-width: 300px;
+    max-width: 200px; /* Węższe okienko */
     background: transparent;
-    border: none;
-    border-bottom: 1px solid #000;
+    border: 1px solid #ccc; /* Pełna ramka */
     color: #000;
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.8rem;
     text-align: center;
-    padding: 8px 0;
+    padding: 8px 10px; /* Padding dla lepszego wyśrodkowania */
     text-transform: uppercase;
     outline: none;
+    transition: border 0.3s ease;
 }
 
-.arnold-search:focus { border-bottom-color: #000; }
+.arnold-search:focus { border: 1px solid #000; } /* Ciemniejsza ramka po kliknięciu */
+
 .arnold-search::placeholder {
     color: #000;
     font-family: 'Courier New', Courier, monospace;
