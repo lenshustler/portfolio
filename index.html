@@ -71,10 +71,13 @@
     </footer>
 
     <div id="lightbox" class="lightbox">
-        <span class="close"></span>
-        <span class="nav-arrow prev"></span> 
-        <img class="lightbox-content" id="lightbox-img">
-        <span class="nav-arrow next"></span> 
+        <img class="lightbox-content" id="lightbox-img" alt="Zdjęcie w powiększeniu">
+        
+        <div class="lightbox-controls">
+            <button class="nav-arrow prev" aria-label="Poprzednie zdjęcie"></button>
+            <button class="nav-arrow next" aria-label="Następne zdjęcie"></button>
+            <button class="close" aria-label="Zamknij"></button>
+        </div>
     </div>
 
     <button id="back-to-top" title="Wróć na górę"></button>
