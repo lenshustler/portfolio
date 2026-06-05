@@ -61,13 +61,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.body.style.overflow = 'hidden';
     }
 
+    // POPRAWKA: Płynność (brak skakania)
     function updateLightbox() {
         if (visibleImages.length > 0) {
-            lightboxImg.style.transition = 'none';
+            lightboxImg.style.transition = 'none'; // Wyłączenie animacji przy zmianie
             lightboxImg.src = visibleImages[activeIdx].src;
             lightboxImg.classList.remove('zoomed');
             lightboxImg.style.transform = 'scale(1.0)';
             
+            // Włączenie animacji z powrotem po przerysowaniu
             requestAnimationFrame(() => {
                 lightboxImg.style.transition = 'transform 0.3s ease';
             });
