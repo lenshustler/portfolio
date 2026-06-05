@@ -33,36 +33,17 @@
     #file-selector { display: none; }
     #status-message { margin-top: 15px; font-weight: bold; color: #555; }
 
-    /* ========================================================
-       2. UKŁAD STRONY (RESPONSYWNY)
-       ======================================================== */
     .zine-container { width: 95%; max-width: 297mm; margin: 40px auto; box-sizing: border-box; }
 
     .page, .zine-photo-item {
-      width: 100%; 
-      aspect-ratio: 297 / 210; 
-      background: #fff; 
-      box-sizing: border-box; 
-      padding: 8%; 
-      border-bottom: 1px dashed #ccc; 
-      display: flex; 
-      flex-direction: column; 
-      justify-content: space-between;
+      width: 100%; aspect-ratio: 297 / 210; background: #fff; box-sizing: border-box; padding: 8%; border-bottom: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: space-between;
     }
 
-    .contact-sheet-page {
-      width: 100%;
-      background: #fff;
-      box-sizing: border-box;
-      padding: 8%;
-      border-bottom: 1px dashed #ccc;
-    }
-
+    .contact-sheet-page { width: 100%; background: #fff; box-sizing: border-box; padding: 8%; border-bottom: 1px dashed #ccc; }
     .cover-page { justify-content: center; text-align: center; align-items: center; }
     .intro-page { justify-content: flex-start; }
     
     #render-intro-text { white-space: pre-wrap; line-height: 1.6; font-size: 14px; margin-top: 25px; }
-
     .img-wrapper { width: 100%; flex: 1; min-height: 0; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; overflow: hidden; }
     .img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
@@ -87,36 +68,20 @@
       
       .zine-container { width: 297mm !important; margin: 0 !important; padding: 0 !important; }
       
-      .page, .zine-photo-item, .contact-sheet-page {
-        width: 297mm !important; 
-        height: 210mm !important; 
-        padding: 15mm !important; 
-        box-sizing: border-box !important;
-        border: none !important;
-        margin: 0 !important;
-        page-break-after: always !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: flex-start !important;
-        overflow: hidden !important; /* Blokuje wyciekanie poza stronę */
+      .page, .zine-photo-item {
+        width: 297mm !important; height: 210mm !important; padding: 15mm !important; box-sizing: border-box !important; border: none !important; margin: 0 !important; page-break-after: always !important; display: flex !important; flex-direction: column !important; justify-content: flex-start !important; overflow: hidden !important;
+      }
+
+      /* Mniejszy padding dla arkusza stykow, by zmieścić więcej zdjęć */
+      .contact-sheet-page {
+        width: 297mm !important; height: 210mm !important; padding: 10mm !important; box-sizing: border-box !important; border: none !important; margin: 0 !important; page-break-after: always !important; overflow: hidden !important;
       }
 
       .contact-grid {
-        display: grid !important;
-        grid-template-columns: repeat(5, 1fr) !important;
-        gap: 8px !important; /* Nieco mniejszy gap, by zmieścić 25 zdjęć */
-        margin-top: 10px !important;
-        max-height: 160mm !important; /* Wymusza wysokość siatki */
+        display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 8px !important; margin-top: 5px !important;
       }
 
-      .contact-thumb { 
-        break-inside: avoid !important; /* Zapobiega łamaniu w pół */
-        display: flex !important;
-      }
-
-      .page.intro-page { justify-content: flex-start !important; }
-      .zine-photo-item { justify-content: space-between !important; }
-      .cover-page { justify-content: center !important; align-items: center !important; }
+      .contact-thumb { break-inside: avoid !important; }
     }
   </style>
 </head>
@@ -201,7 +166,7 @@
       const files = Array.from(e.target.files);
       if(files.length === 0) return;
 
-      statusMessage.innerText = `Przetwarzanie ${files.length} plików... (proszę czekać, to może chwilę potrwać)`;
+      statusMessage.innerText = `Przetwarzanie ${files.length} plików...`;
       processedImages = [];
 
       for(let file of files) {
@@ -222,46 +187,27 @@
         const objectUrl = URL.createObjectURL(file);
         const img = new Image();
         img.src = objectUrl;
-        
         img.onload = function() {
           const canvas = document.createElement('canvas');
           const maxDim = 1500; 
           let width = img.width;
           let height = img.height;
-
-          if (width > maxDim) {
-            height = (maxDim / width) * height;
-            width = maxDim;
-          }
-
-          canvas.width = width;
-          canvas.height = height;
+          if (width > maxDim) { height = (maxDim / width) * height; width = maxDim; }
+          canvas.width = width; canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
 
           canvas.toBlob((blob) => {
             const resizedUrl = URL.createObjectURL(blob);
-            
             EXIF.getData(img, function() {
               const dto = EXIF.getTag(this, "DateTimeOriginal");
               let formattedTime = "Brak danych";
               let rawDate = file.lastModified;
-
-              if(dto) {
-                formattedTime = dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3');
-                rawDate = formattedTime;
-              }
-
+              if(dto) { formattedTime = dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3'); rawDate = formattedTime; }
               const artist = EXIF.getTag(this, "Artist") || EXIF.getTag(this, "Copyright");
               const defaultAuthor = document.getElementById('author-input').value;
               const author = artist || defaultAuthor;
-
-              resolve({
-                url: resizedUrl,
-                time: formattedTime,
-                rawDate: rawDate,
-                author: author
-              });
+              resolve({ url: resizedUrl, time: formattedTime, rawDate: rawDate, author: author });
             });
           }, 'image/jpeg', 0.7);
         };
@@ -272,7 +218,6 @@
       const titleVal = document.getElementById('title-input').value;
       const authorVal = document.getElementById('author-input').value;
       const introVal = document.getElementById('intro-input').value;
-
       document.getElementById('render-title').innerText = titleVal;
       document.getElementById('render-author').innerText = authorVal;
       document.getElementById('render-intro-text').innerText = introVal;
@@ -280,51 +225,31 @@
 
       const stage = document.getElementById('photos-stage');
       const contactStage = document.getElementById('contact-stage');
-
-      stage.innerHTML = "";
-      contactStage.innerHTML = "";
+      stage.innerHTML = ""; contactStage.innerHTML = "";
 
       images.forEach((img, index) => {
         const pageDiv = document.createElement('div');
         pageDiv.className = 'zine-photo-item';
-        pageDiv.innerHTML = `
-          <div class="img-wrapper"><img src="${img.url}"></div>
-          <div class="photo-meta">
-            <div><strong>DATA:</strong> ${img.time}</div>
-            <div class="meta-bottom-row">
-              <span><strong>FOTOGRAF:</strong> ${img.author}</span>
-              <span><strong>${titleVal}</strong> ${index + 1}/${images.length}</span>
-            </div>
-          </div>
-        `;
+        pageDiv.innerHTML = `<div class="img-wrapper"><img src="${img.url}"></div><div class="photo-meta"><div><strong>DATA:</strong> ${img.time}</div><div class="meta-bottom-row"><span><strong>FOTOGRAF:</strong> ${img.author}</span><span><strong>${titleVal}</strong> ${index + 1}/${images.length}</span></div></div>`;
         stage.appendChild(pageDiv);
       });
 
-      const itemsPerPage = 25; 
+      // ZMIANA: 20 zdjęć na stronę zamiast 25
+      const itemsPerPage = 20; 
       for (let i = 0; i < images.length; i += itemsPerPage) {
         const chunk = images.slice(i, i + itemsPerPage);
         const sheetSection = document.createElement('section');
         sheetSection.className = 'contact-sheet-page';
-        sheetSection.innerHTML = `
-          <h2 style="margin-top:0; border-bottom:1px solid #000; padding-bottom:5px; text-transform:uppercase;">
-            ${titleVal} — CONTACT SHEET
-          </h2>
-          <div class="contact-grid"></div>
-        `;
-        
+        sheetSection.innerHTML = `<h2 style="margin-top:0; border-bottom:1px solid #000; padding-bottom:5px; text-transform:uppercase;">${titleVal} — CONTACT SHEET</h2><div class="contact-grid"></div>`;
         const grid = sheetSection.querySelector('.contact-grid');
         chunk.forEach((img, idx) => {
           const thumb = document.createElement('div');
           thumb.className = 'contact-thumb';
-          thumb.innerHTML = `
-            <div class="thumb-wrapper"><img src="${img.url}"></div>
-            <div class="thumb-number">${i + idx + 1}/${images.length}</div>
-          `;
+          thumb.innerHTML = `<div class="thumb-wrapper"><img src="${img.url}"></div><div class="thumb-number">${i + idx + 1}/${images.length}</div>`;
           grid.appendChild(thumb);
         });
         contactStage.appendChild(sheetSection);
       }
-
       statusMessage.innerText = `Sukces! Gotowe.`;
       zineOutput.style.display = 'block';
       printBtn.style.display = 'block';
