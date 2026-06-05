@@ -27,13 +27,13 @@ header {
     align-items: center;
     padding: 35px 40px;
     width: 100%;
-    border-bottom: 1px solid #000; /* Czarny pasek oddzielający */
+    border-bottom: 1px solid #000;
 }
 
 .logo {
     flex: 1;
     text-align: left;
-    font-size: 1.2rem; /* Dopasowano do stylu maszynowego */
+    font-size: 1.2rem;
     font-weight: bold;
     text-transform: uppercase;
 }
@@ -73,24 +73,24 @@ header {
 .ig-icon svg { display: block; color: #000; }
 
 /* ==========================================================================
-   3. WYSZUKIWARKA (STYL PROSTOKĄTNEGO OKIENKA)
+   3. WYSZUKIWARKA (SZEROKIE OKIENKO)
    ========================================================================== */
 .arnold-search {
     width: 100%;
-    max-width: 200px; /* Węższe okienko */
+    max-width: 450px; /* Dopasowano szerokość */
     background: transparent;
-    border: 1px solid #ccc; /* Pełna ramka */
+    border: 1px solid #ccc;
     color: #000;
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.8rem;
     text-align: center;
-    padding: 8px 10px; /* Padding dla lepszego wyśrodkowania */
+    padding: 10px 15px;
     text-transform: uppercase;
     outline: none;
     transition: border 0.3s ease;
 }
 
-.arnold-search:focus { border: 1px solid #000; } /* Ciemniejsza ramka po kliknięciu */
+.arnold-search:focus { border: 1px solid #000; }
 
 .arnold-search::placeholder {
     color: #000;
@@ -102,8 +102,9 @@ header {
 .suggestions-list {
     position: absolute;
     top: 100%;
-    left: 20px;
-    right: 20px;
+    width: 100%;
+    max-width: 450px; /* Zgodnie z szerokością wyszukiwarki */
+    margin: 0 auto;
     background-color: #fff;
     list-style: none;
     z-index: 1000;
