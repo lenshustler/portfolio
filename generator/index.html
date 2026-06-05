@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zine Generator</title>
   
-  <!-- Biblioteka do czytania metadanych EXIF (tylko do daty i czasu) -->
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
   <style>
@@ -86,16 +85,16 @@
       width: 297mm;
       margin: 40px auto;
       background: #fff;
-      padding: 20px;
+      padding: 25mm; /* Zwiększony margines również na podglądzie ekranowym */
       box-sizing: border-box;
       box-shadow: 0 0 20px rgba(0,0,0,0.05);
     }
 
-    /* Standardowa strona (Okładka, Wstęp, Zdjęcia) ma sztywną wysokość A4 */
+    /* Standardowa strona (Okładka, Wstęp, Zdjęcia) */
     .page {
       height: 210mm;
       box-sizing: border-box;
-      padding: 20mm;
+      padding: 10mm 0;
       border-bottom: 1px dashed #ccc;
       display: flex;
       flex-direction: column;
@@ -104,12 +103,12 @@
       break-after: page;
     }
 
-    /* SPECJALNA KLASA DLA STYKÓWKI: Pozwala na elastyczne rozciąganie na wiele stron przy 80+ zdjęciach */
+    /* Sekcja stykówki: Automatyczna wysokość na wiele stron */
     .contact-sheet-page {
       height: auto !important; 
       min-height: 210mm;
       box-sizing: border-box;
-      padding: 20mm;
+      padding: 10mm 0;
       border-bottom: 1px dashed #ccc;
       display: flex;
       flex-direction: column;
@@ -142,7 +141,7 @@
     .zine-photo-item {
       height: 210mm;
       box-sizing: border-box;
-      padding: 15mm 20mm;
+      padding: 10mm 0;
       border-bottom: 1px dashed #ccc;
       display: flex;
       flex-direction: column;
@@ -154,7 +153,7 @@
 
     .zine-photo-item .img-wrapper {
       width: 100%;
-      height: 150mm;
+      height: 145mm; /* Dopasowana przestrzeń, aby uwzględnić większe marginesy kartki */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -184,8 +183,8 @@
     .contact-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 15px;
-      margin-top: 20px;
+      gap: 20px;
+      margin-top: 25px;
     }
 
     .contact-thumb {
@@ -193,16 +192,15 @@
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      height: 140px;
+      height: 130px;
       box-sizing: border-box;
-      /* Zapobiega brzydkiemu przecinaniu miniaturki na przełomie stron PDF */
       page-break-inside: avoid;
       break-inside: avoid;
     }
 
     .contact-thumb .thumb-wrapper {
       width: 100%;
-      height: 110px;
+      height: 105px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -211,7 +209,7 @@
     .contact-thumb img {
       max-width: 100%;
       max-height: 100%;
-      object-fit: contain; /* Pełne kadry pionowe i poziome bez ucinania boków */
+      object-fit: contain;
     }
 
     .contact-thumb .thumb-number {
@@ -238,7 +236,7 @@
     }
 
     /* ========================================================
-       3. USTAWIENIA DRUKU DO PDF
+       3. USTAWIENIA DRUKU DO PDF (Bezpieczne, duże marginesy)
        ======================================================== */
     @media print {
       body {
@@ -257,30 +255,37 @@
         width: 100%;
       }
 
+      /* Wymuszenie bezpiecznego, szerokiego marginesu 25mm z każdej strony kartki formatu A4 */
       .page {
         border: none;
         margin: 0;
-        padding: 15mm;
+        padding: 25mm; 
         height: 100vh;
       }
 
       .contact-sheet-page {
         border: none;
         margin: 0;
-        padding: 15mm;
-        height: auto !important; /* Pozwalamy drukarce naturalnie tworzyć kolejne strony stykówki */
+        padding: 25mm; 
+        height: auto !important; 
+      }
+
+      .zine-photo-item {
+        border: none;
+        margin: 0;
+        padding: 25mm;
+        height: 100vh;
       }
 
       @page {
         size: A4 landscape;
-        margin: 0;
+        margin: 0; /* Zerujemy margines systemowy, bo kontrolujemy go precyzyjnie przez padding: 25mm */
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- PANEL KONFIGURACYJNY (Widoczny tylko na ekranie) -->
   <div class="setup-panel">
     <h2>Generator Zina</h2>
     <p>Wgraj zdjęcia z komputera. Skrypt ułoży je chronologicznie na podstawie daty wykonania i wygeneruje prosty zine gotowy do zapisu jako PDF.</p>
@@ -308,26 +313,21 @@
     <div id="status-message">Oczekiwanie na pliki...</div>
   </div>
 
-  <!-- KONTENER FILMU / ZINA -->
   <div class="zine-container" id="zine-output" style="display: none;">
     
-    <!-- Strona 1: Okładka -->
     <section class="page cover-page">
       <h1 id="render-title">TYTUŁ</h1>
       <div id="render-author" style="font-size: 18px;">AUTORZY</div>
       <div id="render-date" style="margin-top: 30px; font-weight: bold;">DATA</div>
     </section>
 
-    <!-- Strona 2: Wstęp tekstowy -->
     <section class="page intro-page">
       <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0;">O projekcie</h2>
       <div id="render-intro-text"></div>
     </section>
 
-    <!-- Strony ze zdjęciami wpadną tutaj dynamicznie -->
     <div id="photos-stage"></div>
 
-    <!-- Strona końcowa: Elastyczna Stykówka (Contact Sheet) -->
     <section class="contact-sheet-page">
       <h2 id="contact-header" style="margin-top: 0; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">— CONTACT SHEET —</h2>
       <div id="contact-grid" class="contact-grid"></div>
@@ -335,7 +335,6 @@
 
   </div>
 
-  <!-- Przycisk zapisu -->
   <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
 
   <script>
@@ -425,7 +424,6 @@
         document.getElementById('render-date').innerText = new Date().toISOString().substring(0, 10);
       }
 
-      // Dynamiczne ustawienie nowego nagłówka stykówki według Twojego wzoru
       const total = images.length;
       document.getElementById('contact-header').innerText = `${titleVal} — CONTACT SHEET — ${total} FRAMES`;
 
@@ -457,7 +455,7 @@
         `;
         stage.appendChild(pageDiv);
 
-        // B. Miniaturka na stykówce (Zdjęcia pionowe i poziome widać w całości)
+        // B. Miniaturka na stykówce
         const thumb = document.createElement('div');
         thumb.className = 'contact-thumb';
         thumb.innerHTML = `
@@ -469,7 +467,7 @@
         grid.appendChild(thumb);
       });
 
-      statusMessage.innerText = `Sukces! Przygotowano układ z ${total} zdjęć. Możesz zapisać plik.`;
+      statusMessage.innerText = `Sukces! Przygotowano układ z ${total} zdjęć. Marginesy zostały wyrównane.`;
       zineOutput.style.display = 'block';
       printBtn.style.display = 'block';
     }
