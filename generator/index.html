@@ -38,7 +38,7 @@
        ======================================================== */
     .zine-container { width: 95%; max-width: 297mm; margin: 40px auto; box-sizing: border-box; }
 
-    .page, .zine-photo-item, .contact-sheet-page {
+    .page, .zine-photo-item {
       width: 100%; 
       aspect-ratio: 297 / 210; 
       background: #fff; 
@@ -48,6 +48,14 @@
       display: flex; 
       flex-direction: column; 
       justify-content: space-between;
+    }
+
+    .contact-sheet-page {
+      width: 100%;
+      background: #fff;
+      box-sizing: border-box;
+      padding: 8%;
+      border-bottom: 1px dashed #ccc;
     }
 
     .cover-page { justify-content: center; text-align: center; align-items: center; }
@@ -69,7 +77,6 @@
 
     .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-transform: uppercase; z-index: 1000; }
 
-    /* Druk zachowujemy bez zmian, wymuszamy 297mm */
     @media print {
       @page { size: A4 landscape; margin: 0; }
       body { background: #fff; padding: 0; margin: 0; }
@@ -77,13 +84,24 @@
       
       .zine-container { width: 297mm !important; margin: 0; padding: 0; }
       
-      .page, .zine-photo-item, .contact-sheet-page {
+      .page, .zine-photo-item {
         border: none; margin: 0; padding: 25mm; width: 297mm; height: 210mm;
         display: flex; flex-direction: column; justify-content: flex-start;
-        aspect-ratio: auto;
       }
       
-      .page.intro-page, .contact-sheet-page { justify-content: flex-start !important; }
+      /* Naprawa Contact Sheet w druku */
+      .contact-sheet-page {
+        width: 297mm !important;
+        min-height: 210mm !important;
+        height: auto !important;
+        padding: 20mm !important;
+        border: none !important;
+        display: block !important;
+        page-break-after: always !important;
+      }
+
+      .contact-thumb { break-inside: avoid !important; }
+      .page.intro-page { justify-content: flex-start !important; }
       .zine-photo-item { justify-content: space-between; }
       .cover-page { justify-content: center !important; }
     }
@@ -114,7 +132,7 @@
 
   <div class="setup-panel">
     <h2>Generator archiwum</h2>
-    <p>Wgraj zdjęcia z komputera. Skrypt ułoży je chronologicznie na podstawie daty wykonania i wygeneruje proste archiwum gotowe do zapisu jako PDF.</p>
+    <p>Wgraj zdjęcia. Skrypt automatycznie je przeskaluje (optymalizacja PDF) i ułoży chronologicznie.</p>
     
     <div class="input-group">
       <label for="title-input">Tytuł Projektu:</label>
@@ -127,7 +145,7 @@
     </div>
 
     <div class="input-group">
-      <label for="intro-input">Tekst wstępu (O projekcie):</label>
+      <label for="intro-input">Tekst wstępu:</label>
       <textarea id="intro-input">Chronologiczne archiwum zdjęć wykonanych w maju 2026 roku w Gdyni.</textarea>
     </div>
 
@@ -171,22 +189,16 @@
       const files = Array.from(e.target.files);
       if(files.length === 0) return;
 
-      statusMessage.innerText = `Przetwarzanie ${files.length} plików... (proszę czekać)`;
+      statusMessage.innerText = `Przetwarzanie ${files.length} plików... (proszę czekać, to może chwilę potrwać)`;
       processedImages = [];
 
-      // Przetwarzanie plików
       for(let file of files) {
         try {
           const data = await extractData(file);
           processedImages.push(data);
         } catch(err) {
-          console.error("Błąd pliku:", file.name, err);
+          console.error("Błąd:", err);
         }
-      }
-
-      if(processedImages.length === 0) {
-        statusMessage.innerText = "Nie udało się załadować zdjęć.";
-        return;
       }
 
       processedImages.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
@@ -195,33 +207,52 @@
 
     function extractData(file) {
       return new Promise((resolve) => {
-        // Używamy URL.createObjectURL - to jest klucz do uniknięcia crashu
         const objectUrl = URL.createObjectURL(file);
         const img = new Image();
         img.src = objectUrl;
         
         img.onload = function() {
-          EXIF.getData(img, function() {
-            const dto = EXIF.getTag(this, "DateTimeOriginal");
-            let formattedTime = "Brak danych o czasie";
-            let rawDate = file.lastModified;
+          // Downsampling (Canvas)
+          const canvas = document.createElement('canvas');
+          const maxDim = 1500; 
+          let width = img.width;
+          let height = img.height;
 
-            if(dto) {
-              formattedTime = dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3');
-              rawDate = formattedTime;
-            }
+          if (width > maxDim) {
+            height = (maxDim / width) * height;
+            width = maxDim;
+          }
 
-            const artist = EXIF.getTag(this, "Artist") || EXIF.getTag(this, "Copyright");
-            const defaultAuthor = document.getElementById('author-input').value;
-            const author = artist || defaultAuthor;
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
 
-            resolve({
-              url: objectUrl, // Zwracamy wskaźnik do pliku
-              time: formattedTime,
-              rawDate: rawDate,
-              author: author
+          canvas.toBlob((blob) => {
+            const resizedUrl = URL.createObjectURL(blob);
+            
+            EXIF.getData(img, function() {
+              const dto = EXIF.getTag(this, "DateTimeOriginal");
+              let formattedTime = "Brak danych";
+              let rawDate = file.lastModified;
+
+              if(dto) {
+                formattedTime = dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3');
+                rawDate = formattedTime;
+              }
+
+              const artist = EXIF.getTag(this, "Artist") || EXIF.getTag(this, "Copyright");
+              const defaultAuthor = document.getElementById('author-input').value;
+              const author = artist || defaultAuthor;
+
+              resolve({
+                url: resizedUrl,
+                time: formattedTime,
+                rawDate: rawDate,
+                author: author
+              });
             });
-          });
+          }, 'image/jpeg', 0.7);
         };
       });
     }
@@ -234,77 +265,58 @@
       document.getElementById('render-title').innerText = titleVal;
       document.getElementById('render-author').innerText = authorVal;
       document.getElementById('render-intro-text').innerText = introVal;
-      
-      if(images[0] && images[0].time !== "Brak danych o czasie") {
-        document.getElementById('render-date').innerText = images[0].time.substring(0, 10);
-      } else {
-        document.getElementById('render-date').innerText = new Date().toISOString().substring(0, 10);
-      }
+      document.getElementById('render-date').innerText = images[0]?.time.substring(0, 10) || "Brak daty";
 
-      const total = images.length;
       const stage = document.getElementById('photos-stage');
       const contactStage = document.getElementById('contact-stage');
 
       stage.innerHTML = "";
       contactStage.innerHTML = "";
 
+      // Render pojedynczych zdjęć
       images.forEach((img, index) => {
-        const num = String(index + 1).padStart(2, '0');
-        const totalStr = String(total).padStart(2, '0');
-        const pageStatus = `${num}/${totalStr}`;
-
         const pageDiv = document.createElement('div');
         pageDiv.className = 'zine-photo-item';
         pageDiv.innerHTML = `
-          <div class="img-wrapper">
-            <img src="${img.url}">
-          </div>
+          <div class="img-wrapper"><img src="${img.url}"></div>
           <div class="photo-meta">
             <div><strong>DATA:</strong> ${img.time}</div>
             <div class="meta-bottom-row">
               <span><strong>FOTOGRAF:</strong> ${img.author}</span>
-              <span><strong>${titleVal}</strong> &nbsp;&nbsp; ${pageStatus}</span>
+              <span><strong>${titleVal}</strong> ${index + 1}/${images.length}</span>
             </div>
           </div>
         `;
         stage.appendChild(pageDiv);
       });
 
+      // Render Contact Sheet
       const itemsPerPage = 25; 
       for (let i = 0; i < images.length; i += itemsPerPage) {
         const chunk = images.slice(i, i + itemsPerPage);
-        const currentPageNum = Math.floor(i / itemsPerPage) + 1;
-        const totalContactPages = Math.ceil(images.length / itemsPerPage);
-        
         const sheetSection = document.createElement('section');
         sheetSection.className = 'contact-sheet-page';
-        const pageSuffix = totalContactPages > 1 ? ` — PAGE ${currentPageNum}/${totalContactPages}` : '';
-        
         sheetSection.innerHTML = `
-          <h2 style="margin-top: 0; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">
-            ${titleVal} — CONTACT SHEET — ${total} FRAMES${pageSuffix}
+          <h2 style="margin-top:0; border-bottom:1px solid #000; padding-bottom:5px; text-transform:uppercase;">
+            ${titleVal} — CONTACT SHEET
           </h2>
           <div class="contact-grid"></div>
         `;
         
         const grid = sheetSection.querySelector('.contact-grid');
-        chunk.forEach((img, index) => {
-          const globalIndex = i + index;
+        chunk.forEach((img, idx) => {
           const thumb = document.createElement('div');
           thumb.className = 'contact-thumb';
           thumb.innerHTML = `
-            <div class="thumb-wrapper">
-              <img src="${img.url}">
-            </div>
-            <div class="thumb-number">${String(globalIndex + 1).padStart(2, '0')}/${String(total).padStart(2, '0')}</div>
+            <div class="thumb-wrapper"><img src="${img.url}"></div>
+            <div class="thumb-number">${i + idx + 1}/${images.length}</div>
           `;
           grid.appendChild(thumb);
         });
-        
         contactStage.appendChild(sheetSection);
       }
 
-      statusMessage.innerText = `Sukces! Gotowe do zapisu. Wgrano ${total} zdjęć.`;
+      statusMessage.innerText = `Sukces! Gotowe.`;
       zineOutput.style.display = 'block';
       printBtn.style.display = 'block';
     }
