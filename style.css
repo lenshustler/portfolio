@@ -44,10 +44,12 @@ header {
     cursor: pointer; color: #000; transition: all 0.2s; font-weight: bold;
 }
 .search-btn:hover { background-color: #000; color: #fff; }
+
 .suggestions-list {
     position: absolute; top: 100%; width: 100%; max-width: 350px;
-    margin: 0; left: 20px; background-color: #fff; list-style: none; z-index: 1000;
+    margin: 0; background-color: #fff; list-style: none; z-index: 1000;
     display: none; border: 1px solid #000;
+    left: 20px; /* Zostawiamy 20px tylko na desktopie, na mobilce nadpiszemy */
 }
 .suggestions-list li { padding: 12px 15px; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; border-bottom: 1px solid #eee; transition: background-color 0.2s, color 0.2s; }
 .suggestions-list li:hover { background-color: #000; color: #fff; }
@@ -92,7 +94,7 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
 .lightbox-content { 
     max-width: 95vw; max-height: 95vh; object-fit: contain;
     transition: transform 0.3s ease; cursor: default;
-    touch-action: none; /* KLUCZOWE: Zapobiega skakaniu/przewijaniu na tel */
+    touch-action: none;
 }
 .lightbox-content.zoomed { transform: scale(2.0); cursor: move; }
 
@@ -123,7 +125,11 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
 @media (max-width: 1100px) { .gallery-grid { column-count: 3; } }
 @media (max-width: 768px) {
     header { flex-direction: column; padding: 20px; gap: 20px; }
-    .header-branding, .search-nav, .header-links { width: 100%; justify-content: center; flex: none; }
+    .header-branding, .header-links { width: 100%; justify-content: center; flex: none; }
+    
+    .search-nav { width: 100%; justify-content: center; flex: none; padding: 0; }
+    .suggestions-list { left: 0; } /* Zerujemy lewy margines na mobilce, żeby idealnie przylegało do inputa */
+    
     .gallery-grid { column-count: 2; column-gap: 10px; }
     
     /* MOBILE: Pasek strzałek na dole */
@@ -139,9 +145,8 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
         width: 50px; height: 50px;
     }
     
-    /* MOBILE: X zawsze w prawym górnym rogu */
     .close {
-        position: fixed !important; /* Fixed ignoruje kontener i przykleja do viewportu */
+        position: fixed !important; 
         top: 15px !important; 
         right: 15px !important;
         width: 40px; height: 40px;
