@@ -128,13 +128,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- 3. WYSZUKIWARKA I PODPOWIEDZI ---
     const searchInput = document.getElementById('search-input');
-    const searchBtn = document.querySelector('.search-btn'); // Pobrany przycisk
+    const searchBtn = document.querySelector('.search-btn'); 
     const suggestionsBox = document.getElementById('search-suggestions');
-    const defaultTags = ['street', 'portret', 'abstrakcja' , 'monochrome']; 
+    // Dodano "generator" do listy podpowiedzi
+    const defaultTags = ['street', 'portret', 'abstrakcja', 'monochrome', 'generator']; 
 
     // GŁÓWNA FUNKCJA FILTRUJĄCA (wywoływana przyciskiem lub Enterem)
     const performSearch = () => {
         const term = searchInput.value.toLowerCase().trim();
+
+        // --- PRZEKIEROWANIE ---
+        if (term === 'generator') {
+            window.location.href = 'generator/index.html';
+            return; 
+        }
+
         const cards = document.querySelectorAll('.photo-card');
 
         cards.forEach(card => {
@@ -202,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 performSearch();
-                searchInput.blur(); // Zamyka klawiaturę na mobilkach
+                searchInput.blur(); 
             }
         });
 
@@ -212,7 +220,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (e.target.tagName === 'LI') {
                     searchInput.value = e.target.textContent;
                     suggestionsBox.style.display = "none";
-                    performSearch(); // Szukamy od razu po wybraniu podpowiedzi
+                    performSearch(); 
                 }
             });
         }
