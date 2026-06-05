@@ -92,7 +92,7 @@
       height: 210mm;
       background: #fff;
       box-sizing: border-box;
-      padding: 25mm; /* Margines widoczny na ekranie */
+      padding: 25mm;
       border-bottom: 1px dashed #ccc;
       display: flex;
       flex-direction: column;
@@ -119,12 +119,13 @@
     .cover-page {
       justify-content: center;
       text-align: center;
+      align-items: center;
     }
 
     .cover-page h1 {
       font-size: 36px;
       letter-spacing: 2px;
-      margin: 0 0 20px 0;
+      margin: 0 0 15px 0;
     }
 
     .intro-page {
@@ -135,13 +136,13 @@
       white-space: pre-wrap;
       line-height: 1.6;
       font-size: 14px;
+      margin-top: 25px;
     }
 
-    /* KLUCZOWA ZMIANA: Kontener na zdjęcie dynamicznie dopasowuje się do reszty strony */
     .img-wrapper {
       width: 100%;
       flex: 1; 
-      min-height: 0; /* Zapobiega wypychaniu zawartości */
+      min-height: 0; 
       display: flex;
       justify-content: center;
       align-items: center;
@@ -207,7 +208,7 @@
       margin-top: 5px;
     }
 
-    /* Przycisk */
+    /* Przycisk zapisu */
     .print-action-btn {
       position: fixed;
       bottom: 30px;
@@ -230,7 +231,7 @@
     @media print {
       @page {
         size: A4 landscape;
-        margin: 25mm; /* Przeglądarka sama tworzy idealny margines 25mm wokół każdej kartki */
+        margin: 25mm; 
       }
 
       body {
@@ -249,16 +250,24 @@
         width: 100%;
       }
 
-      /* Resetujemy paddingi elementów, bo marginesem steruje już @page */
       .page, .zine-photo-item {
         border: none;
         margin: 0;
         padding: 0;
         width: 100%;
-        height: 100vh; /* Zajmuje dokładnie obszar wewnątrz marginesów 25mm */
+        height: 100vh; 
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+      }
+
+      .page.cover-page {
+        justify-content: center !important;
+        align-items: center !important;
+      }
+
+      .page.intro-page {
+        justify-content: flex-start !important;
       }
 
       .contact-sheet-page {
@@ -266,7 +275,7 @@
         margin: 0;
         padding: 0;
         width: 100%;
-        height: auto !important; /* Pozwala stykówce swobodnie płynąć na kolejne strony */
+        height: auto !important; 
         display: block;
       }
     }
@@ -275,8 +284,8 @@
 <body>
 
   <div class="setup-panel">
-    <h2>Generator Archiwum</h2>
-    <p>Wgraj zdjęcia z komputera. Skrypt ułoży je chronologicznie na podstawie daty wykonania i wygeneruje prosty zine gotowy do zapisu jako PDF.</p>
+    <h2>Generator archiwum</h2>
+    <p>Wgraj zdjęcia z komputera. Skrypt ułoży je chronologicznie na podstawie daty wykonania i wygeneruje proste archiwum gotowe do zapisu jako PDF.</p>
     
     <div class="input-group">
       <label for="title-input">Tytuł Projektu:</label>
@@ -304,9 +313,11 @@
   <div class="zine-container" id="zine-output" style="display: none;">
     
     <section class="page cover-page">
-      <h1 id="render-title">TYTUŁ</h1>
-      <div id="render-author" style="font-size: 18px;">AUTORZY</div>
-      <div id="render-date" style="margin-top: 30px; font-weight: bold;">DATA</div>
+      <div>
+        <h1 id="render-title">TYTUŁ</h1>
+        <div id="render-author" style="font-size: 18px;">AUTORZY</div>
+        <div id="render-date" style="margin-top: 35px; font-weight: bold;">DATA</div>
+      </div>
     </section>
 
     <section class="page intro-page">
@@ -452,7 +463,7 @@
         grid.appendChild(thumb);
       });
 
-      statusMessage.innerText = `Sukces! Naprawiono błąd układu stron. Możesz zapisać plik z ${total} zdjęciami.`;
+      statusMessage.innerText = `Sukces! Gotowe do zapisu. Łącznie wgrano ${total} zdjęć.`;
       zineOutput.style.display = 'block';
       printBtn.style.display = 'block';
     }
