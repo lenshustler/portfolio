@@ -1,16 +1,18 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const PROJECT_ID = '6g67d261';
-    const DATASET = 'portfolio'; 
+    const DATASET = 'portfolio';
     const grid = document.querySelector('.gallery-grid');
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const prevBtn = document.querySelector('.prev');
     const nextBtn = document.querySelector('.next');
     const closeBtn = document.querySelector('.close');
-    let images = [];
+    
+    let images = []; // Wszystkie zdjęcia w galerii
+    let visibleImages = []; // Zdjęcia aktualnie przefiltrowane
     let activeIdx = 0;
 
-    // --- 1. POBIERANIE DANYCH Z SANITY ---
+    // --- 1. POBIERANIE DANYCH ---
     if (grid) {
         try {
             const QUERY = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, isHighlight, categories, "imageUrl": image.asset->url }`);
@@ -28,19 +30,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 photos.forEach((photo, index) => {
                     const card = document.createElement('div');
-                    card.className = 'photo-card'; 
-                    
-                    if (photo.isHighlight === true) {
-                        card.classList.add('highlight');
-                    } else {
-                        card.classList.add('hidden');
-                    }
-
+                    card.className = 'photo-card';
+                    card.classList.add(photo.isHighlight ? 'highlight' : 'hidden');
                     card.setAttribute('data-category', (photo.categories || []).join(' '));
+                    
                     const img = document.createElement('img');
                     img.src = photo.imageUrl + "?auto=format";
                     img.setAttribute('draggable', 'false');
-                    img.onclick = () => showImage(index);
+                    
+                    // Przypisanie zdarzenia otwarcia
+                    img.onclick = () => openLightboxFromImage(img);
                     
                     card.appendChild(img);
                     grid.appendChild(card);
@@ -51,201 +50,138 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (e) { console.error("Błąd połączenia z Sanity:", e); }
     }
 
-    // --- 2. LOGIKA LIGHTBOXA I GESTÓW (SWIPE) ---
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    function handleSwipe() {
-        const swipeThreshold = 50; 
-        if (touchEndX < touchStartX - swipeThreshold) {
-            nextBtn.click(); 
-        }
-        if (touchEndX > touchStartX + swipeThreshold) {
-            prevBtn.click(); 
-        }
-    }
-
-    if (lightbox) {
-        lightbox.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
-
-        lightbox.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, { passive: true });
-    }
-
-    function showImage(index) {
-        const visible = Array.from(document.querySelectorAll('.photo-card:not(.hidden) img'));
-        if (visible.length === 0) return;
+    // --- 2. LOGIKA LIGHTBOXA ---
+    function openLightboxFromImage(clickedImg) {
+        // Aktualizujemy listę widocznych zdjęć (bez tych z klasą hidden)
+        visibleImages = Array.from(document.querySelectorAll('.photo-card:not(.hidden) img'));
+        activeIdx = visibleImages.indexOf(clickedImg);
         
-        activeIdx = visible.findIndex(img => img.src === images[index].src);
         if (activeIdx === -1) activeIdx = 0;
-
-        const updateLightbox = () => {
-            lightboxImg.src = visible[activeIdx].src;
-        };
-
         updateLightbox();
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
+    }
 
+    function updateLightbox() {
+        if (visibleImages.length > 0) {
+            lightboxImg.src = visibleImages[activeIdx].src;
+        }
+    }
+
+    // Przyciski nawigacji (Zdefiniowane raz, poza funkcjami)
+    if (nextBtn) {
         nextBtn.onclick = (e) => {
             e.stopPropagation();
-            activeIdx = (activeIdx + 1) % visible.length;
+            if (visibleImages.length === 0) return;
+            activeIdx = (activeIdx + 1) % visibleImages.length;
             updateLightbox();
         };
+    }
+    
+    if (prevBtn) {
         prevBtn.onclick = (e) => {
             e.stopPropagation();
-            activeIdx = (activeIdx - 1 + visible.length) % visible.length;
+            if (visibleImages.length === 0) return;
+            activeIdx = (activeIdx - 1 + visibleImages.length) % visibleImages.length;
             updateLightbox();
         };
     }
 
-    if (closeBtn) closeBtn.onclick = () => {
-        lightbox.classList.remove('active');
-        document.body.style.overflow = 'auto';
-    };
+    if (closeBtn) {
+        closeBtn.onclick = () => {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+    }
 
-    if (lightbox) lightbox.onclick = (e) => { 
-        if (e.target === lightbox || e.target === lightboxImg) {
-            closeBtn.onclick();
-        }
-    };
+    if (lightbox) {
+        lightbox.onclick = (e) => {
+            if (e.target === lightbox) closeBtn.onclick();
+        };
+    }
 
+    // Gest Swipe
+    let touchStartX = 0;
+    if (lightbox) {
+        lightbox.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, { passive: true });
+        lightbox.addEventListener('touchend', e => {
+            const diff = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(diff) > 50) diff > 0 ? prevBtn.click() : nextBtn.click();
+        }, { passive: true });
+    }
+
+    // Klawiatura i Zabezpieczenia
     document.addEventListener('keydown', (e) => {
-        if (lightbox && lightbox.classList.contains('active')) {
-            if (e.key === "ArrowRight") nextBtn.click();
-            if (e.key === "ArrowLeft") prevBtn.click();
-            if (e.key === "Escape") closeBtn.onclick();
-        }
+        if (!lightbox.classList.contains('active')) return;
+        if (e.key === "ArrowRight") nextBtn.click();
+        if (e.key === "ArrowLeft") prevBtn.click();
+        if (e.key === "Escape") closeBtn.onclick();
     });
 
-    document.addEventListener('contextmenu', (e) => { 
-        if (e.target.tagName === 'IMG') e.preventDefault(); 
+    document.addEventListener('contextmenu', (e) => {
+        if (e.target.tagName === 'IMG') e.preventDefault();
     });
 
-    // --- 3. WYSZUKIWARKA I PODPOWIEDZI ---
+    // --- 3. WYSZUKIWARKA ---
     const searchInput = document.getElementById('search-input');
-    const searchBtn = document.querySelector('.search-btn'); 
+    const searchBtn = document.querySelector('.search-btn');
     const suggestionsBox = document.getElementById('search-suggestions');
-    // Dodano "generator" do listy podpowiedzi
-    const defaultTags = ['street', 'portret', 'abstrakcja', 'monochrome', 'generator']; 
+    const defaultTags = ['street', 'portret', 'abstrakcja', 'monochrome', 'generator'];
 
-    // GŁÓWNA FUNKCJA FILTRUJĄCA (wywoływana przyciskiem lub Enterem)
     const performSearch = () => {
         const term = searchInput.value.toLowerCase().trim();
+        if (term === 'generator') { window.location.href = 'generator/index.html'; return; }
 
-        // --- PRZEKIEROWANIE ---
-        if (term === 'generator') {
-            window.location.href = 'generator/index.html';
-            return; 
-        }
-
-        const cards = document.querySelectorAll('.photo-card');
-
-        cards.forEach(card => {
-            const catString = (card.getAttribute('data-category') || "").toLowerCase();
-            const catWords = catString.split(' '); 
-
-            if (term === "") {
-                if (card.classList.contains('highlight')) {
-                    card.classList.remove('hidden');
-                } else {
-                    card.classList.add('hidden');
-                }
-            } else {
-                const isMatch = catWords.some(word => word.startsWith(term));
-                card.classList.toggle('hidden', !isMatch);
-            }
+        document.querySelectorAll('.photo-card').forEach(card => {
+            const cats = (card.getAttribute('data-category') || "").toLowerCase().split(' ');
+            const isMatch = term === "" ? card.classList.contains('highlight') : cats.some(w => w.startsWith(term));
+            card.classList.toggle('hidden', !isMatch);
         });
         if (suggestionsBox) suggestionsBox.style.display = "none";
     };
 
     if (searchInput) {
-        const showDefaultSuggestions = () => {
-            if (!suggestionsBox) return;
-            suggestionsBox.innerHTML = defaultTags.map(tag => `<li>${tag}</li>`).join('');
-            suggestionsBox.style.display = "block";
-        };
-
-        searchInput.addEventListener('focus', () => {
-            if (searchInput.value.trim() === "") showDefaultSuggestions();
-        });
-
-        // 1. Obsługa pisania (TYLKO podpowiedzi, brak filtrowania galerii w locie)
         searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase().trim();
-            const cards = document.querySelectorAll('.photo-card');
-            
-            let allCategories = new Set();
-            cards.forEach(card => {
-                const cats = card.getAttribute('data-category');
-                if (cats) {
-                    cats.split(' ').forEach(c => { if(c) allCategories.add(c.toLowerCase()); });
-                }
-            });
-            const uniqueCategories = Array.from(allCategories);
-
             if (term === "") {
-                showDefaultSuggestions();
-            } else {
-                const matches = uniqueCategories.filter(c => c.startsWith(term) && c !== term);
-                if (matches.length > 0) {
-                    suggestionsBox.innerHTML = matches.map(match => `<li>${match}</li>`).join('');
+                if (suggestionsBox) {
+                    suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}</li>`).join('');
                     suggestionsBox.style.display = "block";
-                } else {
-                    suggestionsBox.style.display = "none";
+                }
+            } else {
+                // Logika podpowiedzi
+                const cards = document.querySelectorAll('.photo-card');
+                let matches = new Set();
+                cards.forEach(c => c.getAttribute('data-category').split(' ').forEach(cat => {if(cat.startsWith(term)) matches.add(cat)}));
+                
+                if (suggestionsBox) {
+                    suggestionsBox.innerHTML = Array.from(matches).map(m => `<li>${m}</li>`).join('');
+                    suggestionsBox.style.display = matches.size > 0 ? "block" : "none";
                 }
             }
         });
 
-        // 2. Obsługa przycisku Search
-        if (searchBtn) {
-            searchBtn.addEventListener('click', performSearch);
-        }
-
-        // 3. Obsługa klawisza Enter
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
+        if (searchBtn) searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
+        
+        if (suggestionsBox) suggestionsBox.addEventListener('click', (e) => {
+            if (e.target.tagName === 'LI') {
+                searchInput.value = e.target.textContent;
                 performSearch();
-                searchInput.blur(); 
-            }
-        });
-
-        // 4. Kliknięcie w podpowiedź
-        if (suggestionsBox) {
-            suggestionsBox.addEventListener('click', (e) => {
-                if (e.target.tagName === 'LI') {
-                    searchInput.value = e.target.textContent;
-                    suggestionsBox.style.display = "none";
-                    performSearch(); 
-                }
-            });
-        }
-
-        // 5. Ukrywanie podpowiedzi
-        document.addEventListener('click', (e) => {
-            if (e.target !== searchInput && e.target !== suggestionsBox && e.target !== searchBtn) {
-                if (suggestionsBox) suggestionsBox.style.display = "none";
             }
         });
     }
 
-    // --- 4. DODATKI (STRZAŁKA I LICZNIK) ---
+    // --- 4. DODATKI ---
     const btt = document.getElementById('back-to-top');
-    window.onscroll = () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; };
+    window.addEventListener('scroll', () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; });
     if (btt) btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
     const counterEl = document.getElementById('frame-count');
-    try {
+    if (counterEl) {
         fetch('https://abacus.jasoncameron.dev/hit/alan_lysiak_portfolio/pentax_v1')
         .then(r => r.json())
-        .then(d => { 
-            if (counterEl) counterEl.innerText = (200 + (d.value || 0)).toString().padStart(2, '0'); 
-        });
-    } catch (e) { 
-        if (counterEl) counterEl.innerText = "200"; 
+        .then(d => counterEl.innerText = (200 + (d.value || 0)).toString().padStart(2, '0'))
+        .catch(() => counterEl.innerText = "200");
     }
 });
