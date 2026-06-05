@@ -1,182 +1,265 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alan Łysiak | Generator Zine</title>
-    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
-    
-    <style>
-        /* Reset i globalne style */
-        body { margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; font-family: 'Courier New', monospace; background: #fff; color: #000; }
-        a { text-decoration: none; color: #000; }
-        ul { list-style: none; padding: 0; margin: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alan Łysiak | Generator archiwum</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
-        /* HEADER & FOOTER - Twoja struktura */
-        header, footer { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; }
-        .header-branding { display: flex; align-items: center; gap: 15px; }
-        .site-logo { height: 40px; width: auto; }
-        .site-name { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; }
-        .header-links, .footer-links { display: flex; gap: 35px; align-items: center; text-transform: uppercase; font-size: 0.8rem; }
-        
-        /* GENERATOR STYLES */
-        main { flex: 1; padding: 40px 20px; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; }
-        .setup-panel { padding: 20px 0; border-bottom: 2px solid #000; margin-bottom: 40px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-weight: bold; margin-bottom: 5px; }
-        .input-group input, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; }
-        .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
-        
-        /* ZINE CONTENT */
-        .zine-container { max-width: 297mm; margin: 0 auto; display: none; }
-        .page, .zine-photo-item, .contact-sheet-page { width: 100%; background: #fff; box-sizing: border-box; padding: 8%; border-bottom: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: space-between; }
-        .cover-page { aspect-ratio: 297/210; justify-content: center; text-align: center; align-items: center; }
-        .img-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; margin-bottom: 15px; }
-        .img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .contact-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 20px; }
-        .contact-thumb { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; }
-        .thumb-wrapper { flex: 1; display: flex; align-items: center; overflow: hidden; }
-        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; cursor: pointer; text-transform: uppercase; z-index: 1000; }
-        
-        @media print {
-            body { background: #fff; }
-            header, footer, .setup-panel, .print-action-btn { display: none !important; }
-            .zine-container { width: 297mm !important; display: block !important; }
-            .page, .zine-photo-item, .contact-sheet-page { width: 297mm !important; height: 210mm !important; padding: 15mm !important; page-break-after: always !important; }
-        }
-    </style>
+  <style>
+    /* ========================================================
+       1. STYLIZACJA EKRANOWA (RESPONSYWNA)
+       ======================================================== */
+    body { font-family: 'Courier New', Courier, monospace; background: #f4f4f4; color: #000; margin: 0; padding: 0; }
+    
+    header { display: flex; justify-content: space-between; align-items: center; padding: 25px 40px; background: #fff; border-bottom: 1px solid #000; flex-wrap: wrap; }
+    .header-branding { display: flex; align-items: center; gap: 15px; }
+    .site-logo { height: 40px; width: auto; }
+    .site-name { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; text-decoration: none; color: #000; }
+    
+    .header-links { list-style: none; display: flex; gap: 35px; margin: 0; padding: 0; align-items: center; }
+    .header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; display: flex; align-items: center; }
+    .ig-icon a { color: #000; }
+
+    .setup-panel { background: #fff; padding: 20px; border-bottom: 2px solid #000; width: 90%; max-width: 900px; margin: 20px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .setup-panel h2 { margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+    .input-group { margin-bottom: 15px; }
+    .input-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+    .input-group input, .input-group textarea { width: 100%; padding: 10px; font-family: inherit; border: 1px solid #ccc; box-sizing: border-box; }
+    .input-group textarea { height: 120px; resize: vertical; }
+
+    .file-upload-btn { display: inline-block; background: #000; color: #fff; padding: 12px 20px; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
+    #file-selector { display: none; }
+    #status-message { margin-top: 15px; font-weight: bold; color: #555; }
+
+    .zine-container { width: 95%; max-width: 297mm; margin: 40px auto; box-sizing: border-box; }
+
+    .page, .zine-photo-item {
+      width: 100%; aspect-ratio: 297 / 210; background: #fff; box-sizing: border-box; padding: 8%; border-bottom: 1px dashed #ccc; display: flex; flex-direction: column; justify-content: space-between;
+    }
+
+    .contact-sheet-page { width: 100%; background: #fff; box-sizing: border-box; padding: 8%; border-bottom: 1px dashed #ccc; }
+    .cover-page { justify-content: center; text-align: center; align-items: center; }
+    .intro-page { justify-content: flex-start; }
+    
+    #render-intro-text { white-space: pre-wrap; line-height: 1.6; font-size: 14px; margin-top: 25px; }
+    .img-wrapper { width: 100%; flex: 1; min-height: 0; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; overflow: hidden; }
+    .img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+    .photo-meta { width: 100%; font-size: clamp(10px, 2vw, 13px); line-height: 1.4; border-top: 1px solid #000; padding-top: 10px; }
+    .meta-bottom-row { display: flex; justify-content: space-between; margin-top: 5px; flex-wrap: wrap; }
+
+    .contact-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+    .contact-thumb { display: flex; flex-direction: column; justify-content: space-between; align-items: center; aspect-ratio: 1; }
+    .contact-thumb .thumb-wrapper { width: 100%; flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    .contact-thumb img { max-width: 100%; max-height: 100%; object-fit: cover; }
+    .contact-thumb .thumb-number { font-size: 9px; font-weight: bold; margin-top: 2px; }
+
+    .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-transform: uppercase; z-index: 1000; }
+
+    /* ========================================================
+       3. NAPRAWIONY DRUK
+       ======================================================== */
+    @media print {
+      @page { size: A4 landscape; margin: 0; }
+      body { background: #fff; padding: 0; margin: 0; }
+      header, .setup-panel, .print-action-btn, #status-message { display: none !important; }
+      
+      .zine-container { width: 297mm !important; margin: 0 !important; padding: 0 !important; }
+      
+      .page, .zine-photo-item {
+        width: 297mm !important; height: 210mm !important; padding: 15mm !important; box-sizing: border-box !important; border: none !important; margin: 0 !important; page-break-after: always !important; display: flex !important; flex-direction: column !important; justify-content: flex-start !important; overflow: hidden !important;
+      }
+
+      .contact-sheet-page {
+        width: 297mm !important; height: 210mm !important; padding: 10mm !important; box-sizing: border-box !important; border: none !important; margin: 0 !important; page-break-after: always !important; overflow: hidden !important;
+      }
+
+      .contact-grid {
+        display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 15px !important; margin-top: 5px !important;
+      }
+
+      .contact-thumb { break-inside: avoid !important; }
+    }
+  </style>
 </head>
 <body>
+<header>
+    <div class="header-branding">
+        <img src="../images/logo.png" alt="Logo" class="site-logo">
+        <a href="../index.html" class="site-name">Alan Łysiak</a>
+    </div>
+    <ul class="header-links">
+        <li><a href="../index.html">Galeria</a></li>
+        <li><a href="../zine.html">Zine</a></li>
+        <li><a href="../kontakt.html">Kontakt</a></li>
+        <li class="ig-icon">
+            <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+            </a>
+        </li>
+    </ul>
+</header>
 
-    <header>
-        <div class="header-branding">
-            <img src="images/logo.png" alt="Logo" class="site-logo">
-            <a href="index.html" class="site-name">Alan Łysiak</a>
-        </div>
-        <ul class="header-links">
-            <li><a href="index.html">Galeria</a></li>
-            <li><a href="zine.html">Zine</a></li>
-            <li>
-                <a href="https://instagram.com/lenshustler" target="_blank">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                </a>
-            </li>
-        </ul>
-    </header>
+<div class="setup-panel">
+    <h2>Generator archiwum</h2>
+    <p>Wgraj zdjęcia. Skrypt automatycznie je przeskaluje (optymalizacja PDF) i ułoży chronologicznie.</p>
+    
+    <div class="input-group">
+      <label for="title-input">Tytuł Projektu:</label>
+      <input type="text" id="title-input" value="GDYNIA_MAJ_2026">
+    </div>
 
-    <main>
-        <div class="setup-panel">
-            <h2>Generator archiwum</h2>
-            <div class="input-group">
-                <label>Tytuł Projektu:</label>
-                <input type="text" id="title-input" value="GDYNIA_MAJ_2026">
-            </div>
-            <div class="input-group">
-                <label>Autor:</label>
-                <input type="text" id="author-input" value="ALAN ŁYSIAK">
-            </div>
-            <label class="file-upload-btn">
-                <input type="file" id="file-selector" multiple accept="image/jpeg, image/jpg">
-                Wybierz pliki
-            </label>
-            <div id="status-message">Wybierz pliki, aby rozpocząć...</div>
-        </div>
+    <div class="input-group">
+      <label for="author-input">Autor / Fotograf:</label>
+      <input type="text" id="author-input" value="ALAN ŁYSIAK">
+    </div>
 
-        <div class="zine-container" id="zine-output">
-            <section class="page cover-page">
-                <div>
-                    <h1 id="render-title"></h1>
-                    <div id="render-author" style="font-size: 18px;"></div>
-                    <div id="render-date" style="margin-top: 35px; font-weight: bold;"></div>
-                </div>
-            </section>
-            <div id="photos-stage"></div>
-            <div id="contact-stage"></div>
-        </div>
-    </main>
+    <div class="input-group">
+      <label for="intro-input">Tekst wstępu:</label>
+      <textarea id="intro-input">Chronologiczne archiwum zdjęć wykonanych w maju 2026 roku w Gdyni.</textarea>
+    </div>
 
-    <footer>
-        <ul class="footer-links">
-            <li><a href="index.html">Galeria</a></li>
-            <li><a href="zine.html">Zine</a></li>
-            <li><a href="https://instagram.com/lenshustler" target="_blank">IG</a></li>
-        </ul>
-        <p>&copy; Alan Łysiak</p>
-    </footer>
+    <label class="file-upload-btn">
+      <input type="file" id="file-selector" multiple accept="image/jpeg, image/jpg">
+      Wybierz pliki i generuj
+    </label>
 
-    <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
+    <div id="status-message">Oczekiwanie na pliki...</div>
+</div>
 
-    <script>
-        const fileSelector = document.getElementById('file-selector');
-        const statusMessage = document.getElementById('status-message');
-        const zineOutput = document.getElementById('zine-output');
-        const printBtn = document.getElementById('print-btn');
+<div class="zine-container" id="zine-output" style="display: none;">
+    <section class="page cover-page">
+      <div>
+        <h1 id="render-title">TYTUŁ</h1>
+        <div id="render-author" style="font-size: 18px;">AUTORZY</div>
+        <div id="render-date" style="margin-top: 35px; font-weight: bold;">DATA</div>
+      </div>
+    </section>
 
-        fileSelector.addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files);
-            if(files.length === 0) return;
-            statusMessage.innerText = `Przetwarzanie ${files.length} plików...`;
-            
-            let processedImages = [];
-            for(let file of files) {
-                processedImages.push(await extractData(file));
-            }
-            processedImages.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
-            renderZine(processedImages);
+    <section class="page intro-page">
+      <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0;">O projekcie</h2>
+      <div id="render-intro-text"></div>
+    </section>
+
+    <div id="photos-stage"></div>
+    <div id="contact-stage"></div>
+</div>
+
+<button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
+
+<script>
+    const fileSelector = document.getElementById('file-selector');
+    const statusMessage = document.getElementById('status-message');
+    const zineOutput = document.getElementById('zine-output');
+    const printBtn = document.getElementById('print-btn');
+
+    let processedImages = [];
+
+    fileSelector.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      if(files.length === 0) return;
+
+      statusMessage.innerText = `Przetwarzanie ${files.length} plików...`;
+      processedImages = [];
+
+      for(let file of files) {
+        try {
+          const data = await extractData(file);
+          processedImages.push(data);
+        } catch(err) {
+          console.error("Błąd:", err);
+        }
+      }
+
+      processedImages.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
+      renderZine(processedImages);
+    });
+
+    function extractData(file) {
+      return new Promise((resolve) => {
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.src = objectUrl;
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const maxDim = 1500; 
+          let width = img.width;
+          let height = img.height;
+          if (width > maxDim) { height = (maxDim / width) * height; width = maxDim; }
+          canvas.width = width; canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob((blob) => {
+            const resizedUrl = URL.createObjectURL(blob);
+            EXIF.getData(img, function() {
+              const dto = EXIF.getTag(this, "DateTimeOriginal");
+              let formattedTime = "Brak danych";
+              let rawDate = file.lastModified;
+              if(dto) { formattedTime = dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3'); rawDate = formattedTime; }
+              const artist = EXIF.getTag(this, "Artist") || EXIF.getTag(this, "Copyright");
+              const defaultAuthor = document.getElementById('author-input').value;
+              const author = artist || defaultAuthor;
+              resolve({ url: resizedUrl, time: formattedTime, rawDate: rawDate, author: author });
+            });
+          }, 'image/jpeg', 0.7);
+        };
+      });
+    }
+
+    function renderZine(images) {
+      const titleVal = document.getElementById('title-input').value;
+      const authorVal = document.getElementById('author-input').value;
+      const introVal = document.getElementById('intro-input').value;
+      document.getElementById('render-title').innerText = titleVal;
+      document.getElementById('render-author').innerText = authorVal;
+      document.getElementById('render-intro-text').innerText = introVal;
+      
+      // POPRAWKA: Zakres dat
+      if (images.length > 0) {
+        const firstDate = images[0].time.substring(0, 10);
+        const lastDate = images[images.length - 1].time.substring(0, 10);
+        document.getElementById('render-date').innerText = `${firstDate} – ${lastDate}`;
+      } else {
+        document.getElementById('render-date').innerText = "Brak daty";
+      }
+
+      const stage = document.getElementById('photos-stage');
+      const contactStage = document.getElementById('contact-stage');
+      stage.innerHTML = ""; contactStage.innerHTML = "";
+
+      images.forEach((img, index) => {
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'zine-photo-item';
+        pageDiv.innerHTML = `<div class="img-wrapper"><img src="${img.url}"></div><div class="photo-meta"><div><strong>DATA:</strong> ${img.time}</div><div class="meta-bottom-row"><span><strong>FOTOGRAF:</strong> ${img.author}</span><span><strong>${titleVal}</strong> ${index + 1}/${images.length}</span></div></div>`;
+        stage.appendChild(pageDiv);
+      });
+
+      const itemsPerPage = 15; 
+      for (let i = 0; i < images.length; i += itemsPerPage) {
+        const chunk = images.slice(i, i + itemsPerPage);
+        const sheetSection = document.createElement('section');
+        sheetSection.className = 'contact-sheet-page';
+        sheetSection.innerHTML = `<h2 style="margin-top:0; border-bottom:1px solid #000; padding-bottom:5px; text-transform:uppercase;">${titleVal} — CONTACT SHEET</h2><div class="contact-grid"></div>`;
+        const grid = sheetSection.querySelector('.contact-grid');
+        chunk.forEach((img, idx) => {
+          const thumb = document.createElement('div');
+          thumb.className = 'contact-thumb';
+          thumb.innerHTML = `<div class="thumb-wrapper"><img src="${img.url}"></div><div class="thumb-number">${i + idx + 1}/${images.length}</div>`;
+          grid.appendChild(thumb);
         });
-
-        function extractData(file) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.src = URL.createObjectURL(file);
-                img.onload = function() {
-                    EXIF.getData(img, function() {
-                        const dto = EXIF.getTag(this, "DateTimeOriginal");
-                        resolve({ 
-                            url: img.src, 
-                            time: dto ? dto.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3') : "Brak daty", 
-                            rawDate: dto || file.lastModified,
-                            author: EXIF.getTag(this, "Artist") || document.getElementById('author-input').value 
-                        });
-                    });
-                };
-            });
-        }
-
-        function renderZine(images) {
-            const title = document.getElementById('title-input').value;
-            document.getElementById('render-title').innerText = title;
-            document.getElementById('render-author').innerText = document.getElementById('author-input').value;
-            document.getElementById('render-date').innerText = `${images[0].time.substring(0, 10)} – ${images[images.length - 1].time.substring(0, 10)}`;
-            
-            const stage = document.getElementById('photos-stage');
-            const contactStage = document.getElementById('contact-stage');
-            stage.innerHTML = ""; contactStage.innerHTML = "";
-
-            images.forEach((img, index) => {
-                const div = document.createElement('div');
-                div.className = 'zine-photo-item';
-                div.innerHTML = `<div class="img-wrapper"><img src="${img.url}"></div><div>DATA: ${img.time} | FOTOGRAF: ${img.author}</div>`;
-                stage.appendChild(div);
-            });
-
-            const itemsPerPage = 15;
-            for (let i = 0; i < images.length; i += itemsPerPage) {
-                const section = document.createElement('section');
-                section.className = 'contact-sheet-page';
-                section.innerHTML = `<h2>${title} — CONTACT SHEET</h2><div class="contact-grid"></div>`;
-                const grid = section.querySelector('.contact-grid');
-                images.slice(i, i + itemsPerPage).forEach((img, idx) => {
-                    grid.innerHTML += `<div class="contact-thumb"><div class="thumb-wrapper"><img src="${img.url}"></div><small>${i + idx + 1}</small></div>`;
-                });
-                contactStage.appendChild(section);
-            }
-            zineOutput.style.display = 'block';
-            printBtn.style.display = 'block';
-            statusMessage.innerText = "Gotowe!";
-        }
-    </script>
+        contactStage.appendChild(sheetSection);
+      }
+      statusMessage.innerText = `Sukces! Gotowe.`;
+      zineOutput.style.display = 'block';
+      printBtn.style.display = 'block';
+    }
+  </script>
 </body>
 </html>
