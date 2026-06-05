@@ -5,56 +5,125 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generator archiwum</title>
   
-  <!-- Biblioteka do czytania metadanych EXIF (tylko do daty i czasu) -->
   <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
+  <import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap');
+
   <style>
-    /* ========================================================
-       1. STYLIZACJA EKRANOWA (Panel zarządzania)
-       ======================================================== */
-    body {
-      font-family: 'Courier New', Courier, monospace;
-      background: #f4f4f4;
-      color: #000;
+    /* ==========================================================================
+       1. INTEGRACJA STYLÓW Z TWOJEJ STRONY GŁÓWNEJ (IBM Plex Mono)
+       ========================================================================== */
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent !important;
+      outline: none !important;
+    }
+
+    body {
+      font-family: 'IBM Plex Mono', 'Courier New', monospace;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: #ffffff;
+      color: #000;
+      -webkit-user-select: none;
+      user-select: none;
+      line-height: 1.5; 
+    }
+
+    header {
+      padding: 35px 0 10px 0;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    .logo a {
+      text-decoration: none;
+      color: #000;
+    }
+
+    .header-links, .footer-links {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 35px;
+      margin: 12px 0 8px 0;
       padding: 0;
     }
 
+    .header-links a, .footer-links a {
+      text-decoration: none;
+      color: #555;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: color 0.3s ease;
+    }
+
+    .header-links a:hover, .footer-links a:hover {
+      color: #000;
+    }
+
+    /* ==========================================================================
+       2. PANEL ZARZĄDZANIA GENERATORA (Stylizowany pod Twój minimalizm)
+       ========================================================================== */
     .setup-panel {
-      background: #fff;
-      padding: 30px;
-      border-bottom: 2px solid #000;
-      max-width: 900px;
-      margin: 20px auto;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      background: #ffffff;
+      padding: 30px 20px;
+      border: 1px solid #000;
+      max-width: 600px;
+      margin: 30px auto;
+      text-align: center;
     }
 
     .setup-panel h2 {
-      margin-top: 0;
+      font-size: 1rem;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      font-weight: 700;
     }
 
     .input-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      text-align: left;
     }
 
     .input-group label {
       display: block;
-      font-weight: bold;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       margin-bottom: 5px;
+      color: #555;
     }
 
     .input-group input, .input-group textarea {
       width: 100%;
       padding: 10px;
       font-family: inherit;
+      font-size: 0.75rem;
       border: 1px solid #ccc;
+      background: transparent;
       box-sizing: border-box;
+      color: #000;
+    }
+
+    .input-group input:focus, .input-group textarea:focus {
+      border-color: #000;
     }
 
     .input-group textarea {
-      height: 120px;
+      height: 100px;
       resize: vertical;
     }
 
@@ -62,11 +131,18 @@
       display: inline-block;
       background: #000;
       color: #fff;
-      padding: 12px 20px;
+      padding: 12px 25px;
       cursor: pointer;
+      font-size: 0.7rem;
       font-weight: bold;
       text-transform: uppercase;
+      letter-spacing: 2px;
       margin-top: 10px;
+      transition: background 0.3s;
+    }
+
+    .file-upload-btn:hover {
+      background: #444;
     }
 
     #file-selector {
@@ -74,14 +150,16 @@
     }
 
     #status-message {
-      margin-top: 15px;
-      font-weight: bold;
-      color: #555;
+      margin-top: 20px;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #777;
     }
 
-    /* ========================================================
-       2. UKŁAD STRONY — IDEALNE POZIOME A4 (Na ekranie i w PDF)
-       ======================================================== */
+    /* ==========================================================================
+       3. UKŁAD STRONY DO DRUKU/ZINA (Nienaruszony, wymiary A4)
+       ========================================================================== */
     .zine-container {
       width: 297mm;
       margin: 40px auto;
@@ -93,7 +171,7 @@
       height: 210mm;
       background: #fff;
       box-sizing: border-box;
-      padding: 25mm; /* Albumowy bezpieczny margines wewnątrz strony */
+      padding: 25mm;
       border-bottom: 1px dashed #ccc;
       display: flex;
       flex-direction: column;
@@ -112,6 +190,7 @@
       font-size: 36px;
       letter-spacing: 2px;
       margin: 0 0 15px 0;
+      text-transform: uppercase;
     }
 
     .intro-page {
@@ -155,11 +234,10 @@
       margin-top: 5px;
     }
 
-    /* SIATKA STYKÓWKI (Zoptymalizowana pod 36 miniatur na stronę: 6x6) */
     .contact-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 10px; /* Zmniejszony margines między fotkami, żeby zmieścić 6 wierszy */
+      gap: 10px;
       margin-top: 15px;
     }
 
@@ -168,7 +246,7 @@
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      height: 85px; /* Skrócona wysokość, by zmieścić 6 rzędów w pionie */
+      height: 85px;
       box-sizing: border-box;
     }
 
@@ -192,7 +270,7 @@
       margin-top: 2px;
     }
 
-    /* Przycisk zapisu */
+    /* Przycisk akcji PDF */
     .print-action-btn {
       position: fixed;
       bottom: 30px;
@@ -202,20 +280,58 @@
       border: none;
       padding: 15px 30px;
       font-family: inherit;
-      font-size: 16px;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-transform: uppercase;
+      z-index: 99999;
+    }
+
+    /* ==========================================================================
+       4. STOPKA & LICZNIK (Zgodne z Twoją stroną)
+       ========================================================================== */
+    footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 0 30px 0;
+    }
+
+    .pentax-counter {
+      margin-bottom: 30px; 
+    }
+
+    .counter-frame {
+      width: 30px; height: 20px;
+      background-color: #000;
+      border: 1.5px solid #888; 
+      border-radius: 2px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #frame-count {
+      font-family: 'Courier New', monospace;
+      color: #fff;
+      font-size: 0.8rem;
+    }
+
+    .footer-name {
+      font-size: 0.6rem;
+      letter-spacing: 2px;
       text-transform: uppercase;
     }
 
-    /* ========================================================
-       3. USTAWIEŃ DRUKU PDF (UKRYWANIE NAGŁÓWKÓW PRZEGLĄDARKI)
-       ======================================================== */
+    /* ==========================================================================
+       5. REGUŁY DRUKU PDF (Ukrywanie całego interfejsu strony)
+       ========================================================================== */
     @media print {
       @page {
         size: A4 landscape;
-        margin: 0; /* Usuwa adresy stron, daty i tytuły systemowe przeglądarki */
+        margin: 0;
       }
 
       body {
@@ -223,7 +339,8 @@
         padding: 0;
       }
 
-      .setup-panel, .print-action-btn, #status-message {
+      /* Ukrywamy oryginalny nagłówek, panel konfiguracji, stopkę i przycisk zapisu */
+      header, .setup-panel, footer, .print-action-btn, #status-message {
         display: none !important;
       }
 
@@ -237,31 +354,31 @@
       .page, .zine-photo-item, .contact-sheet-page {
         border: none;
         margin: 0;
-        padding: 25mm; /* Margines albumu w pełni kontrolowany wewnętrznie */
+        padding: 25mm;
         width: 297mm;
         height: 210mm;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
       }
-
-      .page.cover-page {
-        justify-content: center !important;
-        align-items: center !important;
-      }
-
-      .page.intro-page, .contact-sheet-page {
-        justify-content: flex-start !important;
-      }
     }
   </style>
 </head>
 <body>
 
-  <!-- PANEL KONFIGURACYJNY -->
+  <header>
+    <div class="logo">
+      <a href="/">ALAN ŁYSIAK</a>
+    </div>
+    <ul class="header-links">
+      <li><a href="/">PROJEKTY</a></li>
+      <li><a href="/info">INFO</a></li>
+      <li><a href="/generator">GENERATOR</a></li>
+    </ul>
+  </header>
+
   <div class="setup-panel">
-    <h2>Generator archiwum</h2>
-    <p>Wgraj zdjęcia z komputera. Skrypt ułoży je chronologicznie na podstawie daty wykonania i wygeneruje proste archiwum gotowe do zapisu jako PDF.</p>
+    <h2>Zine & Archive Generator</h2>
     
     <div class="input-group">
       <label for="title-input">Tytuł Projektu:</label>
@@ -274,7 +391,7 @@
     </div>
 
     <div class="input-group">
-      <label for="intro-input">Tekst wstępu (O projekcie):</label>
+      <label for="intro-input">Tekst wstępu / O projekcie:</label>
       <textarea id="intro-input">Chronologiczne archiwum zdjęć wykonanych w maju 2026 roku w Gdyni.</textarea>
     </div>
 
@@ -286,10 +403,8 @@
     <div id="status-message">Oczekiwanie na pliki...</div>
   </div>
 
-  <!-- KONTENER FILMU / ZINA -->
   <div class="zine-container" id="zine-output" style="display: none;">
     
-    <!-- Okładka -->
     <section class="page cover-page">
       <div>
         <h1 id="render-title">TYTUŁ</h1>
@@ -298,21 +413,26 @@
       </div>
     </section>
 
-    <!-- Wstęp -->
     <section class="page intro-page">
-      <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0;">O projekcie</h2>
+      <h2 style="text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 10px; margin-top: 0; font-size: 20px;">O projekcie</h2>
       <div id="render-intro-text"></div>
     </section>
 
-    <!-- Scena głównych zdjęć -->
     <div id="photos-stage"></div>
 
-    <!-- Scena stron stykówki -->
     <div id="contact-stage"></div>
 
   </div>
 
-  <!-- Przycisk zapisu -->
+  <footer>
+    <div class="pentax-counter">
+      <div class="counter-frame">
+        <span id="frame-count">00</span>
+      </div>
+    </div>
+    <div class="footer-name">© ALAN ŁYSIAK</div>
+  </footer>
+
   <button class="print-action-btn" id="print-btn" style="display: none;" onclick="window.print()">Zapisz jako PDF</button>
 
   <script>
@@ -320,6 +440,7 @@
     const statusMessage = document.getElementById('status-message');
     const zineOutput = document.getElementById('zine-output');
     const printBtn = document.getElementById('print-btn');
+    const frameCount = document.getElementById('frame-count');
 
     let processedImages = [];
 
@@ -400,6 +521,10 @@
       }
 
       const total = images.length;
+      
+      // Aktualizacja Twojego licznika klatek Pentaxa w stopce!
+      frameCount.innerText = String(total).padStart(2, '0');
+
       const stage = document.getElementById('photos-stage');
       const contactStage = document.getElementById('contact-stage');
 
@@ -429,7 +554,7 @@
         stage.appendChild(pageDiv);
       });
 
-      // 2. PODZIAŁ STYKÓWKI — TERAZ PO 36 ZDJĘĆ NA STRONĘ
+      // 2. PODZIAŁ STYKÓWKI (36 ZDJĘĆ NA STRONĘ)
       const itemsPerPage = 36; 
       const totalContactPages = Math.ceil(images.length / itemsPerPage);
 
@@ -443,7 +568,7 @@
         const pageSuffix = totalContactPages > 1 ? ` — PAGE ${currentPageNum}/${totalContactPages}` : '';
         
         sheetSection.innerHTML = `
-          <h2 style="margin-top: 0; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase;">
+          <h2 style="margin-top: 0; border-bottom: 1px solid #000; padding-bottom: 5px; text-transform: uppercase; font-size: 16px;">
             ${titleVal} — CONTACT SHEET — ${total} FRAMES${pageSuffix}
           </h2>
           <div class="contact-grid"></div>
@@ -471,7 +596,7 @@
         contactStage.appendChild(sheetSection);
       }
 
-      statusMessage.innerText = `Sukces! Gotowe do zapisu. Łącznie wgrano ${total} zdjęć.`;
+      statusMessage.innerText = `Sukces! Zina ułożono. Łącznie wgrano ${total} zdjęć.`;
       zineOutput.style.display = 'block';
       printBtn.style.display = 'block';
     }
