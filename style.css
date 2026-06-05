@@ -22,7 +22,7 @@ header {
 .header-branding { flex: 1; display: flex; align-items: center; gap: 15px; }
 .site-logo { height: 40px; width: auto; }
 .site-name { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; text-decoration: none; color: #000; }
-.search-nav { flex: 1; display: flex; justify-content: center; gap: 8px; padding: 0 20px; position: relative; }
+.search-nav { flex: 1; display: flex; justify-content: flex-start; gap: 8px; padding: 0 20px; position: relative; }
 .header-links { flex: 1; list-style: none; display: flex; justify-content: flex-end; align-items: center; gap: 35px; padding: 0; }
 .header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; transition: color 0.3s ease; }
 .header-links a:hover { color: #555; }
@@ -34,7 +34,7 @@ header {
 .arnold-search {
     width: 100%; max-width: 350px; background: transparent; border: 1px solid #ccc;
     color: #000; font-family: 'Courier New', Courier, monospace; font-size: 0.8rem;
-    text-align: center; padding: 10px 15px; text-transform: uppercase; outline: none; transition: border 0.3s ease;
+    text-align: left; padding: 10px 15px; text-transform: uppercase; outline: none; transition: border 0.3s ease;
 }
 .arnold-search:focus { border: 1px solid #000; }
 .arnold-search::placeholder { color: #000; font-family: 'Courier New', Courier, monospace; font-size: 0.7rem; text-transform: uppercase; }
@@ -45,8 +45,8 @@ header {
 }
 .search-btn:hover { background-color: #000; color: #fff; }
 .suggestions-list {
-    position: absolute; top: 100%; width: 100%; max-width: 450px;
-    margin: 0 auto; background-color: #fff; list-style: none; z-index: 1000;
+    position: absolute; top: 100%; width: 100%; max-width: 350px;
+    margin: 0; left: 20px; background-color: #fff; list-style: none; z-index: 1000;
     display: none; border: 1px solid #000;
 }
 .suggestions-list li { padding: 12px 15px; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; border-bottom: 1px solid #eee; transition: background-color 0.2s, color 0.2s; }
