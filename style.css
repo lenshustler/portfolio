@@ -141,7 +141,8 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
     transition: opacity 0.25s ease; 
     padding: 20px;
 }
-.custom-modal.active { display: flex; opacity: 1; }
+/* POPRAWKA: touch-action zamraża przewijanie tła na urządzeniach mobilnych */
+.custom-modal.active { display: flex; opacity: 1; touch-action: none; }
 
 .custom-modal-content {
     background-color: #ffffff; 
@@ -152,6 +153,7 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
     position: relative;
     border-radius: 0 !important; 
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    touch-action: pan-y; /* POPRAWKA: pozwala przewijać tylko wnętrze modala w osi Y */
 }
 
 .custom-modal-close {
