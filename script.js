@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let activeIdx = 0;
     let clickTimer = null; 
 
-    // Zmienne do obsługi przesuwania (touch pan) na telefonie
     let isMoving = false;
     let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
@@ -128,28 +127,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function updateLightbox() {
         if (visibleImages.length > 0 && lightboxImg) {
-            // POPRAWKA: Ultra-krótkie mignięcie wygaszania (100ms na zmianę źródła)
+            // POPRAWKA: Super szybkie wygaszenie (40ms) przed zmianą źródła pliku
             lightboxImg.style.opacity = '0';
             
             setTimeout(() => {
                 const baseUrl = visibleImages[activeIdx].getAttribute('data-fullsrc');
-                const isMobile = window.innerWidth < 768;
                 
-                if (isMobile) {
-                    lightboxImg.src = baseUrl + "?auto=format&w=800&q=75";
-                } else {
-                    lightboxImg.src = baseUrl + "?auto=format&w=1600";
-                }
+                // POPRAWKA: Zarówno mobile jak i desktop ciągną ostry obraz 1600px z wysoką jakością q=90
+                lightboxImg.src = baseUrl + "?auto=format&w=1600&q=90";
                 
                 resetZoom();
-            }, 100);
+            }, 40);
         }
     }
 
     if (lightboxImg) {
         lightboxImg.decoding = "async";
         
-        // Płynne ujawnienie obrazu natychmiast po załadowaniu pliku przez przeglądarkę
         lightboxImg.onload = () => {
             lightboxImg.style.opacity = '1';
         };
@@ -206,7 +200,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         lightboxImg.addEventListener('touchend', () => {
             if (!isMoving) return;
             isMoving = false;
-            lightboxImg.style.transition = 'transform 0.3s ease, opacity 0.12s ease-in-out';
+            lightboxImg.style.transition = 'transform 0.3s ease, opacity 0.06s ease-in-out';
         });
     }
 
