@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let activeIdx = 0;
     let clickTimer = null; 
 
- // --- 1. POBIERANIE DANYCH ---
+    // --- 1. POBIERANIE DANYCH ---
     if (grid) {
         try {
             const QUERY = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, isHighlight, categories, "imageUrl": image.asset->url }`);
@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (!photos || photos.length === 0) {
                 console.log("Brak zdjęć do wyświetlenia.");
-                // Zamiast wstawiać tekst do grida, po prostu nic nie robimy
             } else {
                 photos.sort(() => Math.random() - 0.5);
                 grid.innerHTML = "";
@@ -64,22 +63,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.body.style.overflow = 'hidden';
     }
 
-    // POPRAWKA: Płynność (brak skakania)
     function updateLightbox() {
         if (visibleImages.length > 0) {
-            lightboxImg.style.transition = 'none'; // Wyłączenie animacji przy zmianie
+            lightboxImg.style.transition = 'none';
             lightboxImg.src = visibleImages[activeIdx].src;
             lightboxImg.classList.remove('zoomed');
             lightboxImg.style.transform = 'scale(1.0)';
             
-            // Włączenie animacji z powrotem po przerysowaniu
             requestAnimationFrame(() => {
                 lightboxImg.style.transition = 'transform 0.3s ease';
             });
         }
     }
 
-    // Obsługa kliknięcia w zdjęcie
     if (lightboxImg) {
         lightboxImg.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -104,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (closeBtn) { closeBtn.onclick = () => { lightbox.classList.remove('active'); document.body.style.overflow = 'auto'; lightboxImg.classList.remove('zoomed'); lightboxImg.style.transform = 'scale(1.0)'; }; }
     if (lightbox) { lightbox.onclick = (e) => { if (e.target === lightbox) closeBtn.onclick(); }; }
 
-    // Swipe i Klawiatura
+    // Swipe na urządzeniach mobilnych
     let touchStartX = 0;
     if (lightbox) {
         lightbox.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, { passive: true });
@@ -114,14 +110,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, { passive: true });
     }
 
+    // Obsługa klawiatury (Rozbudowana o zamykanie modali)
     document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") {
+            if (lightbox.classList.contains('active')) {
+                closeBtn.onclick();
+            }
+            closeAllModals();
+        }
         if (!lightbox.classList.contains('active')) return;
         if (e.key === "ArrowRight") nextBtn.click();
         if (e.key === "ArrowLeft") prevBtn.click();
-        if (e.key === "Escape") closeBtn.onclick();
     });
 
-    // --- 3. WYSZUKIWARKA (POPRAWIONA) ---
+    // --- 3. WYSZUKIWARKA ---
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.querySelector('.search-btn');
     const suggestionsBox = document.querySelector('.suggestions-list');
@@ -140,7 +142,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     if (searchInput && suggestionsBox) {
-        // Kliknięcie w pole wyszukiwania otwiera listę
         searchInput.addEventListener('click', () => {
             if (searchInput.value.trim() === "") {
                 suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}</li>`).join('');
@@ -148,7 +149,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // Pisanie w polu wyszukiwania
         searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase().trim();
             if (term === "") {
@@ -164,7 +164,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // Kliknięcie w dowolne miejsce poza wyszukiwarką zamyka podpowiedzi
         document.addEventListener('click', (e) => {
             if (e.target !== searchInput && !suggestionsBox.contains(e.target)) {
                 suggestionsBox.style.display = "none";
@@ -182,7 +181,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // --- 4. DODATKI ---
+    // --- 4. DODATKI (STRZAŁKA I LICZNIK) ---
     const btt = document.getElementById('back-to-top');
     window.addEventListener('scroll', () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; });
     if (btt) btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -194,4 +193,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         .then(d => counterEl.innerText = (200 + (d.value || 0)).toString().padStart(2, '0'))
         .catch(() => counterEl.innerText = "200");
     }
-});
+
+    // --- 5. LOGIKA OKIENEK (MODALI) ---
+    const modalTriggers = document.querySelectorAll('.modal-trigger');
+    const modalCloses = document.querySelectorAll('.custom-modal-close');
+    const modals = document.querySelectorAll('.custom-modal');
+
+    // Otwieranie okienek po kliknięciu w linki
+    modalTriggers.forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault(); // Zatrzymujemy domyślny skok linku '#'
+            const targetId = trigger.getAttribute('data-target');
+            const targetModal = document.getElementById(targetId);
+            if (targetModal) {
+                targetModal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Blokujemy przewijanie galerii w tle
+            }
+        });
+    });
+
+    // Wspólna funkcja zamykająca wszystkie okienka
+    function closeAllModals() {
+        modals.forEach(modal => modal.classList
