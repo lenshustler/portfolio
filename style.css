@@ -141,8 +141,7 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
     transition: opacity 0.25s ease; 
     padding: 20px;
 }
-/* POPRAWKA: touch-action zamraża przewijanie tła na urządzeniach mobilnych */
-.custom-modal.active { display: flex; opacity: 1; touch-action: none; }
+.custom-modal.active { display: flex; opacity: 1; }
 
 .custom-modal-content {
     background-color: #ffffff; 
@@ -153,7 +152,6 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
     position: relative;
     border-radius: 0 !important; 
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-    touch-action: pan-y; /* POPRAWKA: pozwala przewijać tylko wnętrze modala w osi Y */
 }
 
 .custom-modal-close {
@@ -212,7 +210,6 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
     header { flex-direction: column; padding: 20px; gap: 15px; }
     .header-branding, .header-links { width: 100%; justify-content: center; flex: none; }
     
-    /* POPRAWKA: Zacieśniamy linki w menu, żeby Zine i IG się mieściły na szerokość */
     .header-links { gap: 18px; }
     .header-links a { font-size: 0.75rem; }
     
@@ -221,11 +218,9 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
     
     .gallery-grid { column-count: 2; column-gap: 10px; }
     
-    /* POPRAWKA: Zacieśniamy linki w stopce na dole */
     .footer-links { gap: 18px; }
     .footer-links a { font-size: 0.65rem; }
     
-    /* MOBILE: Pasek strzałek na dole ekranu */
     .lightbox-controls {
         position: absolute; top: auto; bottom: 20px;
         width: 100%; height: 60px;
@@ -235,12 +230,11 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
     .nav-arrow { position: static; transform: none; width: 50px; height: 50px; }
     .close { position: fixed !important; top: 15px !important; right: 15px !important; width: 40px; height: 40px; }
 
-    /* POPRAWKA: Optymalizacja wysokości i przestrzeni okienka popup na telefonie */
     .custom-modal {
         padding: 10px; 
     }
     .custom-modal-content {
-        padding: 30px 18px 18px 18px; /* Zmniejszony padding wewnętrzny oszczędza miejsce */
+        padding: 30px 18px 18px 18px; 
         max-height: 92vh; 
         overflow-y: auto;  
     }
@@ -257,7 +251,6 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
         margin-bottom: 8px;
     }
 
-    /* Bardziej kompaktowe kafelki Kontaktu - zapobiegają przewijaniu całego modala */
     .contact-card {
         flex-direction: column; 
         align-items: stretch;
@@ -271,7 +264,7 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
         gap: 6px;
     }
     .contact-avatar {
-        width: 42px; /* Subtelnie mniejszy avatar */
+        width: 42px; 
         height: 42px;
     }
     .contact-title {
@@ -285,4 +278,11 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
         padding: 8px 0; 
         font-size: 0.7rem;
     }
+}
+
+/* ULTIMATE LOCK: Całkowite zamrożenie przewijania tła na iOS/Android */
+html.modal-open, html.modal-open body {
+    overflow: hidden !important;
+    height: 100vh !important;
+    overscroll-behavior: none !important;
 }
