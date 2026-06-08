@@ -7,16 +7,18 @@
     <link rel="icon" type="image/png" href="favicon.png?v=123">
     <link rel="stylesheet" href="style.css?v=55.0">
     <style>
-        /* Styl dla sekcji specyfikacji */
-        .zine-specs { border: 2px solid #000; padding: 25px; max-width: 500px; margin: 40px auto; text-align: left; }
-        .zine-specs h3 { margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; }
-        .spec-item { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .spec-label { font-weight: bold; display: block; margin-bottom: 4px; }
-        /* Poprawka dla Softcover - zawijanie tekstu */
-        .spec-value { display: block; word-break: break-word; line-height: 1.4; }
-        
-        /* Strzałka powrotu */
-        .back-to-zine { position: fixed; bottom: 30px; left: 30px; font-size: 2.5rem; text-decoration: none; color: #000; z-index: 999; cursor: pointer; line-height: 1; }
+        /* Strzałka powrotu po prawej stronie */
+        .back-to-zine { 
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            font-size: 2.5rem; 
+            text-decoration: none; 
+            color: #000; 
+            z-index: 999; 
+            cursor: pointer; 
+            line-height: 1; 
+        }
         .back-to-zine:hover { opacity: 0.6; }
     </style>
 </head>
@@ -42,17 +44,8 @@
         </ul>
     </header>
 
-    <section class="zine-section" style="width: 92%; max-width: 1200px; height: 75vh; margin: 20px auto 60px auto; display: flex; justify-content: center;">
+    <section class="zine-section" style="width: 92%; max-width: 1200px; height: 82vh; margin: 20px auto 60px auto; display: flex; justify-content: center;">
         <iframe src="https://www.blurb.com/bookshare/app/index.html?bookId=12871169" frameborder="0" allowfullscreen onload="this.focus()" scrolling="no" style="width: 100%; height: 100%; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.08);"></iframe>
-    </section>
-
-    <section class="zine-specs">
-        <h3>ZINE SPECIFICATIONS</h3>
-        <div class="spec-item"><span class="spec-label">STRONY</span><span class="spec-value">60 (full color)</span></div>
-        <div class="spec-item"><span class="spec-label">FOTOGRAFIE</span><span class="spec-value">45</span></div>
-        <div class="spec-item"><span class="spec-label">ZINE TYPE</span><span class="spec-value">SOFTCOVER BOOK (PERFECT BOUND)</span></div>
-        <div class="spec-item"><span class="spec-label">PAPIER</span><span class="spec-value">150gsm Matted</span></div>
-        <div class="spec-item"><span class="spec-label">FORMAT</span><span class="spec-value">A5</span></div>
     </section>
 
     <footer>
@@ -77,9 +70,53 @@
 
     <a href="zine.html" class="back-to-zine" title="Powrót do listy zine'ów">←</a>
 
-    <div id="modal-contact" class="custom-modal"><div class="custom-modal-content"><button class="custom-modal-close" aria-label="Zamknij">&times;</button><h2>Kontakt</h2><div class="custom-modal-body"><p>Masz pytania? Napisz: lyskier@gmail.com</p></div></div></div>
-    <div id="modal-privacy" class="custom-modal"><div class="custom-modal-content"><button class="custom-modal-close" aria-label="Zamknij">&times;</button><h2>Polityka Prywatności</h2><div class="custom-modal-body"><p>Ta strona szanuje Twoją prywatność.</p></div></div></div>
-    <div id="modal-terms" class="custom-modal"><div class="custom-modal-content"><button class="custom-modal-close" aria-label="Zamknij">&times;</button><h2>Regulamin</h2><div class="custom-modal-body"><p>Wszystkie fotografie są własnością autora.</p></div></div></div>
+    <div id="modal-contact" class="custom-modal">
+        <div class="custom-modal-content">
+            <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
+            <h2>Kontakt</h2>
+            <div class="custom-modal-body" style="-webkit-user-select: text !important; user-select: text !important;">
+                <p class="modal-description">Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.</p>
+                <div class="contact-section-label">Email</div>
+                <div class="contact-card">
+                    <div class="contact-card-left">
+                        <img src="images/logo.png" alt="Alan Łysiak Logo" class="contact-avatar">
+                        <div class="contact-info-block"><span class="contact-title">lyskier@gmail.com</span><span class="contact-subtitle">Napisz wiadomość</span></div>
+                    </div>
+                    <a href="mailto:lyskier@gmail.com" class="contact-card-btn">Send Email</a>
+                </div>
+                <div class="contact-section-label">Instagram</div>
+                <div class="contact-card">
+                    <div class="contact-card-left">
+                        <img src="images/insta-avatar.jpg" alt="Instagram Avatar" class="contact-avatar" onerror="this.src='images/logo.png'">
+                        <div class="contact-info-block"><span class="contact-title">@lenshustler</span><span class="contact-subtitle">Instagram</span></div>
+                    </div>
+                    <a href="https://instagram.com/lenshustler" target="_blank" class="contact-card-btn">View Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-privacy" class="custom-modal">
+        <div class="custom-modal-content">
+            <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
+            <h2>Polityka Prywatności</h2>
+            <div class="custom-modal-body">
+                <p>Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.</p>
+                <p style="margin-top: 15px;">Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-terms" class="custom-modal">
+        <div class="custom-modal-content">
+            <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
+            <h2>Regulamin strony</h2>
+            <div class="custom-modal-body">
+                <p>Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.</p>
+                <p style="margin-top: 15px;">Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione.</p>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js?v=55.0"></script>
 </body>
