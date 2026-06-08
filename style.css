@@ -3,9 +3,9 @@
    ========================================================================== */
 * {
     margin: 0; padding: 0; box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent !important; outline: none !important;
+    -webkit-tap-highlight-color: transparent; outline: none;
 }
-html { overflow-y: scroll; }
+html { overflow-y: scroll; scroll-behavior: smooth; }
 body {
     font-family: 'Courier New', Courier, monospace;
     -webkit-font-smoothing: antialiased; background-color: #ffffff;
@@ -17,210 +17,103 @@ body {
    ========================================================================== */
 header {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 35px 40px; width: 100%; border-bottom: 1px solid #000;
+    padding: 30px 40px; width: 100%; border-bottom: 1px solid #000;
 }
 .header-branding { flex: 1; display: flex; align-items: center; gap: 15px; }
-.site-logo { height: 40px; width: auto; }
-.site-name { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; text-decoration: none; color: #000; }
-.search-nav { flex: 1; display: flex; justify-content: flex-start; gap: 8px; padding: 0 20px; position: relative; }
-.header-links { flex: 1; list-style: none; display: flex; justify-content: flex-end; align-items: center; gap: 35px; padding: 0; }
-.header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; transition: color 0.3s ease; }
-.header-links a:hover { color: #555; }
-.ig-icon svg { display: block; color: #000; }
+.site-logo { height: 35px; width: auto; }
+.site-name { font-size: 1.1rem; font-weight: bold; text-transform: uppercase; text-decoration: none; color: #000; }
 
-/* Przełącznik języków PL / EN */
-.lang-switch {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    user-select: none;
-    color: #000;
-}
-.lang-switch span {
-    cursor: pointer;
-    color: #888;
-    transition: color 0.2s ease;
-    padding: 0 2px;
-}
-.lang-switch span:hover {
-    color: #000;
-}
-.lang-switch span.active {
-    color: #000;
-    font-weight: bold;
-    text-decoration: underline;
-}
+.search-nav { flex: 1; display: flex; justify-content: center; gap: 8px; position: relative; }
+.header-links { flex: 1; list-style: none; display: flex; justify-content: flex-end; align-items: center; gap: 30px; }
+.header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; transition: opacity 0.3s; }
+.header-links a:hover { opacity: 0.5; }
+
+/* Przełącznik języków */
+.lang-switch { font-size: 0.8rem; text-transform: uppercase; user-select: none; color: #000; display: flex; gap: 5px; }
+.lang-switch span { cursor: pointer; color: #888; transition: color 0.2s; }
+.lang-switch span:hover { color: #000; }
+.lang-switch span.active { color: #000; font-weight: bold; text-decoration: underline; }
 
 /* ==========================================================================
-   3. WYSZUKIWARKA
+   3. WYSZUKIWARKA & PODPOWIEDZI
    ========================================================================== */
 .arnold-search {
-    width: 100%; max-width: 350px; background: transparent; border: 1px solid #ccc;
-    color: #000; font-family: 'Courier New', Courier, monospace; font-size: 0.8rem;
-    text-align: left; padding: 10px 15px; text-transform: uppercase; outline: none; transition: border 0.3s ease;
+    width: 100%; max-width: 250px; background: transparent; border: 1px solid #ccc;
+    color: #000; font-family: inherit; font-size: 0.8rem;
+    padding: 8px 12px; text-transform: uppercase; outline: none; transition: border 0.3s;
 }
 .arnold-search:focus { border: 1px solid #000; }
-.arnold-search::placeholder { color: #000; font-family: 'Courier New', Courier, monospace; font-size: 0.7rem; text-transform: uppercase; }
 .search-btn {
-    border: 1px solid #000; background: transparent; padding: 8px 25px;
-    font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; text-transform: uppercase;
-    cursor: pointer; color: #000; transition: all 0.2s; font-weight: bold;
+    border: 1px solid #000; background: transparent; padding: 0 20px;
+    font-family: inherit; font-size: 0.8rem; text-transform: uppercase;
+    cursor: pointer; color: #000; font-weight: bold; transition: all 0.2s;
 }
 .search-btn:hover { background-color: #000; color: #fff; }
 
 .suggestions-list {
-    position: absolute; top: 100%; width: 100%; max-width: 350px;
-    margin: 0; background-color: #fff; list-style: none; z-index: 1000;
-    display: none; border: 1px solid #000; left: 20px; 
+    position: absolute; top: 100%; left: 0; width: 100%;
+    margin-top: 5px; background-color: #fff; list-style: none; z-index: 1000;
+    display: none; border: 1px solid #000;
 }
-.suggestions-list li { padding: 12px 15px; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; border-bottom: 1px solid #eee; transition: background-color 0.2s, color 0.2s; }
+.suggestions-list li { padding: 10px; font-size: 0.75rem; text-transform: uppercase; cursor: pointer; border-bottom: 1px solid #eee; }
 .suggestions-list li:hover { background-color: #000; color: #fff; }
 
 /* ==========================================================================
    4. GALERIA
    ========================================================================== */
-.gallery-section { width: 92%; max-width: 1700px; margin: 40px auto 40px auto; }
+.gallery-section { width: 92%; max-width: 1700px; margin: 40px auto; }
 .gallery-grid { column-count: 5; column-gap: 15px; }
 .photo-card { display: inline-block; width: 100%; margin-bottom: 15px; break-inside: avoid; overflow: hidden; }
 .photo-card.hidden { display: none !important; }
-.photo-card img { 
-    width: 100%; height: auto; display: block; cursor: pointer; transition: transform 0.3s ease; 
-    backface-visibility: hidden; -webkit-backface-visibility: hidden; transform: translate3d(0,0,0);
-}
+.photo-card img { width: 100%; height: auto; display: block; cursor: pointer; transition: transform 0.4s ease; }
 .photo-card:hover img { transform: scale(1.03); }
 
 /* ==========================================================================
-   5. STOPKA & LICZNIK
+   5. STOPKA
    ========================================================================== */
-footer { display: flex; flex-direction: column; align-items: center; padding: 40px 0 30px 0; }
-.footer-links { list-style: none; display: flex; justify-content: center; gap: 35px; margin: 12px 0 8px 0; padding: 0; }
+footer { display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+.footer-links { list-style: none; display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; }
 .footer-links a { text-decoration: none; color: #000; font-size: 0.7rem; text-transform: uppercase; }
-.pentax-counter { margin-bottom: 30px; }
-.counter-frame { min-width: 40px; padding: 0 8px; height: 25px; background-color: #000; border: 1.5px solid #000; display: flex; justify-content: center; align-items: center; }
-#frame-count { font-family: 'Courier New', monospace; color: #fff; font-size: 0.8rem; white-space: nowrap; }
-.footer-name { font-size: 0.6rem; text-transform: uppercase; font-family: 'Courier New', Courier, monospace; }
+.pentax-counter { margin-bottom: 20px; }
+.counter-frame { padding: 5px 12px; background-color: #000; color: #fff; font-family: monospace; font-size: 0.8rem; }
 
 /* ==========================================================================
-   6. STRZAŁKA BACK TO TOP
+   6. LIGHTBOX & MODALE
    ========================================================================== */
-#back-to-top { position: fixed; bottom: 30px; right: 20px; width: 50px; height: 50px; cursor: pointer; background: transparent; border: none; display: none; z-index: 1000; }
-#back-to-top:after { content: ''; width: 12px; height: 12px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; transform: rotate(-45deg); margin: 20px auto 0 auto; }
-
-/* ==========================================================================
-   7. LIGHTBOX
-   ========================================================================== */
-.lightbox { 
-    display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; 
-    background-color: #ffffff; opacity: 0; transition: opacity 0.2s ease; justify-content: center; align-items: center;
+.lightbox, .custom-modal {
+    display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%;
+    background-color: #fff; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s;
 }
-.lightbox.active { display: flex; opacity: 1 !important; }
+.lightbox.active, .custom-modal.active { display: flex; opacity: 1; }
+.custom-modal { background-color: rgba(255,255,255,0.9); backdrop-filter: blur(5px); }
 
-.lightbox-content { 
-    max-width: 95vw; max-height: 95vh; object-fit: contain;
-    transition: transform 0.3s ease, opacity 0.06s ease-in-out; /* POPRAWKA: Super szybki mikro-błysk (60ms) */
-    cursor: default; touch-action: none; will-change: transform, opacity; opacity: 1;
-}
-.lightbox-content.zoomed { transform: scale(2.0); cursor: move; }
-.lightbox-controls { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
-
-.nav-arrow, .close { 
-    position: absolute; cursor: pointer; background: transparent; border: none; 
-    display: flex; align-items: center; justify-content: center; 
-    width: 60px; height: 60px; pointer-events: auto; z-index: 101;
-}
-.prev { left: 20px; top: 50%; transform: translateY(-50%); }
-.next { right: 20px; top: 50%; transform: translateY(-50%); }
-.close { top: 20px; right: 20px; }
-
-.nav-arrow:after { content: ''; width: 14px; height: 14px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; }
-.prev:after { transform: rotate(-135deg); margin-left: 6px; }
-.next:after { transform: rotate(45deg); margin-right: 6px; }
-.close:before, .close:after { content: ''; position: absolute; width: 22px; height: 1.5px; background-color: #000; }
-.close:before { transform: rotate(45deg); }
-.close:after { transform: rotate(-45deg); }
-
-/* ==========================================================================
-   8. MODALE (OKIENKA TEKSTOWE)
-   ========================================================================== */
-.custom-modal {
-    display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-    justify-content: center; align-items: center; opacity: 0; transition: opacity 0.25s ease; padding: 20px;
-}
-.custom-modal.active { display: flex; opacity: 1; }
+.lightbox-content { max-width: 90vw; max-height: 85vh; object-fit: contain; }
 .custom-modal-content {
-    background-color: #ffffff; border: 1.5px solid #000000; padding: 45px 35px 35px 35px; 
-    max-width: 540px; width: 100%; position: relative; border-radius: 0 !important; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    background: #fff; border: 1px solid #000; padding: 40px;
+    max-width: 500px; width: 90%; position: relative;
 }
-.custom-modal-close {
-    position: absolute; top: 22px; right: 22px; background: transparent; border: none; font-size: 24px;
-    cursor: pointer; line-height: 1; padding: 0; color: #000; font-family: Arial, sans-serif; transition: transform 0.2s ease;
-}
-.custom-modal-close:hover { transform: scale(1.2); }
-.custom-modal-content h2 { margin-top: 0; margin-bottom: 25px; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
-.custom-modal-body p { line-height: 1.6; font-size: 0.9rem; }
-.modal-description { margin-bottom: 30px; color: #000; font-size: 0.95rem !important; }
-.contact-section-label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: #777; margin-bottom: 10px; letter-spacing: 1px; }
-
-.contact-card {
-    display: flex; align-items: center; justify-content: space-between;
-    border: 1.5px solid #000000; padding: 18px 20px; border-radius: 0 !important; margin-bottom: 25px; background: #ffffff;
-}
-.contact-card-left { display: flex; align-items: center; gap: 15px; }
-.contact-avatar { width: 50px; height: 50px; border-radius: 50% !important; border: 1.5px solid #000000; object-fit: cover; background: #ffffff; }
-.contact-info-block { display: flex; flex-direction: column; gap: 2px; }
-.contact-title { font-size: 0.95rem; font-weight: bold; text-transform: none; color: #000; }
-.contact-subtitle { font-size: 0.75rem; color: #666; text-transform: uppercase; }
-
-.contact-card-btn {
-    background: #000000; color: #ffffff !important; text-decoration: none;
-    width: 140px; text-align: center; padding: 10px 0; border-radius: 0 !important;
-    font-size: 0.75rem; font-weight: bold; text-transform: uppercase; border: 1.5px solid #000000;
-    transition: all 0.2s ease; display: block; white-space: nowrap;
-}
-.contact-card-btn:hover { background: #ffffff; color: #000000 !important; }
 
 /* ==========================================================================
-   9. RESPONSYWNOŚĆ
+   9. RESPONSYWNOŚĆ (MOBILE)
    ========================================================================== */
-@media (max-width: 1100px) { .gallery-grid { column-count: 3; } }
+@media (max-width: 1024px) { .gallery-grid { column-count: 3; } }
 
 @media (max-width: 768px) {
-    html, body { overflow-x: hidden; width: 100%; }
-    header { flex-direction: column; padding: 15px 10px; gap: 10px; }
-    .header-branding, .header-links { width: 100%; justify-content: center; flex: none; }
-    .header-links { gap: 18px; }
-    .header-links a { font-size: 0.75rem; }
-    .search-nav { width: 100%; justify-content: center; flex: none; padding: 0; }
-    .suggestions-list { left: 0; } 
+    header { flex-direction: column; padding: 20px; gap: 20px; }
+    .header-links { gap: 15px; }
+    .search-nav { width: 100%; justify-content: center; }
+    .arnold-search { max-width: 100%; }
     
-    .gallery-section { width: 96%; margin: 15px auto; }
-    .gallery-grid { column-count: 2; column-gap: 8px; }
-    .photo-card { margin-bottom: 8px; }
+    .gallery-grid { column-count: 2; column-gap: 10px; }
     
-    .footer-links { gap: 18px; }
-    .footer-links a { font-size: 0.65rem; }
-    
-    .lightbox-content { max-height: 80vh !important; max-width: 96vw !important; }
-    .lightbox-controls {
-        position: absolute; top: auto; bottom: 20px; width: 100%; height: 60px;
-        display: flex; justify-content: center; align-items: center; gap: 50px; pointer-events: none;
+    .lightbox-controls { 
+        position: fixed; bottom: 20px; width: 100%; display: flex; 
+        justify-content: center; gap: 30px; 
     }
-    .nav-arrow { position: static; transform: none; width: 55px; height: 55px; pointer-events: auto; }
-    .close { position: fixed !important; top: 15px !important; right: 15px !important; width: 44px; height: 44px; }
-
-    .custom-modal { padding: 10px; }
-    .custom-modal-content { padding: 30px 18px 18px 18px; max-height: 92vh; overflow-y: auto; }
-    .custom-modal-content h2 { font-size: 1.15rem; margin-bottom: 15px; }
-    .modal-description { font-size: 0.85rem !important; margin-bottom: 20px; }
-    .contact-section-label { font-size: 0.65rem; margin-bottom: 8px; }
-
-    .contact-card { flex-direction: column; align-items: stretch; gap: 10px; text-align: center; padding: 12px; margin-bottom: 15px; }
-    .contact-card-left { flex-direction: column; gap: 6px; }
-    .contact-avatar { width: 42px; height: 42px; }
-    .contact-title { font-size: 0.85rem; }
-    .contact-subtitle { font-size: 0.65rem; }
-    .contact-card-btn { width: 100%; padding: 8px 0; font-size: 0.7rem; }
+    .nav-arrow { position: static; width: 50px; height: 50px; }
 }
 
-html.modal-open { overflow: hidden !important; }
-html.modal-open body { overflow: hidden !important; overscroll-behavior: none !important; }
+@media (max-width: 480px) {
+    .gallery-grid { column-count: 1; }
+    .custom-modal-content { padding: 20px; }
+}
