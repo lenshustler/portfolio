@@ -47,4 +47,226 @@ header {
 
 .suggestions-list {
     position: absolute; top: 100%; width: 100%; max-width: 350px;
-    margin: 0; background-color: #fff
+    margin: 0; background-color: #fff; list-style: none; z-index: 1000;
+    display: none; border: 1px solid #000;
+    left: 20px;
+}
+.suggestions-list li { padding: 12px 15px; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; border-bottom: 1px solid #eee; transition: background-color 0.2s, color 0.2s; }
+.suggestions-list li:hover { background-color: #000; color: #fff; }
+
+/* ==========================================================================
+   4. GALERIA
+   ========================================================================== */
+.gallery-section { width: 92%; max-width: 1700px; margin: 40px auto 40px auto; }
+.gallery-grid { column-count: 5; column-gap: 15px; }
+.photo-card { display: inline-block; width: 100%; margin-bottom: 15px; break-inside: avoid; overflow: hidden; }
+.photo-card.hidden { display: none !important; }
+.photo-card img { width: 100%; height: auto; display: block; cursor: pointer; transition: transform 0.3s ease; }
+.photo-card:hover img { transform: scale(1.03); }
+
+/* ==========================================================================
+   5. STOPKA & LICZNIK
+   ========================================================================== */
+footer { display: flex; flex-direction: column; align-items: center; padding: 40px 0 30px 0; }
+.footer-links { list-style: none; display: flex; justify-content: center; gap: 35px; margin: 12px 0 8px 0; padding: 0; }
+.footer-links a { text-decoration: none; color: #000; font-size: 0.7rem; text-transform: uppercase; }
+.pentax-counter { margin-bottom: 30px; }
+.counter-frame { min-width: 40px; padding: 0 8px; height: 25px; background-color: #000; border: 1.5px solid #000; display: flex; justify-content: center; align-items: center; }
+#frame-count { font-family: 'Courier New', monospace; color: #fff; font-size: 0.8rem; white-space: nowrap; }
+.footer-name { font-size: 0.6rem; text-transform: uppercase; font-family: 'Courier New', Courier, monospace; }
+
+/* ==========================================================================
+   6. STRZAŁKA BACK TO TOP
+   ========================================================================== */
+#back-to-top { position: fixed; bottom: 30px; right: 20px; width: 50px; height: 50px; cursor: pointer; background: transparent; border: none; display: none; z-index: 1000; }
+#back-to-top:after { content: ''; width: 12px; height: 12px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; transform: rotate(-45deg); margin: 20px auto 0 auto; }
+
+/* ==========================================================================
+   7. LIGHTBOX
+   ========================================================================== */
+.lightbox { 
+    display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; 
+    background-color: #ffffff; opacity: 0; transition: opacity 0.3s ease;
+    justify-content: center; align-items: center;
+}
+.lightbox.active { display: flex; opacity: 1 !important; }
+
+.lightbox-content { 
+    max-width: 95vw; max-height: 95vh; object-fit: contain;
+    transition: transform 0.3s ease; cursor: default;
+    touch-action: none;
+}
+.lightbox-content.zoomed { transform: scale(2.0); cursor: move; }
+
+.lightbox-controls { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    pointer-events: none; z-index: 100;
+}
+
+.nav-arrow, .close { 
+    position: absolute; cursor: pointer; background: transparent; border: none; 
+    display: flex; align-items: center; justify-content: center; 
+    width: 60px; height: 60px; pointer-events: auto; z-index: 101;
+}
+
+.prev { left: 20px; top: 50%; transform: translateY(-50%); }
+.next { right: 20px; top: 50%; transform: translateY(-50%); }
+.close { top: 20px; right: 20px; }
+
+.nav-arrow:after { content: ''; width: 14px; height: 14px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; }
+.prev:after { transform: rotate(-135deg); margin-left: 6px; }
+.next:after { transform: rotate(45deg); margin-right: 6px; }
+
+.close:before, .close:after { content: ''; position: absolute; width: 22px; height: 1.5px; background-color: #000; }
+.close:before { transform: rotate(45deg); }
+.close:after { transform: rotate(-45deg); }
+
+/* ==========================================================================
+   8. MODALE (OKIENKA TEKSTOWE) - POPRAWIONA CZYTELNOŚĆ I SYMETRIA
+   ========================================================================== */
+.custom-modal {
+    display: none; 
+    position: fixed; 
+    z-index: 999999; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.25); /* Eleganckie, półprzezroczyste przyciemnienie tła */
+    backdrop-filter: blur(6px);            /* Nowoczesny efekt rozmycia portfolio pod spodem */
+    -webkit-backdrop-filter: blur(6px);
+    justify-content: center; 
+    align-items: center;
+    opacity: 0; 
+    transition: opacity 0.25s ease; 
+    padding: 20px;
+}
+.custom-modal.active { display: flex; opacity: 1; }
+
+.custom-modal-content {
+    background-color: #ffffff; 
+    border: 1.5px solid #000000; 
+    padding: 45px 35px 35px 35px; 
+    max-width: 540px; 
+    width: 100%; 
+    position: relative;
+    border-radius: 0 !important; /* Zachowujemy surowe, ostre rogi głównego okna */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Przycisk zamykania X */
+.custom-modal-close {
+    position: absolute; 
+    top: 22px; 
+    right: 22px;
+    background: transparent; 
+    border: none; 
+    font-size: 24px;
+    cursor: pointer; 
+    line-height: 1; 
+    padding: 0; 
+    color: #000;
+    font-family: Arial, sans-serif;
+    transition: transform 0.2s ease;
+}
+.custom-modal-close:hover {
+    transform: scale(1.2);
+}
+
+.custom-modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 25px; 
+    font-size: 1.4rem; /* Zwiększone dla lepszego balansu i czytelności */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.custom-modal-body p {
+    line-height: 1.6;
+    font-size: 0.9rem; /* Delikatnie podbity rozmiar tekstu regulaminów i polityki */
+}
+
+/* --- DESIGNERKA WIZYTÓWKA KONTAKTOWA --- */
+.modal-description {
+    margin-bottom: 30px;
+    color: #000;
+    font-size: 0.95rem !important; /* Wyraźniejszy opis główny kontaktu */
+}
+
+.contact-section-label {
+    font-size: 0.75rem; /* Większy, czytelny nagłówek sekcji */
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #777;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.contact-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1.5px solid #000000;
+    padding: 18px 20px; /* Delikatnie zwiększony padding dla oddechu */
+    border-radius: 0 !important; /* Ostre krawędzie obramowania sekcji */
+    margin-bottom: 25px;
+    background: #ffffff;
+}
+
+.contact-card-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Nowoczesne, idealnie okrągłe kółeczka na awatar / logo wewnątrz ostrego kafelka */
+.contact-avatar {
+    width: 50px; /* Zwiększone z 46px dla lepszej proporcji */
+    height: 50px;
+    border-radius: 50% !important; 
+    border: 1.5px solid #000000;
+    object-fit: cover;
+    background: #ffffff;
+}
+
+.contact-info-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.contact-title {
+    font-size: 0.95rem; /* Wyraźnie powiększony adres email / nick (łatwiejsze kopiowanie) */
+    font-weight: bold;
+    text-transform: none;
+    color: #000;
+}
+
+.contact-subtitle {
+    font-size: 0.75rem; /* Zwiększony dopisek pod spodem */
+    color: #666;
+    text-transform: uppercase;
+}
+
+/* Ostre przyciski akcji - DOSKONAŁA SYMETRIA */
+.contact-card-btn {
+    background: #000000;
+    color: #ffffff !important;
+    text-decoration: none;
+    width: 140px; /* Sztywna, identyczna szerokość dla obu przycisków */
+    text-align: center;
+    padding: 10px 0; /* Symetryczny padding góra/dół */
+    border-radius: 0 !important;
+    font-size: 0.75rem; /* Podbita czytelność tekstu na przycisku */
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 1.5px solid #000000;
+    transition: all 0.2s ease;
+    display: block; /* Wspiera wymuszenie stałej szerokości width */
+    white-space: nowrap;
+}
+
+.contact-card-btn:hover {
+    background: #ffffff;
+    color: #000000 !important;
+}
