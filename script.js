@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, { passive: true });
     }
 
-    // Obsługa klawiatury (Rozbudowana o zamykanie modali)
+    // Obsługa klawiatury
     document.addEventListener('keydown', (e) => {
         if (e.key === "Escape") {
             if (lightbox.classList.contains('active')) {
@@ -134,84 +134,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (term === 'generator') { window.location.href = 'generator/index.html'; return; }
 
         document.querySelectorAll('.photo-card').forEach(card => {
-            const cats = (card.getAttribute('data-category') || "").toLowerCase().split(' ');
-            const isMatch = term === "" ? card.classList.contains('highlight') : cats.some(w => w.startsWith(term));
-            card.classList.toggle('hidden', !isMatch);
-        });
-        if (suggestionsBox) suggestionsBox.style.display = "none";
-    };
-
-    if (searchInput && suggestionsBox) {
-        searchInput.addEventListener('click', () => {
-            if (searchInput.value.trim() === "") {
-                suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}</li>`).join('');
-                suggestionsBox.style.display = "block";
-            }
-        });
-
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase().trim();
-            if (term === "") {
-                suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}</li>`).join('');
-                suggestionsBox.style.display = "block";
-            } else {
-                const cards = document.querySelectorAll('.photo-card');
-                let matches = new Set();
-                cards.forEach(c => c.getAttribute('data-category').split(' ').forEach(cat => {if(cat.startsWith(term)) matches.add(cat)}));
-                
-                suggestionsBox.innerHTML = Array.from(matches).map(m => `<li>${m}</li>`).join('');
-                suggestionsBox.style.display = matches.size > 0 ? "block" : "none";
-            }
-        });
-
-        document.addEventListener('click', (e) => {
-            if (e.target !== searchInput && !suggestionsBox.contains(e.target)) {
-                suggestionsBox.style.display = "none";
-            }
-        });
-
-        if (searchBtn) searchBtn.addEventListener('click', performSearch);
-        searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
-        
-        suggestionsBox.addEventListener('click', (e) => {
-            if (e.target.tagName === 'LI') {
-                searchInput.value = e.target.textContent;
-                performSearch();
-            }
-        });
-    }
-
-    // --- 4. DODATKI (STRZAŁKA I LICZNIK) ---
-    const btt = document.getElementById('back-to-top');
-    window.addEventListener('scroll', () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; });
-    if (btt) btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    const counterEl = document.getElementById('frame-count');
-    if (counterEl) {
-        fetch('https://abacus.jasoncameron.dev/hit/alan_lysiak_portfolio/pentax_v1')
-        .then(r => r.json())
-        .then(d => counterEl.innerText = (200 + (d.value || 0)).toString().padStart(2, '0'))
-        .catch(() => counterEl.innerText = "200");
-    }
-
-    // --- 5. LOGIKA OKIENEK (MODALI) ---
-    const modalTriggers = document.querySelectorAll('.modal-trigger');
-    const modalCloses = document.querySelectorAll('.custom-modal-close');
-    const modals = document.querySelectorAll('.custom-modal');
-
-    // Otwieranie okienek po kliknięciu w linki
-    modalTriggers.forEach(trigger => {
-        trigger.addEventListener('click', (e) => {
-            e.preventDefault(); // Zatrzymujemy domyślny skok linku '#'
-            const targetId = trigger.getAttribute('data-target');
-            const targetModal = document.getElementById(targetId);
-            if (targetModal) {
-                targetModal.classList.add('active');
-                document.body.style.overflow = 'hidden'; // Blokujemy przewijanie galerii w tle
-            }
-        });
-    });
-
-    // Wspólna funkcja zamykająca wszystkie okienka
-    function closeAllModals() {
-        modals.forEach(modal => modal.classList
+            const cats = (
