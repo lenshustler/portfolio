@@ -59,15 +59,121 @@
     .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-transform: uppercase; z-index: 1000; }
 
     /* ========================================================
-       2. FIX DLA OKIENEK MODALNYCH W GENERATORZE
+       2. PEŁNA STYLIZACJA OKIENEK MODALNYCH (URATOWANA)
        ======================================================== */
     .custom-modal {
+      display: none; /* Domyślnie całkowicie ukryte */
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
       width: 100% !important;
       height: 100% !important;
-      z-index: 99999 !important; /* Wymuszenie pozycji nad przyciskiem PDF (1000) i zdjęciami */
+      background: rgba(0, 0, 0, 0.4); /* Przyciemnienie tła strony */
+      z-index: 99999 !important; /* Nad wszystkim innym */
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* Klasa dodawana przez Twój plik script.js */
+    .custom-modal.active {
+      display: flex !important;
+    }
+
+    .custom-modal-content {
+      background: #fff;
+      color: #000;
+      padding: 30px;
+      width: 100%;
+      max-width: 500px;
+      position: relative;
+      box-sizing: border-box;
+      border: 1px solid #000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .custom-modal-close {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #000;
+      line-height: 1;
+    }
+
+    .custom-modal-body h2 {
+      margin-top: 0;
+      text-transform: uppercase;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+    }
+
+    .modal-description {
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+
+    .contact-section-label {
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      letter-spacing: 1px;
+    }
+
+    .contact-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9f9f9;
+      border: 1px solid #000;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .contact-card-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .contact-avatar {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border: 1px solid #000;
+      border-radius: 50%;
+    }
+
+    .contact-info-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .contact-title {
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
+    .contact-subtitle {
+      font-size: 0.75rem;
+      color: #666;
+    }
+
+    .contact-card-btn {
+      text-decoration: none;
+      color: #fff;
+      background: #000;
+      padding: 6px 12px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: bold;
     }
 
     /* ========================================================
@@ -168,8 +274,8 @@
 <div id="modal-contact" class="custom-modal">
     <div class="custom-modal-content">
         <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
-        <h2>Kontakt</h2>
         <div class="custom-modal-body" style="-webkit-user-select: text !important; user-select: text !important;">
+            <h2>Kontakt</h2>
             <p class="modal-description">Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.</p>
             
             <div class="contact-section-label">Email</div>
@@ -202,8 +308,8 @@
 <div id="modal-privacy" class="custom-modal">
     <div class="custom-modal-content">
         <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
-        <h2>Polityka Prywatności</h2>
         <div class="custom-modal-body">
+            <h2>Polityka Prywatności</h2>
             <p>Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.</p>
             <p style="margin-top: 15px;">Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.</p>
         </div>
@@ -213,8 +319,8 @@
 <div id="modal-terms" class="custom-modal">
     <div class="custom-modal-content">
         <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
-        <h2>Regulamin strony</h2>
         <div class="custom-modal-body">
+            <h2>Regulamin strony</h2>
             <p>Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.</p>
             <p style="margin-top: 15px;">Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione.</p>
         </div>
