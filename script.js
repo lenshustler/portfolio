@@ -1,10 +1,8 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const PROJECT_ID = '6g67d261';
     const DATASET = 'portfolio';
-    
-    // --- KONFIGURACJA JĘZYKA ---
-    let currentLang = localStorage.getItem('portfolio_lang') || 'pl';
 
+    // --- 1. TŁUMACZENIA (i18n) ---
     const translations = {
         pl: {
             "search-btn": "SZUKAJ",
@@ -14,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             "nav-terms": "Regulamin",
             "seo-h1": "Portfolio fotograficzne Alan Łysiak",
             "contact-title": "Kontakt",
-            "contact-desc": "Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.",
+            "contact-desc": "Masz pytania lub chcesz podjąć współpracę? Napisz bezpośrednio.",
             "contact-email-label": "Email",
             "contact-email-sub": "Napisz wiadomość",
             "contact-email-btn": "Wyślij Email",
@@ -22,11 +20,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             "contact-insta-sub": "Instagram",
             "contact-insta-btn": "Zobacz profil",
             "privacy-title": "Polityka Prywatności",
-            "privacy-p1": "Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.",
-            "privacy-p2": "Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.",
-            "terms-title": "Regulamin strony",
-            "terms-p1": "Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.",
-            "terms-p2": "Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione."
+            "privacy-p1": "Strona używa plików cookies tylko w celach technicznych.",
+            "privacy-p2": "Nie zbieramy danych marketingowych.",
+            "terms-title": "Regulamin",
+            "terms-p1": "Wszystkie zdjęcia są własnością Alana Łysiaka.",
+            "terms-p2": "Kopiowanie bez zgody zabronione."
         },
         en: {
             "search-btn": "SEARCH",
@@ -36,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             "nav-terms": "TERMS",
             "seo-h1": "Photography Portfolio Alan Łysiak",
             "contact-title": "CONTACT",
-            "contact-desc": "Do you have any questions or want to collaborate? Send me an email.",
+            "contact-desc": "Do you have any questions? Feel free to reach out.",
             "contact-email-label": "Email",
             "contact-email-sub": "Send a message",
             "contact-email-btn": "Send Email",
@@ -44,13 +42,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             "contact-insta-sub": "Instagram",
             "contact-insta-btn": "View Profile",
             "privacy-title": "Privacy Policy",
-            "privacy-p1": "This site respects your privacy. We use cookies and local storage only for technical purposes – to ensure the site works correctly and for the visit counter.",
-            "privacy-p2": "This site does not collect, process, or share your personal data with third parties for marketing purposes.",
+            "privacy-p1": "This site uses cookies for technical purposes only.",
+            "privacy-p2": "We do not collect marketing data.",
             "terms-title": "Terms of Service",
-            "terms-p1": "All photographs and materials presented on this site are the property of Alan Łysiak and are protected by international copyright law.",
-            "terms-p2": "Copying, downloading, distributing, modifying, or any commercial use of the photos without prior written consent from the author is strictly prohibited."
+            "terms-p1": "All photographs are property of Alan Łysiak.",
+            "terms-p2": "Copying without permission is prohibited."
         }
     };
+
+    let currentLang = localStorage.getItem('portfolio_lang') || 'pl';
 
     function updateLanguage() {
         document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -59,55 +59,61 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         const searchInput = document.getElementById('search-input');
         if (searchInput) searchInput.placeholder = currentLang === 'pl' ? 'szukaj...' : 'search...';
-        
-        // Podświetlenie aktywnego języka
-        document.getElementById('lang-pl').style.opacity = currentLang === 'pl' ? '1' : '0.5';
-        document.getElementById('lang-en').style.opacity = currentLang === 'en' ? '1' : '0.5';
     }
 
     document.getElementById('lang-pl').addEventListener('click', () => { currentLang = 'pl'; localStorage.setItem('portfolio_lang', 'pl'); updateLanguage(); });
     document.getElementById('lang-en').addEventListener('click', () => { currentLang = 'en'; localStorage.setItem('portfolio_lang', 'en'); updateLanguage(); });
 
-    // --- GALERIA I WYSZUKIWARKA ---
+    // --- 2. POBIERANIE DANYCH Z SANITY ---
     const grid = document.querySelector('.gallery-grid');
     const searchInput = document.getElementById('search-input');
-    const suggestions = document.getElementById('search-suggestions');
+    const suggestionsBox = document.getElementById('search-suggestions');
 
-    // Pobieranie danych
     try {
-        const query = encodeURIComponent(`*[_type == "photo"] { title, categories, "imageUrl": image.asset->url }`);
-        const res = await fetch(`https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${query}`);
-        const { result } = await res.json();
+        const query = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, isHighlight, categories, "imageUrl": image.asset->url }`);
+        const response = await fetch(`https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${query}`);
+        const { result: photos } = await response.json();
 
-        result.forEach(photo => {
+        photos.forEach(photo => {
             const card = document.createElement('div');
-            card.className = 'photo-card';
-            card.setAttribute('data-cats', (photo.categories || []).join(' ').toLowerCase());
-            card.innerHTML = `<img src="${photo.imageUrl}?w=400" alt="${photo.title}">`;
+            card.className = `photo-card ${photo.isHighlight ? 'highlight' : 'hidden'}`;
+            card.setAttribute('data-category', (photo.categories || []).join(' ').toLowerCase());
+            card.innerHTML = `<img src="${photo.imageUrl}?auto=format&w=500" alt="${photo.title || 'Photo'}" loading="lazy">`;
             grid.appendChild(card);
         });
     } catch (e) { console.error("Sanity Error:", e); }
 
-    // Wyszukiwanie
+    // --- 3. WYSZUKIWARKA I HIGHLIGHTY ---
+    const performSearch = () => {
+        const term = searchInput.value.toLowerCase().trim();
+        document.querySelectorAll('.photo-card').forEach(card => {
+            const cats = card.getAttribute('data-category') || "";
+            const isMatch = term === "" ? card.classList.contains('highlight') : cats.includes(term);
+            card.classList.toggle('hidden', !isMatch);
+        });
+        suggestionsBox.style.display = "none";
+    };
+
     searchInput.addEventListener('input', (e) => {
-        const val = e.target.value.toLowerCase();
-        suggestions.innerHTML = "";
-        if (val) {
-            suggestions.style.display = "block";
-            // Tu możesz dodać logikę podpowiedzi z Twojego poprzedniego skryptu
-        } else {
-            suggestions.style.display = "none";
+        const term = e.target.value.toLowerCase().trim();
+        if (!term) {
+            suggestionsBox.style.display = "none";
+            return;
         }
+        // Prosta logika podpowiedzi
+        suggestionsBox.innerHTML = `<li>${term}...</li>`; 
+        suggestionsBox.style.display = "block";
     });
 
-    updateLanguage();
-    
-    // --- OBSŁUGA MODALI ---
+    searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
+    document.querySelector('.search-btn').addEventListener('click', performSearch);
+
+    // --- 4. MODALE ---
     document.querySelectorAll('.modal-trigger').forEach(trigger => {
         trigger.addEventListener('click', (e) => {
             e.preventDefault();
-            const target = document.getElementById(trigger.getAttribute('data-target'));
-            if (target) target.classList.add('active');
+            const targetId = trigger.getAttribute('data-target');
+            document.getElementById(targetId)?.classList.add('active');
         });
     });
 
@@ -116,4 +122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.querySelectorAll('.custom-modal').forEach(m => m.classList.remove('active'));
         });
     });
+
+    // Inicjalizacja
+    updateLanguage();
 });
