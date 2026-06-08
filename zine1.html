@@ -3,12 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>Zine #01 | Alan Łysiak</title>
-    <meta name="description" content="FlaneGRyzm Vol.1 - Alan Łysiak">
-    <meta property="og:title" content="Zine #01 | Alan Łysiak">
-    <meta property="og:type" content="website">
-
     <link rel="icon" type="image/png" href="favicon.png?v=123">
     <link rel="stylesheet" href="style.css?v=55.0">
 </head>
@@ -19,10 +14,8 @@
             <img src="images/logo.png" alt="Logo" class="site-logo">
             <a href="index.html" class="site-name">Alan Łysiak</a>
         </div>
-
         <ul class="header-links">
             <li><a href="index.html">Galeria</a></li>
-            <li><a href="zine.html">Zine</a></li>
             <li><a href="#" class="modal-trigger" data-target="modal-contact">Kontakt</a></li>
             <li class="ig-icon">
                 <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
@@ -37,20 +30,12 @@
     </header>
 
     <section class="zine-section" style="width: 92%; max-width: 1200px; height: 75vh; margin: 20px auto 60px auto; display: flex; justify-content: center;">
-        <iframe 
-            src="https://www.blurb.com/bookshare/app/index.html?bookId=12871169" 
-            frameborder="0" 
-            allowfullscreen 
-            onload="this.focus()" 
-            scrolling="no"
-            style="width: 100%; height: 100%; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.08);">
-        </iframe>
+        <iframe src="https://www.blurb.com/bookshare/app/index.html?bookId=12871169" frameborder="0" allowfullscreen onload="this.focus()" scrolling="no" style="width: 100%; height: 100%; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.08);"></iframe>
     </section>
 
-    <footer id="contact">
+    <footer>
         <ul class="footer-links">
             <li><a href="index.html">Galeria</a></li>
-            <li><a href="zine.html">Zine</a></li>
             <li><a href="#" class="modal-trigger" data-target="modal-privacy">Prywatność</a></li>
             <li><a href="#" class="modal-trigger" data-target="modal-terms">Regulamin</a></li>
             <li><a href="#" class="modal-trigger" data-target="modal-contact">Kontakt</a></li>
@@ -64,71 +49,9 @@
                 </a>
             </li>
         </ul>
-
-        <div class="pentax-counter">
-            <div class="counter-frame">
-                <span id="frame-count">00</span>
-            </div> 
-        </div>
-
+        <div class="pentax-counter"><div class="counter-frame"><span id="frame-count">00</span></div></div>
         <p class="footer-name">&copy; 2026 Alan Łysiak</p>
     </footer>
-
-    <div id="modal-contact" class="custom-modal">
-        <div class="custom-modal-content">
-            <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
-            <h2>Kontakt</h2>
-            <div class="custom-modal-body" style="-webkit-user-select: text !important; user-select: text !important;">
-                <p class="modal-description">Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.</p>
-                
-                <div class="contact-section-label">Email</div>
-                <div class="contact-card">
-                    <div class="contact-card-left">
-                        <img src="images/logo.png" alt="Alan Łysiak Logo" class="contact-avatar">
-                        <div class="contact-info-block">
-                            <span class="contact-title">lyskier@gmail.com</span>
-                            <span class="contact-subtitle">Napisz wiadomość</span>
-                        </div>
-                    </div>
-                    <a href="mailto:lyskier@gmail.com" class="contact-card-btn">Send Email</a>
-                </div>
-
-                <div class="contact-section-label">Instagram</div>
-                <div class="contact-card">
-                    <div class="contact-card-left">
-                        <img src="images/insta-avatar.jpg" alt="Instagram Avatar" class="contact-avatar" onerror="this.src='images/logo.png'">
-                        <div class="contact-info-block">
-                            <span class="contact-title">@lenshustler</span>
-                            <span class="contact-subtitle">Instagram</span>
-                        </div>
-                    </div>
-                    <a href="https://instagram.com/lenshustler" target="_blank" class="contact-card-btn">View Profile</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-privacy" class="custom-modal">
-        <div class="custom-modal-content">
-            <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
-            <h2>Polityka Prywatności</h2>
-            <div class="custom-modal-body">
-                <p>Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.</p>
-                <p style="margin-top: 15px;">Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-terms" class="custom-modal">
-        <div class="custom-modal-content">
-            <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
-            <h2>Regulamin strony</h2>
-            <div class="custom-modal-body">
-                <p>Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.</p>
-                <p style="margin-top: 15px;">Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione.</p>
-            </div>
-        </div>
-    </div>
 
     <script src="script.js?v=55.0"></script>
 </body>
