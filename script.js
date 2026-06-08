@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     img.src = photo.imageUrl + "?auto=format&w=450&q=70";
                     img.setAttribute('data-fullsrc', photo.imageUrl);
                     img.setAttribute('draggable', 'false');
-                    img.loading = "lazy";
+                    img.loading = "lazy"; 
                     img.alt = photo.title || "Zdjęcie";
                     
                     img.onclick = () => openLightboxFromImage(img);
@@ -128,22 +128,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function updateLightbox() {
         if (visibleImages.length > 0 && lightboxImg) {
-            const baseUrl = visibleImages[activeIdx].getAttribute('data-fullsrc');
-            const isMobile = window.innerWidth < 768;
+            // POPRAWKA: Ultra-krótkie mignięcie wygaszania (100ms na zmianę źródła)
+            lightboxImg.style.opacity = '0';
             
-            // Błyskawiczna zmiana źródła obrazu bez wygaszania tła
-            if (isMobile) {
-                lightboxImg.src = baseUrl + "?auto=format&w=800&q=75";
-            } else {
-                lightboxImg.src = baseUrl + "?auto=format&w=1600";
-            }
-            
-            resetZoom();
+            setTimeout(() => {
+                const baseUrl = visibleImages[activeIdx].getAttribute('data-fullsrc');
+                const isMobile = window.innerWidth < 768;
+                
+                if (isMobile) {
+                    lightboxImg.src = baseUrl + "?auto=format&w=800&q=75";
+                } else {
+                    lightboxImg.src = baseUrl + "?auto=format&w=1600";
+                }
+                
+                resetZoom();
+            }, 100);
         }
     }
 
     if (lightboxImg) {
         lightboxImg.decoding = "async";
+        
+        // Płynne ujawnienie obrazu natychmiast po załadowaniu pliku przez przeglądarkę
+        lightboxImg.onload = () => {
+            lightboxImg.style.opacity = '1';
+        };
 
         lightboxImg.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -197,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         lightboxImg.addEventListener('touchend', () => {
             if (!isMoving) return;
             isMoving = false;
-            lightboxImg.style.transition = 'transform 0.3s ease';
+            lightboxImg.style.transition = 'transform 0.3s ease, opacity 0.12s ease-in-out';
         });
     }
 
