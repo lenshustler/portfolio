@@ -6,6 +6,19 @@
     <title>Zine #01 | Alan Łysiak</title>
     <link rel="icon" type="image/png" href="favicon.png?v=123">
     <link rel="stylesheet" href="style.css?v=55.0">
+    <style>
+        /* Styl dla sekcji specyfikacji */
+        .zine-specs { border: 2px solid #000; padding: 25px; max-width: 500px; margin: 40px auto; text-align: left; }
+        .zine-specs h3 { margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; }
+        .spec-item { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .spec-label { font-weight: bold; display: block; margin-bottom: 4px; }
+        /* Poprawka dla Softcover - zawijanie tekstu */
+        .spec-value { display: block; word-break: break-word; line-height: 1.4; }
+        
+        /* Strzałka powrotu */
+        .back-to-zine { position: fixed; bottom: 30px; left: 30px; font-size: 2.5rem; text-decoration: none; color: #000; z-index: 999; cursor: pointer; line-height: 1; }
+        .back-to-zine:hover { opacity: 0.6; }
+    </style>
 </head>
 <body>
 
@@ -33,6 +46,15 @@
         <iframe src="https://www.blurb.com/bookshare/app/index.html?bookId=12871169" frameborder="0" allowfullscreen onload="this.focus()" scrolling="no" style="width: 100%; height: 100%; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.08);"></iframe>
     </section>
 
+    <section class="zine-specs">
+        <h3>ZINE SPECIFICATIONS</h3>
+        <div class="spec-item"><span class="spec-label">STRONY</span><span class="spec-value">60 (full color)</span></div>
+        <div class="spec-item"><span class="spec-label">FOTOGRAFIE</span><span class="spec-value">45</span></div>
+        <div class="spec-item"><span class="spec-label">ZINE TYPE</span><span class="spec-value">SOFTCOVER BOOK (PERFECT BOUND)</span></div>
+        <div class="spec-item"><span class="spec-label">PAPIER</span><span class="spec-value">150gsm Matted</span></div>
+        <div class="spec-item"><span class="spec-label">FORMAT</span><span class="spec-value">A5</span></div>
+    </section>
+
     <footer>
         <ul class="footer-links">
             <li><a href="index.html">Galeria</a></li>
@@ -52,6 +74,12 @@
         <div class="pentax-counter"><div class="counter-frame"><span id="frame-count">00</span></div></div>
         <p class="footer-name">&copy; 2026 Alan Łysiak</p>
     </footer>
+
+    <a href="zine.html" class="back-to-zine" title="Powrót do listy zine'ów">←</a>
+
+    <div id="modal-contact" class="custom-modal"><div class="custom-modal-content"><button class="custom-modal-close" aria-label="Zamknij">&times;</button><h2>Kontakt</h2><div class="custom-modal-body"><p>Masz pytania? Napisz: lyskier@gmail.com</p></div></div></div>
+    <div id="modal-privacy" class="custom-modal"><div class="custom-modal-content"><button class="custom-modal-close" aria-label="Zamknij">&times;</button><h2>Polityka Prywatności</h2><div class="custom-modal-body"><p>Ta strona szanuje Twoją prywatność.</p></div></div></div>
+    <div id="modal-terms" class="custom-modal"><div class="custom-modal-content"><button class="custom-modal-close" aria-label="Zamknij">&times;</button><h2>Regulamin</h2><div class="custom-modal-body"><p>Wszystkie fotografie są własnością autora.</p></div></div></div>
 
     <script src="script.js?v=55.0"></script>
 </body>
