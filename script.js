@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     img.src = photo.imageUrl + "?auto=format&w=450&q=70";
                     img.setAttribute('data-fullsrc', photo.imageUrl);
                     img.setAttribute('draggable', 'false');
-                    img.loading = "lazy"; // Asynchroniczne ładowanie siatki
+                    img.loading = "lazy";
                     img.alt = photo.title || "Zdjęcie";
                     
                     img.onclick = () => openLightboxFromImage(img);
@@ -128,36 +128,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function updateLightbox() {
         if (visibleImages.length > 0 && lightboxImg) {
-            // POPRAWKA MOBILNA: Płynne wygaszenie zdjęcia przed zmianą źródła (eliminuje lag wizualny)
-            lightboxImg.style.opacity = '0';
+            const baseUrl = visibleImages[activeIdx].getAttribute('data-fullsrc');
+            const isMobile = window.innerWidth < 768;
             
-            setTimeout(() => {
-                lightboxImg.style.transition = 'none';
-                const baseUrl = visibleImages[activeIdx].getAttribute('data-fullsrc');
-                const isMobile = window.innerWidth < 768;
-                
-                if (isMobile) {
-                    // POPRAWKA: w=800 drastycznie przyspiesza renderowanie na telefonach i oszczędza RAM urządzenia
-                    lightboxImg.src = baseUrl + "?auto=format&w=800&q=75";
-                } else {
-                    lightboxImg.src = baseUrl + "?auto=format&w=1600";
-                }
-                
-                resetZoom();
-                
-                requestAnimationFrame(() => {
-                    lightboxImg.style.transition = 'transform 0.3s ease, opacity 0.25s ease';
-                });
-            }, 120);
+            // Błyskawiczna zmiana źródła obrazu bez wygaszania tła
+            if (isMobile) {
+                lightboxImg.src = baseUrl + "?auto=format&w=800&q=75";
+            } else {
+                lightboxImg.src = baseUrl + "?auto=format&w=1600";
+            }
+            
+            resetZoom();
         }
     }
 
-    // POPRAWKA MOBILNA: Ujawnienie zdjęcia dopiero po pełnym załadowaniu przez przeglądarkę
     if (lightboxImg) {
         lightboxImg.decoding = "async";
-        lightboxImg.onload = () => {
-            lightboxImg.style.opacity = '1';
-        };
 
         lightboxImg.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -211,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         lightboxImg.addEventListener('touchend', () => {
             if (!isMoving) return;
             isMoving = false;
-            lightboxImg.style.transition = 'transform 0.3s ease, opacity 0.25s ease';
+            lightboxImg.style.transition = 'transform 0.3s ease';
         });
     }
 
