@@ -1,101 +1,204 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    // --- 1. KONFIGURACJA ---
-    const PROJECT_ID = '6g67d261';
-    const DATASET = 'portfolio';
-    const translations = {
-        pl: { "search-btn": "SZUKAJ", "nav-zine": "Zine", "nav-contact": "Kontakt", "nav-privacy": "Prywatność", "nav-terms": "Regulamin", "contact-title": "Kontakt", "contact-desc": "Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.", "contact-email-label": "Email", "contact-email-sub": "Napisz wiadomość", "contact-email-btn": "Wyślij Email", "contact-insta-label": "Instagram", "contact-insta-sub": "Instagram", "contact-insta-btn": "Zobacz profil", "privacy-title": "Polityka Prywatności", "privacy-p1": "Ta strona szanuje Twoją prywatność. Używamy plików cookies oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych.", "privacy-p2": "Strona nie zbiera danych w celach marketingowych.", "terms-title": "Regulamin strony", "terms-p1": "Wszystkie fotografie są własnością Alana Łysiaka.", "terms-p2": "Kopiowanie bez zgody zabronione." },
-        en: { "search-btn": "SEARCH", "nav-zine": "Zine", "nav-contact": "CONTACT", "nav-privacy": "PRIVACY", "nav-terms": "TERMS", "contact-title": "Contact", "contact-desc": "Do you have any questions or want to collaborate? Send me an email.", "contact-email-label": "Email", "contact-email-sub": "Send a message", "contact-email-btn": "Send Email", "contact-insta-label": "Instagram", "contact-insta-sub": "Instagram", "contact-insta-btn": "View Profile", "privacy-title": "Privacy Policy", "privacy-p1": "This site respects your privacy. We use cookies and local storage only for technical purposes.", "privacy-p2": "We do not collect personal data for marketing purposes.", "terms-title": "Terms of Service", "terms-p1": "All photographs are the property of Alan Łysiak.", "terms-p2": "Copying without permission is prohibited." }
-    };
+/* ==========================================================================
+   1. RESET I PODSTAWY
+   ========================================================================== */
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent !important; outline: none !important;
+}
+html { overflow-y: scroll; }
+body {
+    font-family: 'Courier New', Courier, monospace;
+    -webkit-font-smoothing: antialiased; background-color: #ffffff;
+    color: #000; -webkit-user-select: none; user-select: none;
+}
 
-    let currentLang = localStorage.getItem('portfolio_lang') || 'pl';
-    let galleryImages = []; // Do nawigacji lightboxa
-    let currentLightboxIndex = 0;
+/* ==========================================================================
+   2. NAGŁÓWEK (LOGO + WYSZUKIWARKA + LINKI)
+   ========================================================================== */
+header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 35px 40px; width: 100%; border-bottom: 1px solid #000;
+}
+.header-branding { flex: 1; display: flex; align-items: center; gap: 15px; }
+.site-logo { height: 40px; width: auto; }
+.site-name { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; text-decoration: none; color: #000; }
+.search-nav { flex: 1; display: flex; justify-content: flex-start; gap: 8px; padding: 0 20px; position: relative; }
+.header-links { flex: 1; list-style: none; display: flex; justify-content: flex-end; align-items: center; gap: 35px; padding: 0; }
+.header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; transition: color 0.3s ease; }
+.header-links a:hover { color: #555; }
+.ig-icon svg { display: block; color: #000; }
 
-    // --- 2. JĘZYK ---
-    function updateLanguage() {
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (translations[currentLang] && translations[currentLang][key]) el.textContent = translations[currentLang][key];
-        });
-        document.getElementById('lang-pl').style.opacity = currentLang === 'pl' ? '1' : '0.5';
-        document.getElementById('lang-en').style.opacity = currentLang === 'en' ? '1' : '0.5';
-    }
+/* ==========================================================================
+   3. WYSZUKIWARKA
+   ========================================================================== */
+.arnold-search {
+    width: 100%; max-width: 350px; background: transparent; border: 1px solid #ccc;
+    color: #000; font-family: 'Courier New', Courier, monospace; font-size: 0.8rem;
+    text-align: left; padding: 10px 15px; text-transform: uppercase; outline: none; transition: border 0.3s ease;
+}
+.arnold-search:focus { border: 1px solid #000; }
+.arnold-search::placeholder { color: #000; font-family: 'Courier New', Courier, monospace; font-size: 0.7rem; text-transform: uppercase; }
+.search-btn {
+    border: 1px solid #000; background: transparent; padding: 8px 25px;
+    font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; text-transform: uppercase;
+    cursor: pointer; color: #000; transition: all 0.2s; font-weight: bold;
+}
+.search-btn:hover { background-color: #000; color: #fff; }
 
-    document.getElementById('lang-pl').addEventListener('click', () => { currentLang = 'pl'; localStorage.setItem('portfolio_lang', 'pl'); updateLanguage(); });
-    document.getElementById('lang-en').addEventListener('click', () => { currentLang = 'en'; localStorage.setItem('portfolio_lang', 'en'); updateLanguage(); });
+.suggestions-list {
+    position: absolute; top: 100%; width: 100%; max-width: 350px;
+    margin: 0; background-color: #fff; list-style: none; z-index: 1000;
+    display: none; border: 1px solid #000; left: 20px; 
+}
+.suggestions-list li { padding: 12px 15px; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; border-bottom: 1px solid #eee; transition: background-color 0.2s, color 0.2s; }
+.suggestions-list li:hover { background-color: #000; color: #fff; }
 
-    // --- 3. WYSZUKIWARKA ---
-    const searchInput = document.getElementById('search-input');
-    const suggestions = document.getElementById('search-suggestions');
+/* ==========================================================================
+   4. GALERIA
+   ========================================================================== */
+.gallery-section { width: 92%; max-width: 1700px; margin: 40px auto 40px auto; }
+.gallery-grid { column-count: 5; column-gap: 15px; }
+.photo-card { display: inline-block; width: 100%; margin-bottom: 15px; break-inside: avoid; overflow: hidden; }
+.photo-card.hidden { display: none !important; }
+.photo-card img { 
+    width: 100%; height: auto; display: block; cursor: pointer; transition: transform 0.3s ease; 
+    backface-visibility: hidden; -webkit-backface-visibility: hidden; transform: translate3d(0,0,0);
+}
+.photo-card:hover img { transform: scale(1.03); }
+
+/* ==========================================================================
+   5. STOPKA & LICZNIK
+   ========================================================================== */
+footer { display: flex; flex-direction: column; align-items: center; padding: 40px 0 30px 0; }
+.footer-links { list-style: none; display: flex; justify-content: center; gap: 35px; margin: 12px 0 8px 0; padding: 0; }
+.footer-links a { text-decoration: none; color: #000; font-size: 0.7rem; text-transform: uppercase; }
+.pentax-counter { margin-bottom: 30px; }
+.counter-frame { min-width: 40px; padding: 0 8px; height: 25px; background-color: #000; border: 1.5px solid #000; display: flex; justify-content: center; align-items: center; }
+#frame-count { font-family: 'Courier New', monospace; color: #fff; font-size: 0.8rem; white-space: nowrap; }
+.footer-name { font-size: 0.6rem; text-transform: uppercase; font-family: 'Courier New', Courier, monospace; }
+
+/* ==========================================================================
+   6. STRZAŁKA BACK TO TOP
+   ========================================================================== */
+#back-to-top { position: fixed; bottom: 30px; right: 20px; width: 50px; height: 50px; cursor: pointer; background: transparent; border: none; display: none; z-index: 1000; }
+#back-to-top:after { content: ''; width: 12px; height: 12px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; transform: rotate(-45deg); margin: 20px auto 0 auto; }
+
+/* ==========================================================================
+   7. LIGHTBOX
+   ========================================================================== */
+.lightbox { 
+    display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; 
+    background-color: #ffffff; opacity: 0; transition: opacity 0.2s ease; justify-content: center; align-items: center;
+}
+.lightbox.active { display: flex; opacity: 1 !important; }
+
+.lightbox-content { 
+    max-width: 95vw; max-height: 95vh; object-fit: contain;
+    transition: transform 0.3s ease, opacity 0.06s ease-in-out; /* POPRAWKA: Super szybki mikro-błysk (60ms) */
+    cursor: default; touch-action: none; will-change: transform, opacity; opacity: 1;
+}
+.lightbox-content.zoomed { transform: scale(2.0); cursor: move; }
+.lightbox-controls { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
+
+.nav-arrow, .close { 
+    position: absolute; cursor: pointer; background: transparent; border: none; 
+    display: flex; align-items: center; justify-content: center; 
+    width: 60px; height: 60px; pointer-events: auto; z-index: 101;
+}
+.prev { left: 20px; top: 50%; transform: translateY(-50%); }
+.next { right: 20px; top: 50%; transform: translateY(-50%); }
+.close { top: 20px; right: 20px; }
+
+.nav-arrow:after { content: ''; width: 14px; height: 14px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; }
+.prev:after { transform: rotate(-135deg); margin-left: 6px; }
+.next:after { transform: rotate(45deg); margin-right: 6px; }
+.close:before, .close:after { content: ''; position: absolute; width: 22px; height: 1.5px; background-color: #000; }
+.close:before { transform: rotate(45deg); }
+.close:after { transform: rotate(-45deg); }
+
+/* ==========================================================================
+   8. MODALE (OKIENKA TEKSTOWE)
+   ========================================================================== */
+.custom-modal {
+    display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    justify-content: center; align-items: center; opacity: 0; transition: opacity 0.25s ease; padding: 20px;
+}
+.custom-modal.active { display: flex; opacity: 1; }
+.custom-modal-content {
+    background-color: #ffffff; border: 1.5px solid #000000; padding: 45px 35px 35px 35px; 
+    max-width: 540px; width: 100%; position: relative; border-radius: 0 !important; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+.custom-modal-close {
+    position: absolute; top: 22px; right: 22px; background: transparent; border: none; font-size: 24px;
+    cursor: pointer; line-height: 1; padding: 0; color: #000; font-family: Arial, sans-serif; transition: transform 0.2s ease;
+}
+.custom-modal-close:hover { transform: scale(1.2); }
+.custom-modal-content h2 { margin-top: 0; margin-bottom: 25px; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.custom-modal-body p { line-height: 1.6; font-size: 0.9rem; }
+.modal-description { margin-bottom: 30px; color: #000; font-size: 0.95rem !important; }
+.contact-section-label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: #777; margin-bottom: 10px; letter-spacing: 1px; }
+
+.contact-card {
+    display: flex; align-items: center; justify-content: space-between;
+    border: 1.5px solid #000000; padding: 18px 20px; border-radius: 0 !important; margin-bottom: 25px; background: #ffffff;
+}
+.contact-card-left { display: flex; align-items: center; gap: 15px; }
+.contact-avatar { width: 50px; height: 50px; border-radius: 50% !important; border: 1.5px solid #000000; object-fit: cover; background: #ffffff; }
+.contact-info-block { display: flex; flex-direction: column; gap: 2px; }
+.contact-title { font-size: 0.95rem; font-weight: bold; text-transform: none; color: #000; }
+.contact-subtitle { font-size: 0.75rem; color: #666; text-transform: uppercase; }
+
+.contact-card-btn {
+    background: #000000; color: #ffffff !important; text-decoration: none;
+    width: 140px; text-align: center; padding: 10px 0; border-radius: 0 !important;
+    font-size: 0.75rem; font-weight: bold; text-transform: uppercase; border: 1.5px solid #000000;
+    transition: all 0.2s ease; display: block; white-space: nowrap;
+}
+.contact-card-btn:hover { background: #ffffff; color: #000000 !important; }
+
+/* ==========================================================================
+   9. RESPONSYWNOŚĆ
+   ========================================================================== */
+@media (max-width: 1100px) { .gallery-grid { column-count: 3; } }
+
+@media (max-width: 768px) {
+    html, body { overflow-x: hidden; width: 100%; }
+    header { flex-direction: column; padding: 15px 10px; gap: 10px; }
+    .header-branding, .header-links { width: 100%; justify-content: center; flex: none; }
+    .header-links { gap: 18px; }
+    .header-links a { font-size: 0.75rem; }
+    .search-nav { width: 100%; justify-content: center; flex: none; padding: 0; }
+    .suggestions-list { left: 0; } 
     
-    searchInput.addEventListener('input', (e) => {
-        const val = e.target.value.toLowerCase();
-        if(!val) { suggestions.style.display = 'none'; return; }
-        // Tutaj można dodać logikę podpowiedzi, jeśli masz słownik tagów
-        suggestions.style.display = 'block';
-    });
-
-    // --- 4. MODALE I LIGHTBOX (Delegacja zdarzeń) ---
-    document.addEventListener('click', (e) => {
-        // MODALE: Otwieranie
-        const trigger = e.target.closest('.modal-trigger');
-        if (trigger) {
-            const targetId = trigger.getAttribute('data-target');
-            document.getElementById(targetId).classList.add('active');
-            document.documentElement.classList.add('modal-open');
-        }
-
-        // MODALE: Zamykanie
-        if (e.target.classList.contains('custom-modal-close') || e.target.classList.contains('custom-modal')) {
-            document.querySelectorAll('.custom-modal').forEach(m => m.classList.remove('active'));
-            document.documentElement.classList.remove('modal-open');
-        }
-
-        // LIGHTBOX: Otwieranie
-        if (e.target.closest('.photo-card img')) {
-            const img = e.target.closest('.photo-card img');
-            const index = galleryImages.indexOf(img.src);
-            openLightbox(index);
-        }
-
-        // LIGHTBOX: Zamykanie
-        if (e.target.classList.contains('close') || e.target.id === 'lightbox') {
-            document.getElementById('lightbox').classList.remove('active');
-            document.documentElement.classList.remove('modal-open');
-        }
-
-        // LIGHTBOX: Nawigacja
-        if (e.target.classList.contains('prev')) navigateLightbox(-1);
-        if (e.target.classList.contains('next')) navigateLightbox(1);
-    });
-
-    function openLightbox(index) {
-        currentLightboxIndex = index;
-        document.getElementById('lightbox-img').src = galleryImages[index];
-        document.getElementById('lightbox').classList.add('active');
-        document.documentElement.classList.add('modal-open');
+    .gallery-section { width: 96%; margin: 15px auto; }
+    .gallery-grid { column-count: 2; column-gap: 8px; }
+    .photo-card { margin-bottom: 8px; }
+    
+    .footer-links { gap: 18px; }
+    .footer-links a { font-size: 0.65rem; }
+    
+    .lightbox-content { max-height: 80vh !important; max-width: 96vw !important; }
+    .lightbox-controls {
+        position: absolute; top: auto; bottom: 20px; width: 100%; height: 60px;
+        display: flex; justify-content: center; align-items: center; gap: 50px; pointer-events: none;
     }
+    .nav-arrow { position: static; transform: none; width: 55px; height: 55px; pointer-events: auto; }
+    .close { position: fixed !important; top: 15px !important; right: 15px !important; width: 44px; height: 44px; }
 
-    function navigateLightbox(direction) {
-        currentLightboxIndex = (currentLightboxIndex + direction + galleryImages.length) % galleryImages.length;
-        document.getElementById('lightbox-img').src = galleryImages[currentLightboxIndex];
-    }
+    .custom-modal { padding: 10px; }
+    .custom-modal-content { padding: 30px 18px 18px 18px; max-height: 92vh; overflow-y: auto; }
+    .custom-modal-content h2 { font-size: 1.15rem; margin-bottom: 15px; }
+    .modal-description { font-size: 0.85rem !important; margin-bottom: 20px; }
+    .contact-section-label { font-size: 0.65rem; margin-bottom: 8px; }
 
-    // --- 5. POBIERANIE DANYCH ---
-    const grid = document.querySelector('.gallery-grid');
-    try {
-        const response = await fetch(`https://6g67d261.api.sanity.io/v2021-10-21/data/query/portfolio?query=*[_type == "photo"]|order(_createdAt desc){title,isHighlight,categories,"imageUrl":image.asset->url}`);
-        const { result: photos } = await response.json();
-        
-        photos.forEach(photo => {
-            const card = document.createElement('div');
-            card.className = `photo-card ${photo.isHighlight ? 'highlight' : ''}`;
-            card.innerHTML = `<img src="${photo.imageUrl}?auto=format&w=600" alt="${photo.title}">`;
-            grid.appendChild(card);
-            galleryImages.push(photo.imageUrl + "?auto=format"); // Do lightboxa
-        });
-        document.getElementById('frame-count').textContent = photos.length.toString().padStart(2, '0');
-    } catch (e) { console.error("Error fetching photos:", e); }
+    .contact-card { flex-direction: column; align-items: stretch; gap: 10px; text-align: center; padding: 12px; margin-bottom: 15px; }
+    .contact-card-left { flex-direction: column; gap: 6px; }
+    .contact-avatar { width: 42px; height: 42px; }
+    .contact-title { font-size: 0.85rem; }
+    .contact-subtitle { font-size: 0.65rem; }
+    .contact-card-btn { width: 100%; padding: 8px 0; font-size: 0.7rem; }
+}
 
-    updateLanguage();
-});
+html.modal-open { overflow: hidden !important; }
+html.modal-open body { overflow: hidden !important; overscroll-behavior: none !important; }
