@@ -48,8 +48,7 @@ header {
 .suggestions-list {
     position: absolute; top: 100%; width: 100%; max-width: 350px;
     margin: 0; background-color: #fff; list-style: none; z-index: 1000;
-    display: none; border: 1px solid #000;
-    left: 20px; 
+    display: none; border: 1px solid #000; left: 20px; 
 }
 .suggestions-list li { padding: 12px 15px; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; border-bottom: 1px solid #eee; transition: background-color 0.2s, color 0.2s; }
 .suggestions-list li:hover { background-color: #000; color: #fff; }
@@ -63,8 +62,7 @@ header {
 .photo-card.hidden { display: none !important; }
 .photo-card img { 
     width: 100%; height: auto; display: block; cursor: pointer; transition: transform 0.3s ease; 
-    backface-visibility: hidden; -webkit-backface-visibility: hidden;
-    transform: translate3d(0,0,0);
+    backface-visibility: hidden; -webkit-backface-visibility: hidden; transform: translate3d(0,0,0);
 }
 .photo-card:hover img { transform: scale(1.03); }
 
@@ -90,32 +88,23 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
    ========================================================================== */
 .lightbox { 
     display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; 
-    background-color: #ffffff; opacity: 0; transition: opacity 0.3s ease;
-    justify-content: center; align-items: center;
+    background-color: #ffffff; opacity: 0; transition: opacity 0.2s ease; justify-content: center; align-items: center;
 }
 .lightbox.active { display: flex; opacity: 1 !important; }
 
 .lightbox-content { 
     max-width: 95vw; max-height: 95vh; object-fit: contain;
-    transition: transform 0.3s ease, opacity 0.25s ease; /* POPRAWKA: Płynne przejście przezroczystości obrazu */
-    cursor: default;
-    touch-action: none;
-    will-change: transform, opacity;
-    opacity: 1;
+    transition: transform 0.3s ease, opacity 0.06s ease-in-out; /* POPRAWKA: Super szybki mikro-błysk (60ms) */
+    cursor: default; touch-action: none; will-change: transform, opacity; opacity: 1;
 }
 .lightbox-content.zoomed { transform: scale(2.0); cursor: move; }
-
-.lightbox-controls { 
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-    pointer-events: none; z-index: 100;
-}
+.lightbox-controls { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
 
 .nav-arrow, .close { 
     position: absolute; cursor: pointer; background: transparent; border: none; 
     display: flex; align-items: center; justify-content: center; 
     width: 60px; height: 60px; pointer-events: auto; z-index: 101;
 }
-
 .prev { left: 20px; top: 50%; transform: translateY(-50%); }
 .next { right: 20px; top: 50%; transform: translateY(-50%); }
 .close { top: 20px; right: 20px; }
@@ -123,7 +112,6 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
 .nav-arrow:after { content: ''; width: 14px; height: 14px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; }
 .prev:after { transform: rotate(-135deg); margin-left: 6px; }
 .next:after { transform: rotate(45deg); margin-right: 6px; }
-
 .close:before, .close:after { content: ''; position: absolute; width: 22px; height: 1.5px; background-color: #000; }
 .close:before { transform: rotate(45deg); }
 .close:after { transform: rotate(-45deg); }
@@ -132,64 +120,28 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
    8. MODALE (OKIENKA TEKSTOWE)
    ========================================================================== */
 .custom-modal {
-    display: none; 
-    position: fixed; 
-    z-index: 999999; 
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.25); 
-    backdrop-filter: blur(6px);            
-    -webkit-backdrop-filter: blur(6px);
-    justify-content: center; 
-    align-items: center;
-    opacity: 0; 
-    transition: opacity 0.25s ease; 
-    padding: 20px;
+    display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    justify-content: center; align-items: center; opacity: 0; transition: opacity 0.25s ease; padding: 20px;
 }
 .custom-modal.active { display: flex; opacity: 1; }
-
 .custom-modal-content {
-    background-color: #ffffff; 
-    border: 1.5px solid #000000; 
-    padding: 45px 35px 35px 35px; 
-    max-width: 540px; 
-    width: 100%; 
-    position: relative;
-    border-radius: 0 !important; 
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    background-color: #ffffff; border: 1.5px solid #000000; padding: 45px 35px 35px 35px; 
+    max-width: 540px; width: 100%; position: relative; border-radius: 0 !important; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
 }
-
 .custom-modal-close {
-    position: absolute; 
-    top: 22px; 
-    right: 22px;
-    background: transparent; 
-    border: none; 
-    font-size: 24px;
-    cursor: pointer; 
-    line-height: 1; 
-    padding: 0; 
-    color: #000;
-    font-family: Arial, sans-serif;
-    transition: transform 0.2s ease;
+    position: absolute; top: 22px; right: 22px; background: transparent; border: none; font-size: 24px;
+    cursor: pointer; line-height: 1; padding: 0; color: #000; font-family: Arial, sans-serif; transition: transform 0.2s ease;
 }
 .custom-modal-close:hover { transform: scale(1.2); }
-
-.custom-modal-content h2 {
-    margin-top: 0; margin-bottom: 25px; 
-    font-size: 1.4rem; 
-    text-transform: uppercase; letter-spacing: 0.5px;
-}
+.custom-modal-content h2 { margin-top: 0; margin-bottom: 25px; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
 .custom-modal-body p { line-height: 1.6; font-size: 0.9rem; }
 .modal-description { margin-bottom: 30px; color: #000; font-size: 0.95rem !important; }
 .contact-section-label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: #777; margin-bottom: 10px; letter-spacing: 1px; }
 
 .contact-card {
     display: flex; align-items: center; justify-content: space-between;
-    border: 1.5px solid #000000; padding: 18px 20px; 
-    border-radius: 0 !important; margin-bottom: 25px; background: #ffffff;
+    border: 1.5px solid #000000; padding: 18px 20px; border-radius: 0 !important; margin-bottom: 25px; background: #ffffff;
 }
 .contact-card-left { display: flex; align-items: center; gap: 15px; }
 .contact-avatar { width: 50px; height: 50px; border-radius: 50% !important; border: 1.5px solid #000000; object-fit: cover; background: #ffffff; }
@@ -206,57 +158,41 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
 .contact-card-btn:hover { background: #ffffff; color: #000000 !important; }
 
 /* ==========================================================================
-   9. RESPONSYWNOŚĆ (MODYFIKACJE WYŁĄCZNIE DLA MOBILKI)
+   9. RESPONSYWNOŚĆ
    ========================================================================== */
 @media (max-width: 1100px) { .gallery-grid { column-count: 3; } }
 
 @media (max-width: 768px) {
     html, body { overflow-x: hidden; width: 100%; }
-
-    header { flex-direction: column; padding: 20px; gap: 15px; }
+    header { flex-direction: column; padding: 15px 10px; gap: 10px; }
     .header-branding, .header-links { width: 100%; justify-content: center; flex: none; }
-    
     .header-links { gap: 18px; }
     .header-links a { font-size: 0.75rem; }
-    
     .search-nav { width: 100%; justify-content: center; flex: none; padding: 0; }
     .suggestions-list { left: 0; } 
     
-    .gallery-grid { column-count: 2; column-gap: 10px; }
+    .gallery-section { width: 96%; margin: 15px auto; }
+    .gallery-grid { column-count: 2; column-gap: 8px; }
+    .photo-card { margin-bottom: 8px; }
     
     .footer-links { gap: 18px; }
     .footer-links a { font-size: 0.65rem; }
     
+    .lightbox-content { max-height: 80vh !important; max-width: 96vw !important; }
     .lightbox-controls {
-        position: absolute; top: auto; bottom: 20px;
-        width: 100%; height: 60px;
-        display: flex; justify-content: center; align-items: center;
-        gap: 40px; 
-        pointer-events: none;
+        position: absolute; top: auto; bottom: 20px; width: 100%; height: 60px;
+        display: flex; justify-content: center; align-items: center; gap: 50px; pointer-events: none;
     }
-    .nav-arrow { position: static; transform: none; width: 50px; height: 50px; pointer-events: auto; }
-    .close { position: fixed !important; top: 15px !important; right: 15px !important; width: 40px; height: 40px; }
+    .nav-arrow { position: static; transform: none; width: 55px; height: 55px; pointer-events: auto; }
+    .close { position: fixed !important; top: 15px !important; right: 15px !important; width: 44px; height: 44px; }
 
-    .custom-modal {
-        padding: 10px; 
-    }
-    .custom-modal-content {
-        padding: 30px 18px 18px 18px; 
-        max-height: 92vh; 
-        overflow-y: auto;  
-    }
+    .custom-modal { padding: 10px; }
+    .custom-modal-content { padding: 30px 18px 18px 18px; max-height: 92vh; overflow-y: auto; }
     .custom-modal-content h2 { font-size: 1.15rem; margin-bottom: 15px; }
     .modal-description { font-size: 0.85rem !important; margin-bottom: 20px; }
     .contact-section-label { font-size: 0.65rem; margin-bottom: 8px; }
 
-    .contact-card {
-        flex-direction: column; 
-        align-items: stretch;
-        gap: 10px;
-        text-align: center;
-        padding: 12px;
-        margin-bottom: 15px; 
-    }
+    .contact-card { flex-direction: column; align-items: stretch; gap: 10px; text-align: center; padding: 12px; margin-bottom: 15px; }
     .contact-card-left { flex-direction: column; gap: 6px; }
     .contact-avatar { width: 42px; height: 42px; }
     .contact-title { font-size: 0.85rem; }
@@ -264,11 +200,5 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
     .contact-card-btn { width: 100%; padding: 8px 0; font-size: 0.7rem; }
 }
 
-/* POPRAWKA: Całkowite zamrożenie przewijania tła BEZ skakania i ucinania wysokości strony */
-html.modal-open {
-    overflow: hidden !important;
-}
-html.modal-open body {
-    overflow: hidden !important;
-    overscroll-behavior: none !important;
-}
+html.modal-open { overflow: hidden !important; }
+html.modal-open body { overflow: hidden !important; overscroll-behavior: none !important; }
