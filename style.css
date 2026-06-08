@@ -199,7 +199,7 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
 .contact-card-btn:hover { background: #ffffff; color: #000000 !important; }
 
 /* ==========================================================================
-   9. RESPONSYWNOŚĆ (TWOJA ORYGINALNA + ZABEZPIECZENIE MODALI NA TELEFON)
+   9. RESPONSYWNOŚĆ (MODYFIKACJE WYŁĄCZNIE DLA MOBILKI)
    ========================================================================== */
 @media (max-width: 1100px) { .gallery-grid { column-count: 3; } }
 
@@ -207,15 +207,23 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
     /* Blokada przed poziomym rozjeżdżaniem się całej witryny */
     html, body { overflow-x: hidden; width: 100%; }
 
-    header { flex-direction: column; padding: 20px; gap: 20px; }
+    header { flex-direction: column; padding: 20px; gap: 15px; }
     .header-branding, .header-links { width: 100%; justify-content: center; flex: none; }
+    
+    /* POPRAWKA: Zacieśniamy linki w menu, żeby Zine i IG się mieściły na szerokość */
+    .header-links { gap: 18px; }
+    .header-links a { font-size: 0.75rem; }
     
     .search-nav { width: 100%; justify-content: center; flex: none; padding: 0; }
     .suggestions-list { left: 0; } 
     
     .gallery-grid { column-count: 2; column-gap: 10px; }
     
-    /* MOBILE: Pasek strzałek na dole ekranu (Wszystko działa jak 3 dni temu) */
+    /* POPRAWKA: Zacieśniamy linki w stopce na dole */
+    .footer-links { gap: 18px; }
+    .footer-links a { font-size: 0.65rem; }
+    
+    /* MOBILE: Pasek strzałek na dole ekranu */
     .lightbox-controls {
         position: absolute; top: auto; bottom: 20px;
         width: 100%; height: 60px;
@@ -225,27 +233,54 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
     .nav-arrow { position: static; transform: none; width: 50px; height: 50px; }
     .close { position: fixed !important; top: 15px !important; right: 15px !important; width: 40px; height: 40px; }
 
-    /* --- NOWOŚĆ: OPTYMALIZACJA WYSKAKUJĄCYCH OKIENEK NA TELEFONIE --- */
+    /* POPRAWKA: Optymalizacja wysokości i przestrzeni okienka popup na telefonie */
     .custom-modal {
-        padding: 10px; /* Mniejszy padding zewnętrzny, żeby okienko miało miejsce */
+        padding: 10px; 
     }
     .custom-modal-content {
-        padding: 30px 20px 20px 20px;
-        max-height: 85vh; /* Okienko nie wyjdzie poza wysokość ekranu komórki */
-        overflow-y: auto;  /* Jeśli tekst regulaminu jest długi, przewija się wewnątrz okienka */
+        padding: 30px 18px 18px 18px; /* Zmniejszony padding wewnętrzny oszczędza miejsce */
+        max-height: 92vh; 
+        overflow-y: auto;  
     }
+    .custom-modal-content h2 {
+        font-size: 1.15rem; 
+        margin-bottom: 15px;
+    }
+    .modal-description {
+        font-size: 0.85rem !important;
+        margin-bottom: 20px;
+    }
+    .contact-section-label {
+        font-size: 0.65rem;
+        margin-bottom: 8px;
+    }
+
+    /* Bardziej kompaktowe kafelki Kontaktu - zapobiegają przewijaniu całego modala */
     .contact-card {
-        flex-direction: column; /* Układa avatar, adres email i przycisk w pionie na telefonie */
+        flex-direction: column; 
         align-items: stretch;
-        gap: 12px;
+        gap: 10px;
         text-align: center;
-        padding: 15px;
+        padding: 12px;
+        margin-bottom: 15px; 
     }
     .contact-card-left {
-        flex-direction: column; /* Centrowanie avatara i napisów w pionie */
-        gap: 8px;
+        flex-direction: column; 
+        gap: 6px;
+    }
+    .contact-avatar {
+        width: 42px; /* Subtelnie mniejszy avatar */
+        height: 42px;
+    }
+    .contact-title {
+        font-size: 0.85rem;
+    }
+    .contact-subtitle {
+        font-size: 0.65rem;
     }
     .contact-card-btn {
-        width: 100%; /* Przycisk rozciąga się symetrycznie na całą szerokość kafelka */
+        width: 100%; 
+        padding: 8px 0; 
+        font-size: 0.7rem;
     }
 }
