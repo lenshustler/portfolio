@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (modal) modal.classList.remove('active');
         });
         if (lightbox && !lightbox.classList.contains('active')) {
-            document.documentElement.classList.remove('modal-open'); // POPRAWKA: Odblokowanie tła
+            document.documentElement.classList.remove('modal-open');
         }
     }
 
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const targetModal = document.getElementById(targetId);
             if (targetModal) {
                 targetModal.classList.add('active');
-                document.documentElement.classList.add('modal-open'); // POPRAWKA: Blokada tła na mobilce
+                document.documentElement.classList.add('modal-open');
             }
         });
     });
@@ -85,14 +85,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     card.setAttribute('data-category', (photo.categories || []).join(' '));
                     
                     const img = document.createElement('img');
-                    
-                    // ZMIANA: Maksymalnie odchudzone miniatury (szybki start strony na komputerach i telefonach)
                     img.src = photo.imageUrl + "?auto=format&w=450&q=70";
-                    
-                    // ZMIANA: Zapisujemy czysty, bazowy adres URL obrazu (bez narzuconego na sztywno rozmiaru)
                     img.setAttribute('data-fullsrc', photo.imageUrl);
-                    
                     img.setAttribute('draggable', 'false');
+                    img.loading = "lazy"; // Asynchroniczne ładowanie siatki
                     img.alt = photo.title || "Zdjęcie";
                     
                     img.onclick = () => openLightboxFromImage(img);
@@ -110,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- 3. LOGIKA LIGHTBOXA (ZAAWANSOWANA MOBILNA OBSŁUGA DOTYKU) ---
+    // --- 3. LOGIKA LIGHTBOXA ---
     function openLightboxFromImage(clickedImg) {
         visibleImages = Array.from(document.querySelectorAll('.photo-card:not(.hidden) img'));
         activeIdx = visibleImages.indexOf(clickedImg);
@@ -118,7 +114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (activeIdx === -1) activeIdx = 0;
         updateLightbox();
         if (lightbox) lightbox.classList.add('active');
-        document.documentElement.classList.add('modal-open'); // POPRAWKA: Zmiana na html klasę
+        document.documentElement.classList.add('modal-open');
     }
 
     function resetZoom() {
@@ -132,40 +128,45 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function updateLightbox() {
         if (visibleImages.length > 0 && lightboxImg) {
-            lightboxImg.style.transition = 'none';
+            // POPRAWKA MOBILNA: Płynne wygaszenie zdjęcia przed zmianą źródła (eliminuje lag wizualny)
+            lightboxImg.style.opacity = '0';
             
-            // ZMIANA: Pobieramy czysty URL z tagu i sprawdzamy szerokość ekranu urządzenia
-            const baseUrl = visibleImages[activeIdx].getAttribute('data-fullsrc');
-            const isMobile = window.innerWidth < 768;
-            
-            if (isMobile) {
-                // Konfiguracja dla smartfonów: w=1000 i q=80 (błyskawiczny swipe, zero lagów)
-                lightboxImg.src = baseUrl + "?auto=format&w=1000&q=80";
-            } else {
-                // Konfiguracja dla komputerów: w=1600 (pełna ostrość na dużych ekranach)
-                lightboxImg.src = baseUrl + "?auto=format&w=1600";
-            }
-            
-            resetZoom();
-            
-            requestAnimationFrame(() => {
-                lightboxImg.style.transition = 'transform 0.3s ease';
-            });
+            setTimeout(() => {
+                lightboxImg.style.transition = 'none';
+                const baseUrl = visibleImages[activeIdx].getAttribute('data-fullsrc');
+                const isMobile = window.innerWidth < 768;
+                
+                if (isMobile) {
+                    // POPRAWKA: w=800 drastycznie przyspiesza renderowanie na telefonach i oszczędza RAM urządzenia
+                    lightboxImg.src = baseUrl + "?auto=format&w=800&q=75";
+                } else {
+                    lightboxImg.src = baseUrl + "?auto=format&w=1600";
+                }
+                
+                resetZoom();
+                
+                requestAnimationFrame(() => {
+                    lightboxImg.style.transition = 'transform 0.3s ease, opacity 0.25s ease';
+                });
+            }, 120);
         }
     }
 
+    // POPRAWKA MOBILNA: Ujawnienie zdjęcia dopiero po pełnym załadowaniu przez przeglądarkę
     if (lightboxImg) {
+        lightboxImg.decoding = "async";
+        lightboxImg.onload = () => {
+            lightboxImg.style.opacity = '1';
+        };
+
         lightboxImg.addEventListener('click', (e) => {
             e.stopPropagation();
-
-            // Sprawdzamy czy urządzenie obsługuje dotyk (mobilka)
             const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
             if (clickTimer) {
                 clearTimeout(clickTimer);
                 clickTimer = null;
 
-                // Wykonaj zoom tylko, jeśli to urządzenie dotykowe
                 if (isTouchDevice) {
                     lightboxImg.classList.toggle('zoomed');
                     if (lightboxImg.classList.contains('zoomed')) {
@@ -177,7 +178,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 clickTimer = setTimeout(() => {
                     clickTimer = null;
-                    // Jeśli pojedyncze kliknięcie i obrazek nie jest powiększony -> zamknij
                     if (!lightboxImg.classList.contains('zoomed') && closeBtn) {
                         closeBtn.onclick();
                     }
@@ -185,11 +185,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // Obsługa przesuwania palcem (drag/pan) powiększonego zdjęcia na telefonie
         lightboxImg.addEventListener('touchstart', (e) => {
             if (!lightboxImg.classList.contains('zoomed') || e.touches.length !== 1) return;
             isMoving = true;
-            lightboxImg.style.transition = 'none'; // Wyłączamy animacje na czas przeciągania
+            lightboxImg.style.transition = 'none';
             startX = e.touches[0].clientX - currentX;
             startY = e.touches[0].clientY - currentY;
         }, { passive: true });
@@ -197,11 +196,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         lightboxImg.addEventListener('touchmove', (e) => {
             if (!isMoving || !lightboxImg.classList.contains('zoomed')) return;
             
-            // Wyliczanie nowej pozycji palca
             currentX = e.touches[0].clientX - startX;
             currentY = e.touches[0].clientY - startY;
 
-            // Ograniczenie przesuwania, by zdjęcie nie uciekło z ekranu
             const maxDrag = window.innerWidth * 0.4;
             if (currentX > maxDrag) currentX = maxDrag;
             if (currentX < -maxDrag) currentX = -maxDrag;
@@ -214,7 +211,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         lightboxImg.addEventListener('touchend', () => {
             if (!isMoving) return;
             isMoving = false;
-            lightboxImg.style.transition = 'transform 0.3s ease';
+            lightboxImg.style.transition = 'transform 0.3s ease, opacity 0.25s ease';
         });
     }
 
@@ -224,7 +221,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (closeBtn) { 
         closeBtn.onclick = () => { 
             if (lightbox) lightbox.classList.remove('active'); 
-            // Bezpieczne sprawdzanie czy zamykając Lightbox nie mamy otwartego innego modala w tle
             let anyModalActive = Array.from(modals).some(m => m.classList.contains('active'));
             if (!anyModalActive) document.documentElement.classList.remove('modal-open');
             resetZoom(); 
@@ -232,12 +228,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (lightbox) { lightbox.onclick = (e) => { if (e.target === lightbox && closeBtn) closeBtn.onclick(); }; }
 
-    // Zmiana zdjęć gestem przesunięcia ekranu (swipowanie) - działa tylko, gdy NIE ma zoomu
     let touchStartX = 0;
     if (lightbox) {
         lightbox.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, { passive: true });
         lightbox.addEventListener('touchend', e => {
-            if (lightboxImg && lightboxImg.classList.contains('zoomed')) return; // Blokada gestu zmiany zdjęcia podczas przybliżenia
+            if (lightboxImg && lightboxImg.classList.contains('zoomed')) return; 
             const diff = e.changedTouches[0].screenX - touchStartX;
             if (Math.abs(diff) > 40) {
                 if (diff > 0 && prevBtn) prevBtn.click();
@@ -320,7 +315,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // --- 5. DODATKI (STRZAŁKA I LICZNIK) ---
+    // --- 5. DODATKI ---
     const btt = document.getElementById('back-to-top');
     window.addEventListener('scroll', () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; });
     if (btt) btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
