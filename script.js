@@ -23,13 +23,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     const modalCloses = document.querySelectorAll('.custom-modal-close');
     const modals = document.querySelectorAll('.custom-modal');
 
+    // Funkcja sprawdzająca czy jakiekolwiek okno jest otwarte
+    function updateBodyScroll() {
+        const anyModalActive = document.querySelectorAll('.custom-modal.active').length > 0;
+        const lightboxActive = lightbox && lightbox.classList.contains('active');
+        
+        if (anyModalActive || lightboxActive) {
+            document.documentElement.classList.add('modal-open');
+        } else {
+            document.documentElement.classList.remove('modal-open');
+        }
+    }
+
     function closeAllModals() {
         modals.forEach(modal => {
             if (modal) modal.classList.remove('active');
         });
-        if (lightbox && !lightbox.classList.contains('active')) {
-            document.documentElement.classList.remove('modal-open');
-        }
+        updateBodyScroll();
     }
 
     modalTriggers.forEach(trigger => {
@@ -39,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const targetModal = document.getElementById(targetId);
             if (targetModal) {
                 targetModal.classList.add('active');
-                document.documentElement.classList.add('modal-open');
+                updateBodyScroll();
             }
         });
     });
@@ -112,8 +122,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (activeIdx === -1) activeIdx = 0;
         updateLightbox();
-        if (lightbox) lightbox.classList.add('active');
-        document.documentElement.classList.add('modal-open');
+        if (lightbox) {
+            lightbox.classList.add('active');
+            updateBodyScroll();
+        }
     }
 
     function resetZoom() {
@@ -224,9 +236,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (closeBtn) { 
         closeBtn.onclick = () => { 
-            if (lightbox) lightbox.classList.remove('active'); 
-            let anyModalActive = Array.from(modals).some(m => m.classList.contains('active'));
-            if (!anyModalActive) document.documentElement.classList.remove('modal-open');
+            if (lightbox) {
+                lightbox.classList.remove('active'); 
+                updateBodyScroll();
+            }
             resetZoom(); 
         }; 
     }
@@ -279,7 +292,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (searchInput && suggestionsBox) {
         searchInput.addEventListener('click', () => {
             if (searchInput.value.trim() === "") {
-                // NAPRAWIONO: Usunięto '0' z poniższej linijki
                 suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}</li>`).join('');
                 suggestionsBox.style.display = "block";
             }
