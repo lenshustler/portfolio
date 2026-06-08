@@ -1,82 +1,272 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>Zine | Alan Łysiak</title>
-    <meta name="description" content="Publikacje i zine'y - Alan Łysiak">
-    <meta property="og:title" content="Zine | Alan Łysiak">
-    <meta property="og:description" content="Zobacz moje publikacje">
-    <meta property="og:type" content="website">
+/* ==========================================================================
+   1. RESET I PODSTAWY
+   ========================================================================== */
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent !important; outline: none !important;
+}
+html { overflow-y: scroll; }
+body {
+    font-family: 'Courier New', Courier, monospace;
+    -webkit-font-smoothing: antialiased; background-color: #ffffff;
+    color: #000; -webkit-user-select: none; user-select: none;
+}
 
-    <link rel="icon" type="image/png" href="favicon.png?v=123">
-    <link rel="stylesheet" href="style.css?v=55.0">
-</head>
-<body>
+/* ==========================================================================
+   2. NAGŁÓWEK (LOGO + WYSZUKIWARKA + LINKI)
+   ========================================================================== */
+header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 35px 40px; width: 100%; border-bottom: 1px solid #000;
+}
+.header-branding { flex: 1; display: flex; align-items: center; gap: 15px; }
+.site-logo { height: 40px; width: auto; }
+.site-name { font-size: 1.2rem; font-weight: bold; text-transform: uppercase; text-decoration: none; color: #000; }
+.search-nav { flex: 1; display: flex; justify-content: flex-start; gap: 8px; padding: 0 20px; position: relative; }
+.header-links { flex: 1; list-style: none; display: flex; justify-content: flex-end; align-items: center; gap: 35px; padding: 0; }
+.header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; transition: color 0.3s ease; }
+.header-links a:hover { color: #555; }
+.ig-icon svg { display: block; color: #000; }
 
-    <header>
-        <!-- Zaktualizowany kontener logo -->
-        <div class="header-branding">
-            <img src="images/logo.png" alt="Logo" class="site-logo">
-            <a href="index.html" class="site-name">Alan Łysiak</a>
-        </div>
+/* ==========================================================================
+   3. WYSZUKIWARKA
+   ========================================================================== */
+.arnold-search {
+    width: 100%; max-width: 350px; background: transparent; border: 1px solid #ccc;
+    color: #000; font-family: 'Courier New', Courier, monospace; font-size: 0.8rem;
+    text-align: left; padding: 10px 15px; text-transform: uppercase; outline: none; transition: border 0.3s ease;
+}
+.arnold-search:focus { border: 1px solid #000; }
+.arnold-search::placeholder { color: #000; font-family: 'Courier New', Courier, monospace; font-size: 0.7rem; text-transform: uppercase; }
+.search-btn {
+    border: 1px solid #000; background: transparent; padding: 8px 25px;
+    font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; text-transform: uppercase;
+    cursor: pointer; color: #000; transition: all 0.2s; font-weight: bold;
+}
+.search-btn:hover { background-color: #000; color: #fff; }
 
-        <ul class="header-links">
-            <li><a href="index.html">Galeria</a></li>
-            <li><a href="zine.html">Zine</a></li>
-            <li><a href="kontakt.html">Kontakt</a></li>
-            <li class="ig-icon">
-                <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                    </svg>
-                </a>
-            </li>
-        </ul>
-    </header>
+.suggestions-list {
+    position: absolute; top: 100%; width: 100%; max-width: 350px;
+    margin: 0; background-color: #fff; list-style: none; z-index: 1000;
+    display: none; border: 1px solid #000;
+    left: 20px;
+}
+.suggestions-list li { padding: 12px 15px; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; border-bottom: 1px solid #eee; transition: background-color 0.2s, color 0.2s; }
+.suggestions-list li:hover { background-color: #000; color: #fff; }
 
-    <main style="width: 92%; max-width: 1000px; margin: 40px auto; display: flex; flex-direction: column; gap: 60px; align-items: center;">
+/* ==========================================================================
+   4. GALERIA
+   ========================================================================== */
+.gallery-section { width: 92%; max-width: 1700px; margin: 40px auto 40px auto; }
+.gallery-grid { column-count: 5; column-gap: 15px; }
+.photo-card { display: inline-block; width: 100%; margin-bottom: 15px; break-inside: avoid; overflow: hidden; }
+.photo-card.hidden { display: none !important; }
+.photo-card img { width: 100%; height: auto; display: block; cursor: pointer; transition: transform 0.3s ease; }
+.photo-card:hover img { transform: scale(1.03); }
 
-        <a href="zine1.html" style="text-decoration: none; color: #000; text-align: center; transition: opacity 0.3s; display: block;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='1'">
-            <img src="images/link_do_okladki_zine1.jpg" alt="Okładka Zine #01" style="width: 280px; height: 373px; object-fit: cover; display: block; margin: 0 auto 15px auto; cursor: pointer;">
-            <span style="font-size: 1rem; letter-spacing: 2px;">FlaneGRyzm Vol.1</span>
-        </a>
+/* ==========================================================================
+   5. STOPKA & LICZNIK
+   ========================================================================== */
+footer { display: flex; flex-direction: column; align-items: center; padding: 40px 0 30px 0; }
+.footer-links { list-style: none; display: flex; justify-content: center; gap: 35px; margin: 12px 0 8px 0; padding: 0; }
+.footer-links a { text-decoration: none; color: #000; font-size: 0.7rem; text-transform: uppercase; }
+.pentax-counter { margin-bottom: 30px; }
+.counter-frame { min-width: 40px; padding: 0 8px; height: 25px; background-color: #000; border: 1.5px solid #000; display: flex; justify-content: center; align-items: center; }
+#frame-count { font-family: 'Courier New', monospace; color: #fff; font-size: 0.8rem; white-space: nowrap; }
+.footer-name { font-size: 0.6rem; text-transform: uppercase; font-family: 'Courier New', Courier, monospace; }
 
-        <a href="zine2.html" style="text-decoration: none; color: #000; text-align: center; transition: opacity 0.3s; display: block;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='1'">
-            <img src="images/zine2.jpg" alt="Okładka Zine #02" style="width: 280px; height: 373px; object-fit: cover; display: block; margin: 0 auto 15px auto; cursor: pointer;">
-            <span style="font-size: 1rem; letter-spacing: 2px;">Potrójna Ekspozycja</span>
-        </a>
+/* ==========================================================================
+   6. STRZAŁKA BACK TO TOP
+   ========================================================================== */
+#back-to-top { position: fixed; bottom: 30px; right: 20px; width: 50px; height: 50px; cursor: pointer; background: transparent; border: none; display: none; z-index: 1000; }
+#back-to-top:after { content: ''; width: 12px; height: 12px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; transform: rotate(-45deg); margin: 20px auto 0 auto; }
 
-    </main>
+/* ==========================================================================
+   7. LIGHTBOX
+   ========================================================================== */
+.lightbox { 
+    display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; 
+    background-color: #ffffff; opacity: 0; transition: opacity 0.3s ease;
+    justify-content: center; align-items: center;
+}
+.lightbox.active { display: flex; opacity: 1 !important; }
 
-    <footer id="contact">
-        <ul class="footer-links">
-            <li><a href="index.html">Galeria</a></li>
-            <li><a href="zine.html">Zine</a></li>
-            <li><a href="kontakt.html">Kontakt</a></li>
-            <li class="ig-icon">
-                <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                    </svg>
-                </a>
-            </li>
-        </ul>
+.lightbox-content { 
+    max-width: 95vw; max-height: 95vh; object-fit: contain;
+    transition: transform 0.3s ease; cursor: default;
+    touch-action: none;
+}
+.lightbox-content.zoomed { transform: scale(2.0); cursor: move; }
 
-        <div class="pentax-counter">
-            <div class="counter-frame">
-                <span id="frame-count">00</span>
-            </div> 
-        </div>
+.lightbox-controls { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    pointer-events: none; z-index: 100;
+}
 
-        <p class="footer-name">&copy; 2026 Alan Łysiak</p>
-    </footer>
+.nav-arrow, .close { 
+    position: absolute; cursor: pointer; background: transparent; border: none; 
+    display: flex; align-items: center; justify-content: center; 
+    width: 60px; height: 60px; pointer-events: auto; z-index: 101;
+}
 
-    <script src="script.js?v=55.0"></script>
-</body>
-</html>
+.prev { left: 20px; top: 50%; transform: translateY(-50%); }
+.next { right: 20px; top: 50%; transform: translateY(-50%); }
+.close { top: 20px; right: 20px; }
+
+.nav-arrow:after { content: ''; width: 14px; height: 14px; border-top: 1.5px solid #000; border-right: 1.5px solid #000; display: block; }
+.prev:after { transform: rotate(-135deg); margin-left: 6px; }
+.next:after { transform: rotate(45deg); margin-right: 6px; }
+
+.close:before, .close:after { content: ''; position: absolute; width: 22px; height: 1.5px; background-color: #000; }
+.close:before { transform: rotate(45deg); }
+.close:after { transform: rotate(-45deg); }
+
+/* ==========================================================================
+   8. MODALE (OKIENKA TEKSTOWE) - POPRAWIONA CZYTELNOŚĆ I SYMETRIA
+   ========================================================================== */
+.custom-modal {
+    display: none; 
+    position: fixed; 
+    z-index: 999999; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.25); /* Eleganckie, półprzezroczyste przyciemnienie tła */
+    backdrop-filter: blur(6px);            /* Nowoczesny efekt rozmycia portfolio pod spodem */
+    -webkit-backdrop-filter: blur(6px);
+    justify-content: center; 
+    align-items: center;
+    opacity: 0; 
+    transition: opacity 0.25s ease; 
+    padding: 20px;
+}
+.custom-modal.active { display: flex; opacity: 1; }
+
+.custom-modal-content {
+    background-color: #ffffff; 
+    border: 1.5px solid #000000; 
+    padding: 45px 35px 35px 35px; 
+    max-width: 540px; 
+    width: 100%; 
+    position: relative;
+    border-radius: 0 !important; /* Zachowujemy surowe, ostre rogi głównego okna */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Przycisk zamykania X */
+.custom-modal-close {
+    position: absolute; 
+    top: 22px; 
+    right: 22px;
+    background: transparent; 
+    border: none; 
+    font-size: 24px;
+    cursor: pointer; 
+    line-height: 1; 
+    padding: 0; 
+    color: #000;
+    font-family: Arial, sans-serif;
+    transition: transform 0.2s ease;
+}
+.custom-modal-close:hover {
+    transform: scale(1.2);
+}
+
+.custom-modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 25px; 
+    font-size: 1.4rem; /* Zwiększone dla lepszego balansu i czytelności */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.custom-modal-body p {
+    line-height: 1.6;
+    font-size: 0.9rem; /* Delikatnie podbity rozmiar tekstu regulaminów i polityki */
+}
+
+/* --- DESIGNERKA WIZYTÓWKA KONTAKTOWA --- */
+.modal-description {
+    margin-bottom: 30px;
+    color: #000;
+    font-size: 0.95rem !important; /* Wyraźniejszy opis główny kontaktu */
+}
+
+.contact-section-label {
+    font-size: 0.75rem; /* Większy, czytelny nagłówek sekcji */
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #777;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.contact-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1.5px solid #000000;
+    padding: 18px 20px; /* Delikatnie zwiększony padding dla oddechu */
+    border-radius: 0 !important; /* Ostre krawędzie obramowania sekcji */
+    margin-bottom: 25px;
+    background: #ffffff;
+}
+
+.contact-card-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Nowoczesne, idealnie okrągłe kółeczka na awatar / logo wewnątrz ostrego kafelka */
+.contact-avatar {
+    width: 50px; /* Zwiększone z 46px dla lepszej proporcji */
+    height: 50px;
+    border-radius: 50% !important; 
+    border: 1.5px solid #000000;
+    object-fit: cover;
+    background: #ffffff;
+}
+
+.contact-info-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.contact-title {
+    font-size: 0.95rem; /* Wyraźnie powiększony adres email / nick (łatwiejsze kopiowanie) */
+    font-weight: bold;
+    text-transform: none;
+    color: #000;
+}
+
+.contact-subtitle {
+    font-size: 0.75rem; /* Zwiększony dopisek pod spodem */
+    color: #666;
+    text-transform: uppercase;
+}
+
+/* Ostre przyciski akcji - DOSKONAŁA SYMETRIA */
+.contact-card-btn {
+    background: #000000;
+    color: #ffffff !important;
+    text-decoration: none;
+    width: 140px; /* Sztywna, identyczna szerokość dla obu przycisków */
+    text-align: center;
+    padding: 10px 0; /* Symetryczny padding góra/dół */
+    border-radius: 0 !important;
+    font-size: 0.75rem; /* Podbita czytelność tekstu na przycisku */
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 1.5px solid #000000;
+    transition: all 0.2s ease;
+    display: block; /* Wspiera wymuszenie stałej szerokości width */
+    white-space: nowrap;
+}
+
+.contact-card-btn:hover {
+    background: #ffffff;
+    color: #000000 !important;
+}
