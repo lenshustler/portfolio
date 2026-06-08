@@ -13,7 +13,7 @@ body {
 }
 
 /* ==========================================================================
-   2. NAGŁÓWEK (LOGO + WYSZUKIWARKA + LINKI)
+   2. NAGŁÓWEK (LOGO + WYSZUKIWARKA + LINKI + JĘZYK)
    ========================================================================== */
 header {
     display: flex; justify-content: space-between; align-items: center;
@@ -27,6 +27,28 @@ header {
 .header-links a { text-decoration: none; color: #000; font-size: 0.8rem; text-transform: uppercase; transition: color 0.3s ease; }
 .header-links a:hover { color: #555; }
 .ig-icon svg { display: block; color: #000; }
+
+/* Przełącznik języków PL / EN */
+.lang-switch {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    user-select: none;
+    color: #000;
+}
+.lang-switch span {
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s ease;
+    padding: 0 2px;
+}
+.lang-switch span:hover {
+    color: #000;
+}
+.lang-switch span.active {
+    color: #000;
+    font-weight: bold;
+    text-decoration: underline;
+}
 
 /* ==========================================================================
    3. WYSZUKIWARKA
