@@ -59,137 +59,32 @@
     .print-action-btn { position: fixed; bottom: 30px; right: 30px; background: #000; color: #fff; border: none; padding: 15px 30px; font-family: inherit; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-transform: uppercase; z-index: 1000; }
 
     /* ========================================================
-       2. PEŁNA STYLIZACJA OKIENEK MODALNYCH
+       2. MODALE + POPRAWIONY RESPONSYWNY KONTAKT
        ======================================================== */
-    .custom-modal {
-      display: none;
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: 99999 !important;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
+    .custom-modal { display: none; position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0, 0, 0, 0.4); z-index: 99999 !important; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+    .custom-modal.active { display: flex !important; }
+    .custom-modal-content { background: #fff; color: #000; padding: 40px; width: 100%; max-width: 550px; position: relative; box-sizing: border-box; border: 1px solid #000; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+    .custom-modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 26px; cursor: pointer; color: #000; line-height: 1; }
+    .custom-modal-body h2 { margin-top: 0; text-transform: uppercase; font-size: 1.8rem; letter-spacing: 1px; margin-bottom: 15px; }
+    .modal-description { font-size: 0.95rem; line-height: 1.5; margin-bottom: 25px; }
+    .contact-section-label { font-weight: bold; text-transform: uppercase; font-size: 0.85rem; margin-top: 20px; margin-bottom: 8px; letter-spacing: 1px; }
 
-    .custom-modal.active {
-      display: flex !important;
-    }
+    /* RESPONSYWNA KARTA KONTAKTU */
+    .contact-card { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #000; padding: 15px; margin-bottom: 15px; box-sizing: border-box; gap: 10px; }
+    .contact-card-left { display: flex; align-items: center; gap: 15px; overflow: hidden; }
+    .contact-avatar { width: 45px; height: 45px; object-fit: cover; border: 1px solid #000; border-radius: 50%; flex-shrink: 0; }
+    .contact-info-block { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+    .contact-title { font-weight: bold; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .contact-subtitle { font-size: 0.8rem; color: #666; }
 
-    .custom-modal-content {
-      background: #fff;
-      color: #000;
-      padding: 40px;
-      width: 100%;
-      max-width: 550px;
-      position: relative;
-      box-sizing: border-box;
-      border: 1px solid #000;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    }
+    .contact-card-btn { text-decoration: none; color: #fff; background: #000; padding: 10px 15px; text-align: center; font-size: 0.8rem; text-transform: uppercase; font-weight: bold; border: 1px solid #000; white-space: nowrap; transition: background 0.2s, color 0.2s; }
+    .contact-card-btn:hover { background: #fff; color: #000; }
 
-    .custom-modal-close {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: none;
-      border: none;
-      font-size: 26px;
-      cursor: pointer;
-      color: #000;
-      line-height: 1;
-    }
-
-    .custom-modal-body h2 {
-      margin-top: 0;
-      text-transform: uppercase;
-      font-size: 1.8rem;
-      letter-spacing: 1px;
-      margin-bottom: 15px;
-    }
-
-    .modal-description {
-      font-size: 0.95rem;
-      line-height: 1.5;
-      margin-bottom: 25px;
-    }
-
-    .contact-section-label {
-      font-weight: bold;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      margin-top: 20px;
-      margin-bottom: 8px;
-      letter-spacing: 1px;
-    }
-
-    .contact-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fff;
-      border: 1px solid #000;
-      padding: 15px;
-      margin-bottom: 15px;
-      box-sizing: border-box;
-      height: 75px; /* Stała, identyczna wysokość paska */
-    }
-
-    .contact-card-left {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .contact-avatar {
-      width: 45px;
-      height: 45px;
-      object-fit: cover;
-      border: 1px solid #000;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .contact-info-block {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .contact-title {
-      font-weight: bold;
-      font-size: 1rem;
-    }
-
-    .contact-subtitle {
-      font-size: 0.8rem;
-      color: #666;
-    }
-
-    /* POPRAWIONE PRZYCISKI - IDEALNIE RÓWNE */
-    .contact-card-btn {
-      text-decoration: none;
-      color: #fff;
-      background: #000;
-      padding: 10px 0; /* Wyzerowany boczny padding na rzecz min-width */
-      min-width: 130px; /* Wymuszona minimalna szerokość ramki kliknięcia */
-      text-align: center; /* Wyśrodkowanie tekstu w równej ramce */
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      font-weight: bold;
-      border: 1px solid #000;
-      white-space: nowrap;
-      box-sizing: border-box;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .contact-card-btn:hover {
-      background: #fff;
-      color: #000;
+    /* MEDIA QUERY DLA MOBILKI */
+    @media (max-width: 480px) {
+      .contact-card { flex-direction: column; align-items: stretch; }
+      .contact-card-left { width: 100%; }
+      .contact-card-btn { width: 100%; margin-top: 10px; padding: 12px 0; }
     }
 
     /* ========================================================
@@ -199,21 +94,10 @@
       @page { size: A4 landscape; margin: 0; }
       body { background: #fff; padding: 0; margin: 0; }
       header, .setup-panel, .print-action-btn, #status-message, .custom-modal { display: none !important; }
-      
       .zine-container { width: 297mm !important; margin: 0 !important; padding: 0 !important; }
-      
-      .page, .zine-photo-item {
-        width: 297mm !important; height: 210mm !important; padding: 15mm !important; box-sizing: border-box !important; border: none !important; margin: 0 !important; page-break-after: always !important; display: flex !important; flex-direction: column !important; justify-content: flex-start !important; overflow: hidden !important;
-      }
-
-      .contact-sheet-page {
-        width: 297mm !important; height: 210mm !important; padding: 10mm !important; box-sizing: border-box !important; border: none !important; margin: 0 !important; page-break-after: always !important; overflow: hidden !important;
-      }
-
-      .contact-grid {
-        display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 15px !important; margin-top: 5px !important;
-      }
-
+      .page, .zine-photo-item { width: 297mm !important; height: 210mm !important; padding: 15mm !important; box-sizing: border-box !important; border: none !important; margin: 0 !important; page-break-after: always !important; display: flex !important; flex-direction: column !important; justify-content: flex-start !important; overflow: hidden !important; }
+      .contact-sheet-page { width: 297mm !important; height: 210mm !important; padding: 10mm !important; box-sizing: border-box !important; border: none !important; margin: 0 !important; page-break-after: always !important; overflow: hidden !important; }
+      .contact-grid { display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 15px !important; margin-top: 5px !important; }
       .contact-thumb { break-inside: avoid !important; }
     }
   </style>
@@ -335,8 +219,8 @@
 <div id="modal-terms" class="custom-modal">
     <div class="custom-modal-content">
         <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
+        <h2>Regulamin strony</h2>
         <div class="custom-modal-body">
-            <h2>Regulamin strony</h2>
             <p>Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.</p>
             <p style="margin-top: 15px;">Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione.</p>
         </div>
