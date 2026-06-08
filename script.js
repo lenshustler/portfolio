@@ -125,7 +125,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Nowa funkcja wyprzedzająca ruch użytkownika i pobierająca zdjęcia do cache
     function preloadAdjacentImages(isMobile) {
         if (visibleImages.length <= 1) return;
         
@@ -148,12 +147,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const baseUrl = visibleImages[activeIdx].getAttribute('data-fullsrc');
                 const isMobile = window.innerWidth < 768;
                 
-                // Optymalne parametry dające natychmiastowy czas ładowania i świetną jakość
                 const config = isMobile ? "?auto=format&w=1000&q=82" : "?auto=format&w=1600&q=82";
                 lightboxImg.src = baseUrl + config;
                 
                 resetZoom();
-                preloadAdjacentImages(isMobile); // Odpalenie pobierania sąsiadów w tle
+                preloadAdjacentImages(isMobile); 
             }, 40);
         }
     }
@@ -281,7 +279,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (searchInput && suggestionsBox) {
         searchInput.addEventListener('click', () => {
             if (searchInput.value.trim() === "") {
-                suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}0</li>`).join('');
+                // NAPRAWIONO: Usunięto '0' z poniższej linijki
+                suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}</li>`).join('');
                 suggestionsBox.style.display = "block";
             }
         });
