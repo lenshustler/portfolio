@@ -23,9 +23,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await response.json();
             const photos = data.result;
 
-            if (!photos || photos.length === 0) {
-                grid.innerHTML = "<p style='color:black; text-align:center; grid-column: 1/-1;'>Baza danych jest pusta.</p>";
-            } else {
+        if (!photos || photos.length === 0) {
+    // Nie wstrzykuj komunikatu o błędzie do grida, który jest główną sekcją strony!
+    console.log("Brak zdjęć do wyświetlenia.");
+    // Możesz wyświetlić komunikat w innym, mniej istotnym dla SEO miejscu
+}
                 photos.sort(() => Math.random() - 0.5);
                 grid.innerHTML = "";
 
