@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let activeIdx = 0;
     let clickTimer = null; 
 
-    // --- 1. POBIERANIE DANYCH ---
+ // --- 1. POBIERANIE DANYCH ---
     if (grid) {
         try {
             const QUERY = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, isHighlight, categories, "imageUrl": image.asset->url }`);
@@ -23,11 +23,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await response.json();
             const photos = data.result;
 
-        if (!photos || photos.length === 0) {
-    // Nie wstrzykuj komunikatu o błędzie do grida, który jest główną sekcją strony!
-    console.log("Brak zdjęć do wyświetlenia.");
-    // Możesz wyświetlić komunikat w innym, mniej istotnym dla SEO miejscu
-}
+            if (!photos || photos.length === 0) {
+                console.log("Brak zdjęć do wyświetlenia.");
+                // Zamiast wstawiać tekst do grida, po prostu nic nie robimy
+            } else {
                 photos.sort(() => Math.random() - 0.5);
                 grid.innerHTML = "";
 
@@ -49,7 +48,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
                 grid.style.opacity = "1";
             }
-        } catch (e) { console.error("Błąd połączenia z Sanity:", e); }
+        } catch (e) { 
+            console.error("Błąd połączenia z Sanity:", e); 
+        }
     }
 
     // --- 2. LOGIKA LIGHTBOXA ---
