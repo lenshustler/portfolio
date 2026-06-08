@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (modal) modal.classList.remove('active');
         });
         if (lightbox && !lightbox.classList.contains('active')) {
-            document.body.style.overflow = 'auto';
+            document.documentElement.classList.remove('modal-open'); // POPRAWKA: Odblokowanie tła
         }
     }
 
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const targetModal = document.getElementById(targetId);
             if (targetModal) {
                 targetModal.classList.add('active');
-                document.body.style.overflow = 'hidden'; 
+                document.documentElement.classList.add('modal-open'); // POPRAWKA: Blokada tła na mobilce
             }
         });
     });
@@ -85,7 +85,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     card.setAttribute('data-category', (photo.categories || []).join(' '));
                     
                     const img = document.createElement('img');
-                    img.src = photo.imageUrl + "?auto=format";
+                    // OPTYMALIZACJA: Pobieramy lekkie i szybkie miniatury do siatki głównej
+                    img.src = photo.imageUrl + "?auto=format&w=600&q=75";
+                    // Zapamiętujemy adres do ostrego zdjęcia HD dla Lightboxa
+                    img.setAttribute('data-fullsrc', photo.imageUrl + "?auto=format&w=1600");
                     img.setAttribute('draggable', 'false');
                     img.alt = photo.title || "Zdjęcie";
                     
@@ -112,7 +115,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (activeIdx === -1) activeIdx = 0;
         updateLightbox();
         if (lightbox) lightbox.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        document.documentElement.classList.add('modal-open'); // POPRAWKA: Zmiana na html klasę
     }
 
     function resetZoom() {
@@ -127,7 +130,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateLightbox() {
         if (visibleImages.length > 0 && lightboxImg) {
             lightboxImg.style.transition = 'none';
-            lightboxImg.src = visibleImages[activeIdx].src;
+            // OPTYMALIZACJA: Podmieniamy źródło na duży plik wysokiej jakości zapamiętany w data-fullsrc
+            lightboxImg.src = visibleImages[activeIdx].getAttribute('data-fullsrc');
             resetZoom();
             
             requestAnimationFrame(() => {
@@ -202,7 +206,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (nextBtn) { nextBtn.onclick = (e) => { e.stopPropagation(); if (visibleImages.length > 0) { activeIdx = (activeIdx + 1) % visibleImages.length; updateLightbox(); } }; }
     if (prevBtn) { prevBtn.onclick = (e) => { e.stopPropagation(); if (visibleImages.length > 0) { activeIdx = (activeIdx - 1 + visibleImages.length) % visibleImages.length; updateLightbox(); } }; }
-    if (closeBtn) { closeBtn.onclick = () => { if (lightbox) lightbox.classList.remove('active'); document.body.style.overflow = 'auto'; resetZoom(); }; }
+    
+    if (closeBtn) { 
+        closeBtn.onclick = () => { 
+            if (lightbox) lightbox.classList.remove('active'); 
+            // Bezpieczne sprawdzanie czy zamykając Lightbox nie mamy otwartego innego modala w tle
+            let anyModalActive = Array.from(modals).some(m => m.classList.contains('active'));
+            if (!anyModalActive) document.documentElement.classList.remove('modal-open');
+            resetZoom(); 
+        }; 
+    }
     if (lightbox) { lightbox.onclick = (e) => { if (e.target === lightbox && closeBtn) closeBtn.onclick(); }; }
 
     // Zmiana zdjęć gestem przesunięcia ekranu (swipowanie) - działa tylko, gdy NIE ma zoomu
