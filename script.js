@@ -1,19 +1,27 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    // --- 1. KONFIGURACJA ---
     const PROJECT_ID = '6g67d261';
     const DATASET = 'portfolio';
-
-    // --- 1. TŁUMACZENIA I JĘZYK ---
+    
+    // Tłumaczenia
     const translations = {
-        pl: { "search-btn": "SZUKAJ", "nav-zine": "Zine", "nav-contact": "Kontakt", "nav-privacy": "Prywatność", "nav-terms": "Regulamin", "seo-h1": "Portfolio fotograficzne Alan Łysiak", "contact-title": "Kontakt", "contact-desc": "Masz pytania lub chcesz podjąć współpracę? Napisz bezpośrednio.", "contact-email-label": "Email", "contact-email-sub": "Napisz wiadomość", "contact-email-btn": "Wyślij Email", "contact-insta-label": "Instagram", "contact-insta-sub": "Instagram", "contact-insta-btn": "Zobacz profil", "privacy-title": "Polityka Prywatności", "privacy-p1": "Strona używa plików cookies tylko w celach technicznych.", "privacy-p2": "Nie zbieramy danych marketingowych.", "terms-title": "Regulamin", "terms-p1": "Wszystkie zdjęcia są własnością Alana Łysiaka.", "terms-p2": "Kopiowanie bez zgody zabronione." },
-        en: { "search-btn": "SEARCH", "nav-zine": "Zine", "nav-contact": "CONTACT", "nav-privacy": "PRIVACY", "nav-terms": "TERMS", "seo-h1": "Photography Portfolio Alan Łysiak", "contact-title": "CONTACT", "contact-desc": "Do you have any questions? Feel free to reach out.", "contact-email-label": "Email", "contact-email-sub": "Send a message", "contact-email-btn": "Send Email", "contact-insta-label": "Instagram", "contact-insta-sub": "Instagram", "contact-insta-btn": "View Profile", "privacy-title": "Privacy Policy", "privacy-p1": "This site uses cookies for technical purposes only.", "privacy-p2": "We do not collect marketing data.", "terms-title": "Terms of Service", "terms-p1": "All photographs are property of Alan Łysiak.", "terms-p2": "Copying without permission is prohibited." }
+        pl: { "search-btn": "SZUKAJ", "nav-zine": "Zine", "nav-contact": "Kontakt", "nav-privacy": "Prywatność", "nav-terms": "Regulamin" },
+        en: { "search-btn": "SEARCH", "nav-zine": "Zine", "nav-contact": "CONTACT", "nav-privacy": "PRIVACY", "nav-terms": "TERMS" }
+    };
+    
+    // Słownik tagów do podpowiedzi
+    const tagsData = {
+        pl: ["ricoh", "nikon", "fujifilm", "portret", "ulica", "czarnobiale", "abstrakcja", "podroz"],
+        en: ["ricoh", "nikon", "fujifilm", "portrait", "street", "monochrome", "abstract", "travel"]
     };
 
     let currentLang = localStorage.getItem('portfolio_lang') || 'pl';
 
+    // --- 2. JĘZYK ---
     function updateLanguage() {
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
-            if (translations[currentLang][key]) el.textContent = translations[currentLang][key];
+            if (translations[currentLang] && translations[currentLang][key]) el.textContent = translations[currentLang][key];
         });
         document.getElementById('lang-pl').classList.toggle('active', currentLang === 'pl');
         document.getElementById('lang-en').classList.toggle('active', currentLang === 'en');
@@ -24,7 +32,71 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('lang-pl').addEventListener('click', () => { currentLang = 'pl'; localStorage.setItem('portfolio_lang', 'pl'); updateLanguage(); });
     document.getElementById('lang-en').addEventListener('click', () => { currentLang = 'en'; localStorage.setItem('portfolio_lang', 'en'); updateLanguage(); });
 
-    // --- 2. POBIERANIE ZDJĘĆ I LICZNIK ---
+    // --- 3. WYSZUKIWARKA I PODPOWIEDZI ---
+    const searchInput = document.getElementById('search-input');
+    const suggestionsBox = document.getElementById('search-suggestions');
+
+    // Podpowiedzi podczas wpisywania
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        if (!term) {
+            suggestionsBox.style.display = "none";
+            return;
+        }
+        const matches = tagsData[currentLang].filter(tag => tag.startsWith(term));
+        if (matches.length > 0) {
+            suggestionsBox.innerHTML = matches.map(m => `<li>${m}</li>`).join('');
+            suggestionsBox.style.display = "block";
+        } else {
+            suggestionsBox.style.display = "none";
+        }
+    });
+
+    // Kliknięcie w podpowiedź
+    suggestionsBox.addEventListener('click', (e) => {
+        if (e.target.tagName === 'LI') {
+            searchInput.value = e.target.textContent;
+            suggestionsBox.style.display = "none";
+            performSearch(searchInput.value);
+        }
+    });
+
+    // Funkcja filtrująca galerię
+    const performSearch = (term) => {
+        const query = term.toLowerCase().trim();
+        document.querySelectorAll('.photo-card').forEach(card => {
+            const cats = card.getAttribute('data-category') || "";
+            const isMatch = query === "" ? card.classList.contains('highlight') : cats.includes(query);
+            card.classList.toggle('hidden', !isMatch);
+        });
+    };
+
+    // --- 4. GALERIA, LIGHTBOX I MODALE (Delegacja) ---
+    document.addEventListener('click', (e) => {
+        // Zamykanie podpowiedzi przy kliknięciu gdziekolwiek indziej
+        if (!e.target.closest('.search-nav')) suggestionsBox.style.display = "none";
+
+        // MODALE
+        if (e.target.closest('.modal-trigger')) {
+            const targetId = e.target.closest('.modal-trigger').getAttribute('data-target');
+            document.getElementById(targetId)?.classList.add('active');
+        }
+        if (e.target.classList.contains('custom-modal-close') || e.target.classList.contains('custom-modal')) {
+            document.querySelectorAll('.custom-modal').forEach(m => m.classList.remove('active'));
+        }
+        
+        // LIGHTBOX
+        if (e.target.closest('.photo-card img')) {
+            const lightbox = document.getElementById('lightbox');
+            document.getElementById('lightbox-img').src = e.target.src;
+            lightbox.classList.add('active');
+        }
+        if (e.target.classList.contains('close') || e.target.id === 'lightbox') {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+    });
+
+    // --- 5. ŁADOWANIE DANYCH ---
     const grid = document.querySelector('.gallery-grid');
     try {
         const query = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, isHighlight, categories, "imageUrl": image.asset->url }`);
@@ -38,29 +110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             card.innerHTML = `<img src="${photo.imageUrl}?auto=format&w=500" alt="${photo.title || 'Photo'}" loading="lazy">`;
             grid.appendChild(card);
         });
+    } catch (e) { console.error("Sanity Error:", e); }
 
-        // Aktualizacja licznika
-        const frameCount = document.getElementById('frame-count');
-        if (frameCount) frameCount.textContent = photos.length.toString().padStart(2, '0');
-    } catch (e) { console.error(e); }
-
-    // --- 3. LIGHTBOX (Delegacja zdarzeń - klucz do naprawy!) ---
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-
-    document.addEventListener('click', (e) => {
-        // Kliknięcie w zdjęcie
-        if (e.target.closest('.photo-card img')) {
-            lightboxImg.src = e.target.src;
-            lightbox.classList.add('active');
-        }
-        // Kliknięcie w zamknięcie
-        if (e.target.classList.contains('close') || e.target === lightbox) {
-            lightbox.classList.remove('active');
-        }
-    });
-
-    // --- 4. WYSZUKIWARKA (Reszta logiki bez zmian) ---
-    // (Tu zachowaj swoją logikę wyszukiwania z poprzedniego kroku)
     updateLanguage();
 });
