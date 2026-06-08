@@ -121,34 +121,20 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
 .close:before { transform: rotate(45deg); }
 .close:after { transform: rotate(-45deg); }
 
-/* RESPONSYWNOŚĆ */
-@media (max-width: 1100px) { .gallery-grid { column-count: 3; } }
-@media (max-width: 768px) {
-    header { flex-direction: column; padding: 20px; gap: 20px; }
-    .header-branding, .header-links { width: 100%; justify-content: center; flex: none; }
-    
-    .search-nav { width: 100%; justify-content: center; flex: none; padding: 0; }
-    .suggestions-list { left: 0; } /* Zerujemy lewy margines na mobilce, żeby idealnie przylegało do inputa */
-    
-    .gallery-grid { column-count: 2; column-gap: 10px; }
-    
-    /* MOBILE: Pasek strzałek na dole */
-    .lightbox-controls {
-        position: absolute; top: auto; bottom: 20px;
-        width: 100%; height: 60px;
-        display: flex; justify-content: center; align-items: center;
-        gap: 40px; pointer-events: auto;
-    }
-    
-    .nav-arrow {
-        position: static; transform: none; 
-        width: 50px; height: 50px;
-    }
-    
-    .close {
-        position: fixed !important; 
-        top: 15px !important; 
-        right: 15px !important;
-        width: 40px; height: 40px;
-    }
+/* ==========================================================================
+   8. MODALE (OKIENKA TEKSTOWE)
+   ========================================================================== */
+.custom-modal {
+    display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(255, 255, 255, 0.96); justify-content: center; align-items: center;
+    opacity: 0; transition: opacity 0.25s ease; padding: 20px;
 }
+.custom-modal.active { display: flex; opacity: 1; }
+
+.custom-modal-content {
+    background-color: #ffffff; border: 1.5px solid #000000; padding: 40px 30px;
+    max-width: 500px; width: 100%; position: relative;
+}
+
+.custom-modal-close {
+    position: absolute; top: 15px; right:
