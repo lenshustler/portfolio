@@ -85,10 +85,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     card.setAttribute('data-category', (photo.categories || []).join(' '));
                     
                     const img = document.createElement('img');
-                    // OPTYMALIZACJA: Pobieramy lekkie i szybkie miniatury do siatki głównej
-                    img.src = photo.imageUrl + "?auto=format&w=600&q=75";
-                    // Zapamiętujemy adres do ostrego zdjęcia HD dla Lightboxa
-                    img.setAttribute('data-fullsrc', photo.imageUrl + "?auto=format&w=1600");
+                    
+                    // ZMIANA: Maksymalnie odchudzone miniatury (szybki start strony na komputerach i telefonach)
+                    img.src = photo.imageUrl + "?auto=format&w=450&q=70";
+                    
+                    // ZMIANA: Zapisujemy czysty, bazowy adres URL obrazu (bez narzuconego na sztywno rozmiaru)
+                    img.setAttribute('data-fullsrc', photo.imageUrl);
+                    
                     img.setAttribute('draggable', 'false');
                     img.alt = photo.title || "Zdjęcie";
                     
@@ -130,8 +133,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateLightbox() {
         if (visibleImages.length > 0 && lightboxImg) {
             lightboxImg.style.transition = 'none';
-            // OPTYMALIZACJA: Podmieniamy źródło na duży plik wysokiej jakości zapamiętany w data-fullsrc
-            lightboxImg.src = visibleImages[activeIdx].getAttribute('data-fullsrc');
+            
+            // ZMIANA: Pobieramy czysty URL z tagu i sprawdzamy szerokość ekranu urządzenia
+            const baseUrl = visibleImages[activeIdx].getAttribute('data-fullsrc');
+            const isMobile = window.innerWidth < 768;
+            
+            if (isMobile) {
+                // Konfiguracja dla smartfonów: w=1000 i q=80 (błyskawiczny swipe, zero lagów)
+                lightboxImg.src = baseUrl + "?auto=format&w=1000&q=80";
+            } else {
+                // Konfiguracja dla komputerów: w=1600 (pełna ostrość na dużych ekranach)
+                lightboxImg.src = baseUrl + "?auto=format&w=1600";
+            }
+            
             resetZoom();
             
             requestAnimationFrame(() => {
