@@ -125,18 +125,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // Nowa funkcja wyprzedzająca ruch użytkownika i pobierająca zdjęcia do cache
+    function preloadAdjacentImages(isMobile) {
+        if (visibleImages.length <= 1) return;
+        
+        const config = isMobile ? "?auto=format&w=1000&q=82" : "?auto=format&w=1600&q=82";
+        const nextIdx = (activeIdx + 1) % visibleImages.length;
+        const prevIdx = (activeIdx - 1 + visibleImages.length) % visibleImages.length;
+        
+        const nextCache = new Image();
+        nextCache.src = visibleImages[nextIdx].getAttribute('data-fullsrc') + config;
+        
+        const prevCache = new Image();
+        prevCache.src = visibleImages[prevIdx].getAttribute('data-fullsrc') + config;
+    }
+
     function updateLightbox() {
         if (visibleImages.length > 0 && lightboxImg) {
-            // POPRAWKA: Super szybkie wygaszenie (40ms) przed zmianą źródła pliku
             lightboxImg.style.opacity = '0';
             
             setTimeout(() => {
                 const baseUrl = visibleImages[activeIdx].getAttribute('data-fullsrc');
+                const isMobile = window.innerWidth < 768;
                 
-                // POPRAWKA: Zarówno mobile jak i desktop ciągną ostry obraz 1600px z wysoką jakością q=90
-                lightboxImg.src = baseUrl + "?auto=format&w=1600&q=90";
+                // Optymalne parametry dające natychmiastowy czas ładowania i świetną jakość
+                const config = isMobile ? "?auto=format&w=1000&q=82" : "?auto=format&w=1600&q=82";
+                lightboxImg.src = baseUrl + config;
                 
                 resetZoom();
+                preloadAdjacentImages(isMobile); // Odpalenie pobierania sąsiadów w tle
             }, 40);
         }
     }
@@ -264,7 +281,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (searchInput && suggestionsBox) {
         searchInput.addEventListener('click', () => {
             if (searchInput.value.trim() === "") {
-                suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}</li>`).join('');
+                suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}0</li>`).join('');
                 suggestionsBox.style.display = "block";
             }
         });
