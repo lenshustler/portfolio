@@ -2,6 +2,12 @@
   "redirects": [
     {
       "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "lenshustler.vercel.app"
+        }
+      ],
       "destination": "https://lysiak.photo/:path*",
       "permanent": true
     }
