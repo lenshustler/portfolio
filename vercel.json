@@ -1,0 +1,10 @@
+JSON
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://lysiak.photo/$1",
+      "permanent": true
+    }
+  ]
+}
