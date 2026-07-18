@@ -29,7 +29,7 @@ header {
 .ig-icon svg { display: block; color: #000; }
 
 /* ==========================================================================
-   3. WYSZUKIWARKA
+   3. WYSZUKIWARKA I PRZYCISK LOSUJ
    ========================================================================== */
 .arnold-search {
     width: 100%; max-width: 350px; background: transparent; border: 1px solid #ccc;
@@ -38,12 +38,15 @@ header {
 }
 .arnold-search:focus { border: 1px solid #000; }
 .arnold-search::placeholder { color: #000; font-family: 'Courier New', Courier, monospace; font-size: 0.7rem; text-transform: uppercase; }
-.search-btn {
+
+/* Obaj partnerzy akcji wyglądają teraz dokładnie tak samo */
+.search-btn, #random-btn {
     border: 1px solid #000; background: transparent; padding: 8px 25px;
     font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; text-transform: uppercase;
     cursor: pointer; color: #000; transition: all 0.2s; font-weight: bold;
+    white-space: nowrap; /* Zabezpieczenie przed łamaniem tekstu wewnątrz przycisku */
 }
-.search-btn:hover { background-color: #000; color: #fff; }
+.search-btn:hover, #random-btn:hover { background-color: #000; color: #fff; }
 
 .suggestions-list {
     position: absolute; top: 100%; width: 100%; max-width: 350px;
@@ -94,7 +97,7 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
 
 .lightbox-content { 
     max-width: 95vw; max-height: 95vh; object-fit: contain;
-    transition: transform 0.3s ease, opacity 0.06s ease-in-out; /* POPRAWKA: Super szybki mikro-błysk (60ms) */
+    transition: transform 0.3s ease, opacity 0.06s ease-in-out;
     cursor: default; touch-action: none; will-change: transform, opacity; opacity: 1;
 }
 .lightbox-content.zoomed { transform: scale(2.0); cursor: move; }
@@ -164,12 +167,22 @@ footer { display: flex; flex-direction: column; align-items: center; padding: 40
 
 @media (max-width: 768px) {
     html, body { overflow-x: hidden; width: 100%; }
-    header { flex-direction: column; padding: 15px 10px; gap: 10px; }
+    header { flex-direction: column; padding: 15px 10px; gap: 12px; }
     .header-branding, .header-links { width: 100%; justify-content: center; flex: none; }
     .header-links { gap: 18px; }
     .header-links a { font-size: 0.75rem; }
-    .search-nav { width: 100%; justify-content: center; flex: none; padding: 0; }
-    .suggestions-list { left: 0; } 
+    
+    /* Elastyczna wyszukiwarka mobilna z zawijaniem elementów */
+    .search-nav { 
+        width: 100%; 
+        justify-content: center; 
+        flex: none; 
+        padding: 0; 
+        flex-wrap: wrap; /* Bezpieczne przerzucanie przycisków w dół na małych ekranach */
+        gap: 6px; 
+    }
+    .arnold-search { max-width: 100%; text-align: center; }
+    .suggestions-list { left: 0; max-width: 100%; } 
     
     .gallery-section { width: 96%; margin: 15px auto; }
     .gallery-grid { column-count: 2; column-gap: 8px; }
