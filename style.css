@@ -69,7 +69,7 @@ header {
     margin-bottom: 15px; 
     break-inside: avoid; 
     overflow: hidden; 
-    max-height: 600px; /* TUTAJ USTAWASZ LIMIT WYSOKOŚCI W PIKSELACH */
+    max-height: 400px; /* TUTAJ USTAWASZ LIMIT WYSOKOŚCI W PIKSELACH */
 }
 
 .photo-card.hidden { display: none !important; }
