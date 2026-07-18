@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const modalCloses = document.querySelectorAll('.custom-modal-close');
     const modals = document.querySelectorAll('.custom-modal');
 
-    // Funkcja sprawdzająca czy jakiekolwiek okno jest otwarte
     function updateBodyScroll() {
         const anyModalActive = document.querySelectorAll('.custom-modal.active').length > 0;
         const lightboxActive = lightbox && lightbox.classList.contains('active');
@@ -270,9 +269,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.key === "ArrowLeft" && prevBtn) prevBtn.click();
     });
 
-    // --- 4. WYSZUKIWARKA ---
+    // --- 4. WYSZUKIWARKA I PRZYCISK LOSUJ ---
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.querySelector('.search-btn');
+    const randomBtn = document.getElementById('random-btn');
     const suggestionsBox = document.querySelector('.suggestions-list');
     const defaultTags = ['street', 'portret', 'abstrakcja', 'monochrome', 'generator'];
 
@@ -288,6 +288,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         if (suggestionsBox) suggestionsBox.style.display = "none";
     };
+
+    // Logika przycisku Losuj
+    if (randomBtn) {
+        randomBtn.addEventListener('click', () => {
+            const cards = document.querySelectorAll('.photo-card');
+            const allTags = new Set();
+            cards.forEach(card => {
+                const cats = (card.getAttribute('data-category') || "").trim();
+                if (cats) {
+                    cats.split(/\s+/).forEach(tag => {
+                        if (tag !== 'generator') allTags.add(tag);
+                    });
+                }
+            });
+            const tagsArray = Array.from(allTags);
+            if (tagsArray.length > 0) {
+                const randomTag = tagsArray[Math.floor(Math.random() * tagsArray.length)];
+                if (searchInput) {
+                    searchInput.value = randomTag;
+                    performSearch();
+                }
+            }
+        });
+    }
 
     if (searchInput && suggestionsBox) {
         searchInput.addEventListener('click', () => {
