@@ -230,171 +230,245 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (suggestionsBox) suggestionsBox.style.display = "none";
     };
 
-    // --- 0. LOGIKA JĘZYKOWA (PL / EN) ---
-    const translations = {
-        pl: {
-            seoTitle: "Alan Łysiak | Fotografia",
-            seoDesc: "Alan Łysiak – Portfolio fotograficzne. | Street | Portret | Abstrakcja | Podwójne ekspozycję | Zobacz moje fotografie, ziny i projekty. Kontakt: lyskier@gmail.com",
-            searchPlaceholder: "szukaj...",
-            searchBtn: "Szukaj",
-            randomBtn: "Losowo",
-            contactLink: "Kontakt",
-            privacyLink: "Prywatność",
-            termsLink: "Regulamin",
-            backToTop: "Wróć na górę",
-            
-            // Lightbox
-            prevImg: "Poprzednie zdjęcie",
-            nextImg: "Następne zdjęcie",
-            closeModal: "Zamknij",
+   // --- 0. LOGIKA JĘZYKOWA (PL / EN) ---
+const translations = {
+    pl: {
+        // Meta & SEO
+        seoTitle: "Alan Łysiak | Fotografia",
+        seoDesc: "Alan Łysiak – Portfolio fotograficzne. | Street | Portret | Abstrakcja | Podwójne ekspozycje | Zobacz moje fotografie, ziny i projekty. Kontakt: lyskier@gmail.com",
+        
+        // Szukajka i przyciski ogólne
+        searchPlaceholder: "szukaj...",
+        searchBtn: "Szukaj",
+        randomBtn: "Losowo",
+        backToTop: "Wróć na górę",
 
-            // Modal Kontakt
-            contactTitle: "Kontakt",
-            contactDesc: "Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.",
-            contactSub1: "Napisz wiadomość",
-            btnEmail: "Wyślij e-mail",
-            btnProfile: "Zobacz profil",
+        // Nawigacja i stopka
+        navGallery: "Galeria",
+        contactLink: "Kontakt",
+        privacyLink: "Prywatność",
+        termsLink: "Regulamin",
+        navPrivacy: "Prywatność",
+        navTerms: "Regulamin",
+        navContact: "Kontakt",
+        backToGallery: "← Powrót do galerii",
 
-            // Modal Prywatność
-            privacyTitle: "Polityka Prywatności",
-            privacyP1: "Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.",
-            privacyP2: "Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.",
+        // Sekcja Zine / Podstrony Zinów
+        zine1Title: "FlaneGRyzm Vol.1",
+        zine1PageTitle: "FlaneGRyzm Vol.1",
+        zine1Description: "Limitowany zine ze zdjęciami ulicznymi z lat 2024–2026. Druk na papierze 170g.",
+        
+        zine2Title: "Potrójna Ekspozycja",
+        zine2PageTitle: "Potrójna Ekspozycja",
+        zine2Description: "Eksperymentalny cykl fotografii analogowej z wielokrotnym naświetlaniem.",
 
-            // Modal Regulamin
-            termsTitle: "Regulamin strony",
-            termsP1: "Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.",
-            termsP2: "Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione."
-        },
-        en: {
-            seoTitle: "Alan Łysiak | Photography",
-            seoDesc: "Alan Łysiak – Photography Portfolio. | Street | Portrait | Abstract | Double exposure | Explore my photos, zines, and projects. Contact: lyskier@gmail.com",
-            searchPlaceholder: "search...",
-            searchBtn: "Search",
-            randomBtn: "Random",
-            contactLink: "Contact",
-            privacyLink: "Privacy",
-            termsLink: "Terms",
-            backToTop: "Back to top",
-            
-            // Lightbox
-            prevImg: "Previous photo",
-            nextImg: "Next photo",
-            closeModal: "Close",
+        buyButton: "Zamów egzemplarz",
+        btnSendEmail: "Wyślij Email",
+        btnViewProfile: "Zobacz Profil",
+        outOfStock: "Nakład wyprzedany",
 
-            // Modal Contact
-            contactTitle: "Contact",
-            contactDesc: "Have questions or want to collaborate? Feel free to write directly to my email.",
-            contactSub1: "Send a message",
-            btnEmail: "Send Email",
-            btnProfile: "View Profile",
+        // Lightbox (Dostępność ARIA)
+        prevImg: "Poprzednie zdjęcie",
+        nextImg: "Następne zdjęcie",
+        closeModal: "Zamknij",
 
-            // Modal Privacy
-            privacyTitle: "Privacy Policy",
-            privacyP1: "This website respects your privacy. We use cookies and local storage solely for technical purposes – to ensure proper site functionality and visit counter operations.",
-            privacyP2: "The site does not collect, process, or share your personal data with third parties for marketing purposes.",
+        // Modal Kontakt
+        contactTitle: "Kontakt",
+        contactModalTitle: "Kontakt",
+        contactDesc: "Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.",
+        contactModalDesc: "Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.",
+        contactSub1: "Napisz wiadomość",
+        contactEmailSub: "Napisz wiadomość",
+        btnEmail: "Wyślij e-mail",
+        btnProfile: "Zobacz profil",
+        labelEmail: "Email",
+        labelInstagram: "Instagram",
 
-            // Modal Terms
-            termsTitle: "Terms of Service",
-            termsP1: "All photographs and materials presented on this website are the property of Alan Łysiak and are protected by international copyright laws.",
-            termsP2: "Copying, downloading, distributing, modifying, or any commercial use of these photographs without prior written permission from the author is strictly prohibited."
+        // Modal Prywatność
+        privacyTitle: "Polityka Prywatności",
+        privacyModalTitle: "Polityka Prywatności",
+        privacyP1: "Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.",
+        privacyP2: "Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.",
+
+        // Modal Regulamin
+        termsTitle: "Regulamin strony",
+        termsModalTitle: "Regulamin strony",
+        termsP1: "Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.",
+        termsP2: "Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione."
+    },
+    en: {
+        // Meta & SEO
+        seoTitle: "Alan Łysiak | Photography",
+        seoDesc: "Alan Łysiak – Photography Portfolio. | Street | Portrait | Abstract | Double exposure | Explore my photos, zines, and projects. Contact: lyskier@gmail.com",
+        
+        // Search & General buttons
+        searchPlaceholder: "search...",
+        searchBtn: "Search",
+        randomBtn: "Random",
+        backToTop: "Back to top",
+
+        // Navigation & Footer
+        navGallery: "Gallery",
+        contactLink: "Contact",
+        privacyLink: "Privacy",
+        termsLink: "Terms",
+        navPrivacy: "Privacy",
+        navTerms: "Terms",
+        navContact: "Contact",
+        backToGallery: "← Back to gallery",
+
+        // Zine Section / Subpages
+        zine1Title: "FlaneGRyzm Vol.1",
+        zine1PageTitle: "FlaneGRyzm Vol.1",
+        zine1Description: "Limited edition photo zine featuring street photography from 2024–2026. Printed on 170g paper.",
+        
+        zine2Title: "Triple Exposure",
+        zine2PageTitle: "Triple Exposure",
+        zine2Description: "An experimental series of analog multiple-exposure photography.",
+
+        buyButton: "Order a copy",
+        btnSendEmail: "Send Email",
+        btnViewProfile: "View Profile",
+        outOfStock: "Sold out",
+
+        // Lightbox (ARIA accessibility)
+        prevImg: "Previous photo",
+        nextImg: "Next photo",
+        closeModal: "Close",
+
+        // Contact Modal
+        contactTitle: "Contact",
+        contactModalTitle: "Contact",
+        contactDesc: "Have questions or want to collaborate? Feel free to write directly to my email.",
+        contactModalDesc: "Have questions or want to collaborate? Feel free to write directly to my email.",
+        contactSub1: "Send a message",
+        contactEmailSub: "Send a message",
+        btnEmail: "Send Email",
+        btnProfile: "View Profile",
+        labelEmail: "Email",
+        labelInstagram: "Instagram",
+
+        // Privacy Modal
+        privacyTitle: "Privacy Policy",
+        privacyModalTitle: "Privacy Policy",
+        privacyP1: "This website respects your privacy. We use cookies and local storage solely for technical purposes – to ensure proper site functionality and visit counter operations.",
+        privacyP2: "The site does not collect, process, or share your personal data with third parties for marketing purposes.",
+
+        // Terms Modal
+        termsTitle: "Terms of Service",
+        termsModalTitle: "Terms of Service",
+        termsP1: "All photographs and materials presented on this website are the property of Alan Łysiak and are protected by international copyright laws.",
+        termsP2: "Copying, downloading, distributing, modifying, or any commercial use of these photographs without prior written permission from the author is strictly prohibited."
+    }
+};
+
+const langPlBtn = document.getElementById('lang-pl');
+const langEnBtn = document.getElementById('lang-en');
+
+function updateLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('site_lang', lang);
+    const t = translations[lang];
+    if (!t) return;
+
+    // 1. Meta i Tytuł strony
+    document.documentElement.lang = lang;
+    const seoTitleEl = document.getElementById('seo-title');
+    if (seoTitleEl) seoTitleEl.innerText = t.seoTitle;
+    const seoDescEl = document.getElementById('seo-desc');
+    if (seoDescEl) seoDescEl.setAttribute('content', t.seoDesc);
+
+    // 2. Szukajka i przyciski akcji (sprawdzenie dostępności zmiennych)
+    if (typeof searchInput !== 'undefined' && searchInput) searchInput.placeholder = t.searchPlaceholder;
+    const searchBtnEl = document.getElementById('search-btn');
+    if (searchBtnEl) searchBtnEl.innerText = t.searchBtn;
+    const randomBtnEl = document.getElementById('random-btn');
+    if (randomBtnEl) randomBtnEl.innerText = t.randomBtn;
+    const bttEl = document.getElementById('back-to-top');
+    if (bttEl) bttEl.title = t.backToTop;
+
+    // 3. Linki nawigacyjne po klasach i ID
+    document.querySelectorAll('.link-contact').forEach(el => el.innerText = t.contactLink);
+    const privacyEl = document.getElementById('link-privacy');
+    if (privacyEl) privacyEl.innerText = t.privacyLink;
+    const termsEl = document.getElementById('link-terms');
+    if (termsEl) termsEl.innerText = t.termsLink;
+
+    // 4. Dostępność Lightboxa (ARIA)
+    if (typeof prevBtn !== 'undefined' && prevBtn) prevBtn.setAttribute('aria-label', t.prevImg);
+    if (typeof nextBtn !== 'undefined' && nextBtn) nextBtn.setAttribute('aria-label', t.nextImg);
+    if (typeof closeBtn !== 'undefined' && closeBtn) closeBtn.setAttribute('aria-label', t.closeModal);
+
+    // 5. Treści Modal Kontakt
+    const mContactTitle = document.getElementById('modal-contact-title');
+    if (mContactTitle) mContactTitle.innerText = t.contactTitle;
+    const mContactDesc = document.getElementById('modal-contact-desc');
+    if (mContactDesc) mContactDesc.innerText = t.contactDesc;
+    const mContactSub1 = document.getElementById('modal-contact-sub1');
+    if (mContactSub1) mContactSub1.innerText = t.contactSub1;
+    const btnEmail = document.getElementById('btn-send-email');
+    if (btnEmail) btnEmail.innerText = t.btnEmail;
+    const btnProfile = document.getElementById('btn-view-profile');
+    if (btnProfile) btnProfile.innerText = t.btnProfile;
+
+    // 6. Treści Modal Prywatność
+    const mPrivacyTitle = document.getElementById('modal-privacy-title');
+    if (mPrivacyTitle) mPrivacyTitle.innerText = t.privacyTitle;
+    const mPrivacyP1 = document.getElementById('modal-privacy-p1');
+    if (mPrivacyP1) mPrivacyP1.innerText = t.privacyP1;
+    const mPrivacyP2 = document.getElementById('modal-privacy-p2');
+    if (mPrivacyP2) mPrivacyP2.innerText = t.privacyP2;
+
+    // 7. Treści Modal Regulamin
+    const mTermsTitle = document.getElementById('modal-terms-title');
+    if (mTermsTitle) mTermsTitle.innerText = t.termsTitle;
+    const mTermsP1 = document.getElementById('modal-terms-p1');
+    if (mTermsP1) mTermsP1.innerText = t.termsP1;
+    const mTermsP2 = document.getElementById('modal-terms-p2');
+    if (mTermsP2) mTermsP2.innerText = t.termsP2;
+
+    // 8. UNIWERSALNA PODMIANA DLA ATRYBUTÓW data-i18n (dla zine.html, zine1.html, zine2.html oraz stopki)
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) {
+            el.innerText = t[key];
         }
-    };
+    });
 
-    const langPlBtn = document.getElementById('lang-pl');
-    const langEnBtn = document.getElementById('lang-en');
-
-    function updateLanguage(lang) {
-        currentLang = lang;
-        localStorage.setItem('site_lang', lang);
-        const t = translations[lang];
-        if (!t) return;
-
-        // Meta i Tytuł strony
-        document.documentElement.lang = lang;
-        const seoTitleEl = document.getElementById('seo-title');
-        if (seoTitleEl) seoTitleEl.innerText = t.seoTitle;
-        const seoDescEl = document.getElementById('seo-desc');
-        if (seoDescEl) seoDescEl.setAttribute('content', t.seoDesc);
-
-        // Szukajka i przyciski akcji
-        if (searchInput) searchInput.placeholder = t.searchPlaceholder;
-        const searchBtnEl = document.getElementById('search-btn');
-        if (searchBtnEl) searchBtnEl.innerText = t.searchBtn;
-        const randomBtnEl = document.getElementById('random-btn');
-        if (randomBtnEl) randomBtnEl.innerText = t.randomBtn;
-        const bttEl = document.getElementById('back-to-top');
-        if (bttEl) bttEl.title = t.backToTop;
-
-        // Linki nawigacyjne
-        document.querySelectorAll('.link-contact').forEach(el => el.innerText = t.contactLink);
-        const privacyEl = document.getElementById('link-privacy');
-        if (privacyEl) privacyEl.innerText = t.privacyLink;
-        const termsEl = document.getElementById('link-terms');
-        if (termsEl) termsEl.innerText = t.termsLink;
-
-        // Dostępność Lightboxa (ARIA)
-        if (prevBtn) prevBtn.setAttribute('aria-label', t.prevImg);
-        if (nextBtn) nextBtn.setAttribute('aria-label', t.nextImg);
-        if (closeBtn) closeBtn.setAttribute('aria-label', t.closeModal);
-
-        // Treści Modal Kontakt
-        const mContactTitle = document.getElementById('modal-contact-title');
-        if (mContactTitle) mContactTitle.innerText = t.contactTitle;
-        const mContactDesc = document.getElementById('modal-contact-desc');
-        if (mContactDesc) mContactDesc.innerText = t.contactDesc;
-        const mContactSub1 = document.getElementById('modal-contact-sub1');
-        if (mContactSub1) mContactSub1.innerText = t.contactSub1;
-        const btnEmail = document.getElementById('btn-send-email');
-        if (btnEmail) btnEmail.innerText = t.btnEmail;
-        const btnProfile = document.getElementById('btn-view-profile');
-        if (btnProfile) btnProfile.innerText = t.btnProfile;
-
-        // Treści Modal Prywatność
-        const mPrivacyTitle = document.getElementById('modal-privacy-title');
-        if (mPrivacyTitle) mPrivacyTitle.innerText = t.privacyTitle;
-        const mPrivacyP1 = document.getElementById('modal-privacy-p1');
-        if (mPrivacyP1) mPrivacyP1.innerText = t.privacyP1;
-        const mPrivacyP2 = document.getElementById('modal-privacy-p2');
-        if (mPrivacyP2) mPrivacyP2.innerText = t.privacyP2;
-
-        // Treści Modal Regulamin
-        const mTermsTitle = document.getElementById('modal-terms-title');
-        if (mTermsTitle) mTermsTitle.innerText = t.termsTitle;
-        const mTermsP1 = document.getElementById('modal-terms-p1');
-        if (mTermsP1) mTermsP1.innerText = t.termsP1;
-        const mTermsP2 = document.getElementById('modal-terms-p2');
-        if (mTermsP2) mTermsP2.innerText = t.termsP2;
-
-        // Aktualizacja stanu przycisków PL / EN
-        if (langPlBtn && langEnBtn) {
-            if (lang === 'pl') {
-                langPlBtn.classList.add('active');
-                langEnBtn.classList.remove('active');
-            } else {
-                langEnBtn.classList.add('active');
-                langPlBtn.classList.remove('active');
-            }
+    // 9. Aktualizacja stanu przycisków wyboru języka (PL / EN)
+    if (langPlBtn && langEnBtn) {
+        if (lang === 'pl') {
+            langPlBtn.classList.add('active');
+            langEnBtn.classList.remove('active');
+        } else {
+            langEnBtn.classList.add('active');
+            langPlBtn.classList.remove('active');
         }
+    }
 
-        // Tłumaczenie aktywnego tekstu w szukajce oraz podpowiedzi
-        if (searchInput) {
-            const val = searchInput.value.trim();
-            if (val !== '') {
+    // 10. Tłumaczenie aktywnego tagu w szukajce oraz podpowiedzi
+    if (typeof searchInput !== 'undefined' && searchInput) {
+        const val = searchInput.value.trim();
+        if (val !== '') {
+            if (typeof getDisplayTag === 'function' && typeof performSearch === 'function') {
                 const translatedTag = getDisplayTag(val, lang);
                 searchInput.value = translatedTag;
                 performSearch();
-            } else if (suggestionsBox && suggestionsBox.style.display === "block") {
+            }
+        } else if (typeof suggestionsBox !== 'undefined' && suggestionsBox && suggestionsBox.style.display === "block") {
+            if (typeof getDefaultTags === 'function') {
                 suggestionsBox.innerHTML = getDefaultTags().map(t => `<li>${t}</li>`).join('');
             }
         }
     }
+}
 
-    // Inicjalizacja wybranego języka z localStorage (domyślnie PL)
-    const savedLang = localStorage.getItem('site_lang') || 'pl';
-    updateLanguage(savedLang);
+// Inicjalizacja wybranego języka z localStorage (domyślnie PL)
+const savedLang = localStorage.getItem('site_lang') || 'pl';
+updateLanguage(savedLang);
 
-    if (langPlBtn) langPlBtn.addEventListener('click', () => updateLanguage('pl'));
-    if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('en'));
+if (langPlBtn) langPlBtn.addEventListener('click', () => updateLanguage('pl'));
+if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('en'));
 
 
     // --- 1. LOGIKA OKIENEK (MODALI) ---
