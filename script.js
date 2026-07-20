@@ -216,11 +216,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return entry ? entry[lang] : rawTag;
     }
 
-    const getDefaultTags = () => {
-        const defaultKeys = ['street', 'portret', 'abstrakcja', 'monochrome', 'generator'];
-        return defaultKeys.map(k => getDisplayTag(k, currentLang));
-    };
-
     const performSearch = () => {
         if (!searchInput) return;
         const term = searchInput.value.toLowerCase().trim();
