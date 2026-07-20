@@ -24,14 +24,31 @@
         <ul class="header-links">
             <li><a href="index.html" data-i18n="navGallery">Galeria</a></li>
             <li><a href="#" class="modal-trigger" data-target="modal-contact" data-i18n="navContact">Kontakt</a></li>
-            <li class="lang-switch">
-                <button id="lang-pl" class="lang-btn active">PL</button>
+            
+            <!-- PRZEŁĄCZNIK JĘZYKA -->
+            <li class="lang-switcher">
+                <button id="lang-pl" class="lang-btn active" type="button">PL</button>
                 <span class="lang-divider">/</span>
-                <button id="lang-en" class="lang-btn">EN</button>
+                <button id="lang-en" class="lang-btn" type="button">EN</button>
             </li>
+
+            <!-- IKONA INSTAGRAMA Z DEFINICJĄ GRADIENTU -->
             <li class="ig-icon">
-                <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram" class="ig-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="url(#ig-gradient)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <defs>
+                            <linearGradient id="ig-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#f09433" />
+                                <stop offset="25%" stop-color="#e6683c" />
+                                <stop offset="50%" stop-color="#dc2743" />
+                                <stop offset="75%" stop-color="#cc2366" />
+                                <stop offset="100%" stop-color="#bc1888" />
+                            </linearGradient>
+                        </defs>
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
                 </a>
             </li>
         </ul>
@@ -51,12 +68,25 @@
     <footer>
         <ul class="footer-links">
             <li><a href="index.html" data-i18n="navGallery">Galeria</a></li>
-            <li><a href="#" class="modal-trigger" data-target="modal-privacy" data-i18n="navPrivacy">Prywatność</a></li>
-            <li><a href="#" class="modal-trigger" data-target="modal-terms" data-i18n="navTerms">Regulamin</a></li>
-            <li><a href="#" class="modal-trigger" data-target="modal-contact" data-i18n="navContact">Kontakt</a></li>
+            <li><a href="#" class="modal-trigger" id="link-privacy" data-target="modal-privacy" data-i18n="navPrivacy">Prywatność</a></li>
+            <li><a href="#" class="modal-trigger" id="link-terms" data-target="modal-terms" data-i18n="navTerms">Regulamin</a></li>
+            <li><a href="#" class="modal-trigger link-contact" data-target="modal-contact" data-i18n="navContact">Kontakt</a></li>
             <li class="ig-icon">
-                <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram" class="ig-link">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="url(#ig-gradient-footer)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <defs>
+                            <linearGradient id="ig-gradient-footer" x1="0%" y1="100%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#f09433" />
+                                <stop offset="25%" stop-color="#e6683c" />
+                                <stop offset="50%" stop-color="#dc2743" />
+                                <stop offset="75%" stop-color="#cc2366" />
+                                <stop offset="100%" stop-color="#bc1888" />
+                            </linearGradient>
+                        </defs>
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
                 </a>
             </li>
         </ul>
@@ -68,9 +98,9 @@
     <div id="modal-contact" class="custom-modal">
         <div class="custom-modal-content">
             <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
-            <h2 data-i18n="contactModalTitle">Kontakt</h2>
+            <h2 id="modal-contact-title" data-i18n="contactModalTitle">Kontakt</h2>
             <div class="custom-modal-body" style="-webkit-user-select: text !important; user-select: text !important;">
-                <p class="modal-description" data-i18n="contactModalDesc">Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.</p>
+                <p class="modal-description" id="modal-contact-desc" data-i18n="contactModalDesc">Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.</p>
                 
                 <div class="contact-section-label" data-i18n="labelEmail">Email</div>
                 <div class="contact-card">
@@ -78,10 +108,10 @@
                         <img src="images/logo.png" alt="Alan Łysiak Logo" class="contact-avatar">
                         <div class="contact-info-block">
                             <span class="contact-title">lyskier@gmail.com</span>
-                            <span class="contact-subtitle" data-i18n="contactEmailSub">Napisz wiadomość</span>
+                            <span class="contact-subtitle" id="modal-contact-sub1" data-i18n="contactEmailSub">Napisz wiadomość</span>
                         </div>
                     </div>
-                    <a href="mailto:lyskier@gmail.com" class="contact-card-btn" data-i18n="btnSendEmail">Wyślij Email</a>
+                    <a href="mailto:lyskier@gmail.com" class="contact-card-btn" id="btn-send-email" data-i18n="btnSendEmail">Wyślij Email</a>
                 </div>
 
                 <div class="contact-section-label" data-i18n="labelInstagram">Instagram</div>
@@ -93,7 +123,7 @@
                             <span class="contact-subtitle">Instagram</span>
                         </div>
                     </div>
-                    <a href="https://instagram.com/lenshustler" target="_blank" class="contact-card-btn" data-i18n="btnViewProfile">Zobacz Profil</a>
+                    <a href="https://instagram.com/lenshustler" target="_blank" class="contact-card-btn" id="btn-view-profile" data-i18n="btnViewProfile">Zobacz Profil</a>
                 </div>
             </div>
         </div>
@@ -103,10 +133,10 @@
     <div id="modal-privacy" class="custom-modal">
         <div class="custom-modal-content">
             <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
-            <h2 data-i18n="privacyModalTitle">Polityka Prywatności</h2>
+            <h2 id="modal-privacy-title" data-i18n="privacyModalTitle">Polityka Prywatności</h2>
             <div class="custom-modal-body">
-                <p data-i18n="privacyP1">Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.</p>
-                <p style="margin-top: 15px;" data-i18n="privacyP2">Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.</p>
+                <p id="modal-privacy-p1" data-i18n="privacyP1">Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.</p>
+                <p style="margin-top: 15px;" id="modal-privacy-p2" data-i18n="privacyP2">Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.</p>
             </div>
         </div>
     </div>
@@ -115,10 +145,10 @@
     <div id="modal-terms" class="custom-modal">
         <div class="custom-modal-content">
             <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
-            <h2 data-i18n="termsModalTitle">Regulamin strony</h2>
+            <h2 id="modal-terms-title" data-i18n="termsModalTitle">Regulamin strony</h2>
             <div class="custom-modal-body">
-                <p data-i18n="termsP1">Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.</p>
-                <p style="margin-top: 15px;" data-i18n="termsP2">Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione.</p>
+                <p id="modal-terms-p1" data-i18n="termsP1">Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.</p>
+                <p style="margin-top: 15px;" id="modal-terms-p2" data-i18n="termsP2">Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione.</p>
             </div>
         </div>
     </div>
