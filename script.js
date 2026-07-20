@@ -18,6 +18,161 @@ document.addEventListener('DOMContentLoaded', async () => {
     let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
 
+    // --- 0. LOGIKA JĘZYKOWA (PL / EN) ---
+    const translations = {
+        pl: {
+            seoTitle: "Alan Łysiak | Fotografia",
+            seoDesc: "Alan Łysiak – Portfolio fotograficzne. | Street | Portret | Abstrakcja | Podwójne ekspozycję | Zobacz moje fotografie, ziny i projekty. Kontakt: lyskier@gmail.com",
+            searchPlaceholder: "szukaj...",
+            searchBtn: "Search",
+            randomBtn: "Random",
+            contactLink: "Kontakt",
+            privacyLink: "Prywatność",
+            termsLink: "Regulamin",
+            backToTop: "Wróć na górę",
+            
+            // Lightbox
+            prevImg: "Poprzednie zdjęcie",
+            nextImg: "Następne zdjęcie",
+            closeModal: "Zamknij",
+
+            // Modal Kontakt
+            contactTitle: "Kontakt",
+            contactDesc: "Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.",
+            contactSub1: "Napisz wiadomość",
+            btnEmail: "Send Email",
+            btnProfile: "View Profile",
+
+            // Modal Prywatność
+            privacyTitle: "Polityka Prywatności",
+            privacyP1: "Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.",
+            privacyP2: "Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.",
+
+            // Modal Regulamin
+            termsTitle: "Regulamin strony",
+            termsP1: "Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.",
+            termsP2: "Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione."
+        },
+        en: {
+            seoTitle: "Alan Łysiak | Photography",
+            seoDesc: "Alan Łysiak – Photography Portfolio. | Street | Portrait | Abstract | Double exposure | Explore my photos, zines, and projects. Contact: lyskier@gmail.com",
+            searchPlaceholder: "search...",
+            searchBtn: "Search",
+            randomBtn: "Random",
+            contactLink: "Contact",
+            privacyLink: "Privacy",
+            termsLink: "Terms",
+            backToTop: "Back to top",
+            
+            // Lightbox
+            prevImg: "Previous photo",
+            nextImg: "Next photo",
+            closeModal: "Close",
+
+            // Modal Contact
+            contactTitle: "Contact",
+            contactDesc: "Have questions or want to collaborate? Feel free to write directly to my email.",
+            contactSub1: "Send a message",
+            btnEmail: "Send Email",
+            btnProfile: "View Profile",
+
+            // Modal Privacy
+            privacyTitle: "Privacy Policy",
+            privacyP1: "This website respects your privacy. We use cookies and local storage solely for technical purposes – to ensure proper site functionality and visit counter operations.",
+            privacyP2: "The site does not collect, process, or share your personal data with third parties for marketing purposes.",
+
+            // Modal Terms
+            termsTitle: "Terms of Service",
+            termsP1: "All photographs and materials presented on this website are the property of Alan Łysiak and are protected by international copyright laws.",
+            termsP2: "Copying, downloading, distributing, modifying, or any commercial use of these photographs without prior written permission from the author is strictly prohibited."
+        }
+    };
+
+    const langPlBtn = document.getElementById('lang-pl');
+    const langEnBtn = document.getElementById('lang-en');
+
+    function updateLanguage(lang) {
+        localStorage.setItem('site_lang', lang);
+        const t = translations[lang];
+        if (!t) return;
+
+        // Meta i Tytuł strony
+        document.documentElement.lang = lang;
+        const seoTitleEl = document.getElementById('seo-title');
+        if (seoTitleEl) seoTitleEl.innerText = t.seoTitle;
+        const seoDescEl = document.getElementById('seo-desc');
+        if (seoDescEl) seoDescEl.setAttribute('content', t.seoDesc);
+
+        // Szukajka i przyciski akcji
+        const searchInputEl = document.getElementById('search-input');
+        if (searchInputEl) searchInputEl.placeholder = t.searchPlaceholder;
+        const searchBtnEl = document.getElementById('search-btn');
+        if (searchBtnEl) searchBtnEl.innerText = t.searchBtn;
+        const randomBtnEl = document.getElementById('random-btn');
+        if (randomBtnEl) randomBtnEl.innerText = t.randomBtn;
+        const bttEl = document.getElementById('back-to-top');
+        if (bttEl) bttEl.title = t.backToTop;
+
+        // Linki nawigacyjne
+        document.querySelectorAll('.link-contact').forEach(el => el.innerText = t.contactLink);
+        const privacyEl = document.getElementById('link-privacy');
+        if (privacyEl) privacyEl.innerText = t.privacyLink;
+        const termsEl = document.getElementById('link-terms');
+        if (termsEl) termsEl.innerText = t.termsLink;
+
+        // Dostępność Lightboxa (ARIA)
+        if (prevBtn) prevBtn.setAttribute('aria-label', t.prevImg);
+        if (nextBtn) nextBtn.setAttribute('aria-label', t.nextImg);
+        if (closeBtn) closeBtn.setAttribute('aria-label', t.closeModal);
+
+        // Treści Modal Kontakt
+        const mContactTitle = document.getElementById('modal-contact-title');
+        if (mContactTitle) mContactTitle.innerText = t.contactTitle;
+        const mContactDesc = document.getElementById('modal-contact-desc');
+        if (mContactDesc) mContactDesc.innerText = t.contactDesc;
+        const mContactSub1 = document.getElementById('modal-contact-sub1');
+        if (mContactSub1) mContactSub1.innerText = t.contactSub1;
+        const btnEmail = document.getElementById('btn-send-email');
+        if (btnEmail) btnEmail.innerText = t.btnEmail;
+        const btnProfile = document.getElementById('btn-view-profile');
+        if (btnProfile) btnProfile.innerText = t.btnProfile;
+
+        // Treści Modal Prywatność
+        const mPrivacyTitle = document.getElementById('modal-privacy-title');
+        if (mPrivacyTitle) mPrivacyTitle.innerText = t.privacyTitle;
+        const mPrivacyP1 = document.getElementById('modal-privacy-p1');
+        if (mPrivacyP1) mPrivacyP1.innerText = t.privacyP1;
+        const mPrivacyP2 = document.getElementById('modal-privacy-p2');
+        if (mPrivacyP2) mPrivacyP2.innerText = t.privacyP2;
+
+        // Treści Modal Regulamin
+        const mTermsTitle = document.getElementById('modal-terms-title');
+        if (mTermsTitle) mTermsTitle.innerText = t.termsTitle;
+        const mTermsP1 = document.getElementById('modal-terms-p1');
+        if (mTermsP1) mTermsP1.innerText = t.termsP1;
+        const mTermsP2 = document.getElementById('modal-terms-p2');
+        if (mTermsP2) mTermsP2.innerText = t.termsP2;
+
+        // Aktualizacja stanu przycisków PL / EN
+        if (langPlBtn && langEnBtn) {
+            if (lang === 'pl') {
+                langPlBtn.classList.add('active');
+                langEnBtn.classList.remove('active');
+            } else {
+                langEnBtn.classList.add('active');
+                langPlBtn.classList.remove('active');
+            }
+        }
+    }
+
+    // Inicjalizacja wybranego języka z localStorage (domyślnie PL)
+    const savedLang = localStorage.getItem('site_lang') || 'pl';
+    updateLanguage(savedLang);
+
+    if (langPlBtn) langPlBtn.addEventListener('click', () => updateLanguage('pl'));
+    if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('en'));
+
+
     // --- 1. LOGIKA OKIENEK (MODALI) ---
     const modalTriggers = document.querySelectorAll('.modal-trigger');
     const modalCloses = document.querySelectorAll('.custom-modal-close');
