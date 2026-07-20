@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const getDefaultTags = () => {
-        const defaultKeys = ['street', 'portret', 'abstrakcja', 'monochrome', 'generator'];
+        const defaultKeys = ['street', 'portret', 'abstrakcja', 'monochrome'];
         return defaultKeys.map(k => getDisplayTag(k, currentLang));
     };
 
