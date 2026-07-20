@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const prevBtn = document.querySelector('.prev');
     const nextBtn = document.querySelector('.next');
     const closeBtn = document.querySelector('.close');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.querySelector('.search-btn');
+    const randomBtn = document.getElementById('random-btn');
+    const suggestionsBox = document.querySelector('.suggestions-list');
     
     let images = []; 
     let visibleImages = []; 
@@ -19,130 +23,212 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentX = 0, currentY = 0;
     let currentLang = 'pl';
 
-    // --- SŁOWNIK TAGÓW (PL / EN) ---
+    // --- PEŁNY DWUKIERUNKOWY SŁOWNIK TAGÓW (PL / EN) ---
     const tagDictionary = {
         // --- KATEGORIE I STYLE ---
-        'abstrakcja':     { pl: 'abstrakcja',          en: 'abstract' },
-        'street':         { pl: 'street',             en: 'street' },
-        'portret':        { pl: 'portret',            en: 'portrait' },
-        'krajobraz':      { pl: 'krajobraz',          en: 'landscape' },
-        'landscape':      { pl: 'krajobraz',          en: 'landscape' },
-        'czarnobiale':    { pl: 'czarno-białe',       en: 'black & white' },
-        'blackwhite':     { pl: 'czarno-białe',       en: 'black & white' },
-        'monochrome':     { pl: 'monochrom',          en: 'monochrome' },
-        'doublexposure':  { pl: 'podwójna ekspozycja', en: 'double exposure' },
-        'longexposure':   { pl: 'długa ekspozycja',    en: 'long exposure' },
-        'refractography': { pl: 'refraktografia',     en: 'refractography' },
-        'macro':          { pl: 'makro',              en: 'macro' },
-        'urban':          { pl: 'urban',              en: 'urban' },
-        'travel':         { pl: 'podróże',            en: 'travel' },
-        'wildlife':       { pl: 'dzika przyroda',     en: 'wildlife' },
-        'selfie':         { pl: 'selfie',             en: 'selfie' },
-        'generator':      { pl: 'generator',          en: 'generator' },
+        'abstrakcja':        { pl: 'abstrakcja',          en: 'abstract' },
+        'abstract':          { pl: 'abstrakcja',          en: 'abstract' },
+        'street':            { pl: 'street',             en: 'street' },
+        'portret':           { pl: 'portret',            en: 'portrait' },
+        'portrait':          { pl: 'portret',            en: 'portrait' },
+        'krajobraz':         { pl: 'krajobraz',          en: 'landscape' },
+        'landscape':         { pl: 'krajobraz',          en: 'landscape' },
+        'czarnobiale':       { pl: 'czarno-białe',       en: 'black & white' },
+        'blackwhite':        { pl: 'czarno-białe',       en: 'black & white' },
+        'black & white':     { pl: 'czarno-białe',       en: 'black & white' },
+        'monochrome':        { pl: 'monochrom',          en: 'monochrome' },
+        'monochrom':         { pl: 'monochrom',          en: 'monochrome' },
+        'doublexposure':     { pl: 'podwójna ekspozycja', en: 'double exposure' },
+        'double exposure':   { pl: 'podwójna ekspozycja', en: 'double exposure' },
+        'longexposure':      { pl: 'długa ekspozycja',    en: 'long exposure' },
+        'long exposure':     { pl: 'długa ekspozycja',    en: 'long exposure' },
+        'refractography':    { pl: 'refraktografia',     en: 'refractography' },
+        'refraktografia':    { pl: 'refraktografia',     en: 'refractography' },
+        'macro':             { pl: 'makro',              en: 'macro' },
+        'makro':             { pl: 'makro',              en: 'macro' },
+        'urban':             { pl: 'urban',              en: 'urban' },
+        'travel':            { pl: 'podróże',            en: 'travel' },
+        'podroze':           { pl: 'podróże',            en: 'travel' },
+        'podróże':           { pl: 'podróże',            en: 'travel' },
+        'wildlife':          { pl: 'dzika przyroda',     en: 'wildlife' },
+        'dzika przyroda':    { pl: 'dzika przyroda',     en: 'wildlife' },
+        'selfie':            { pl: 'selfie',             en: 'selfie' },
+        'generator':         { pl: 'generator',          en: 'generator' },
 
         // --- KRAJE I REGIONY ---
-        'polska':         { pl: 'polska',             en: 'poland' },
-        'albania':        { pl: 'albania',            en: 'albania' },
-        'austria':        { pl: 'austria',            en: 'austria' },
-        'balkans':        { pl: 'bałkany',            en: 'balkans' },
-        'bosnia':         { pl: 'bośnia',             en: 'bosnia' },
-        'bulgaria':       { pl: 'bułgaria',           en: 'bulgaria' },
-        'chorwacja':      { pl: 'chorwacja',          en: 'croatia' },
-        'croatia':        { pl: 'chorwacja',          en: 'croatia' },
-        'cypr':           { pl: 'cypr',               en: 'cyprus' },
-        'czech':          { pl: 'czechy',             en: 'czechia' },
-        'estonia':        { pl: 'estonia',            en: 'estonia' },
-        'germany':        { pl: 'niemcy',             en: 'germany' },
-        'hiszpania':      { pl: 'hiszpania',          en: 'spain' },
-        'spain':          { pl: 'hiszpania',          en: 'spain' },
-        'holandia':       { pl: 'holandia',           en: 'netherlands' },
-        'netherlands':    { pl: 'holandia',           en: 'netherlands' },
-        'hungary':        { pl: 'węgry',              en: 'hungary' },
-        'wegry':          { pl: 'węgry',              en: 'hungary' },
-        'italy':          { pl: 'włochy',             en: 'italy' },
-        'wlochy':         { pl: 'włochy',             en: 'italy' },
-        'latvia':         { pl: 'łotwa',              en: 'latvia' },
-        'lotwa':          { pl: 'łotwa',              en: 'latvia' },
-        'lichtenstein':   { pl: 'liechtenstein',      en: 'liechtenstein' },
-        'lithuania':      { pl: 'litwa',              en: 'lithuania' },
-        'litwa':          { pl: 'litwa',              en: 'lithuania' },
-        'montenegro':     { pl: 'czarnogóra',         en: 'montenegro' },
-        'romania':        { pl: 'rumunia',            en: 'romania' },
-        'rumunia':        { pl: 'rumunia',            en: 'romania' },
-        'serbia':         { pl: 'serbia',             en: 'serbia' },
-        'slowacja':       { pl: 'słowacja',           en: 'slovakia' },
+        'polska':            { pl: 'polska',             en: 'poland' },
+        'poland':            { pl: 'polska',             en: 'poland' },
+        'albania':           { pl: 'albania',            en: 'albania' },
+        'austria':           { pl: 'austria',            en: 'austria' },
+        'balkans':           { pl: 'bałkany',            en: 'balkans' },
+        'balkany':           { pl: 'bałkany',            en: 'balkans' },
+        'bałkany':           { pl: 'bałkany',            en: 'balkans' },
+        'bosnia':            { pl: 'bośnia',             en: 'bosnia' },
+        'bośnia':            { pl: 'bośnia',             en: 'bosnia' },
+        'bulgaria':          { pl: 'bułgaria',           en: 'bulgaria' },
+        'bułgaria':          { pl: 'bułgaria',           en: 'bulgaria' },
+        'chorwacja':         { pl: 'chorwacja',          en: 'croatia' },
+        'croatia':           { pl: 'chorwacja',          en: 'croatia' },
+        'cypr':              { pl: 'cypr',               en: 'cyprus' },
+        'cyprus':            { pl: 'cypr',               en: 'cyprus' },
+        'czech':             { pl: 'czechy',             en: 'czechia' },
+        'czechy':            { pl: 'czechy',             en: 'czechia' },
+        'czechia':           { pl: 'czechy',             en: 'czechia' },
+        'estonia':           { pl: 'estonia',            en: 'estonia' },
+        'germany':           { pl: 'niemcy',             en: 'germany' },
+        'niemcy':            { pl: 'niemcy',             en: 'germany' },
+        'hiszpania':         { pl: 'hiszpania',          en: 'spain' },
+        'spain':             { pl: 'hiszpania',          en: 'spain' },
+        'holandia':          { pl: 'holandia',           en: 'netherlands' },
+        'netherlands':       { pl: 'holandia',           en: 'netherlands' },
+        'hungary':           { pl: 'węgry',              en: 'hungary' },
+        'wegry':             { pl: 'węgry',              en: 'hungary' },
+        'węgry':             { pl: 'węgry',              en: 'hungary' },
+        'italy':             { pl: 'włochy',             en: 'italy' },
+        'wlochy':            { pl: 'włochy',             en: 'italy' },
+        'włochy':            { pl: 'włochy',             en: 'italy' },
+        'latvia':            { pl: 'łotwa',              en: 'latvia' },
+        'lotwa':             { pl: 'łotwa',              en: 'latvia' },
+        'łotwa':             { pl: 'łotwa',              en: 'latvia' },
+        'lichtenstein':      { pl: 'liechtenstein',      en: 'liechtenstein' },
+        'liechtenstein':     { pl: 'liechtenstein',      en: 'liechtenstein' },
+        'lithuania':         { pl: 'litwa',              en: 'lithuania' },
+        'litwa':             { pl: 'litwa',              en: 'lithuania' },
+        'montenegro':        { pl: 'czarnogóra',         en: 'montenegro' },
+        'czarnogora':        { pl: 'czarnogóra',         en: 'montenegro' },
+        'czarnogóra':        { pl: 'czarnogóra',         en: 'montenegro' },
+        'romania':           { pl: 'rumunia',            en: 'romania' },
+        'rumunia':           { pl: 'rumunia',            en: 'romania' },
+        'serbia':            { pl: 'serbia',             en: 'serbia' },
+        'slowacja':          { pl: 'słowacja',           en: 'slovakia' },
+        'słowacja':          { pl: 'słowacja',           en: 'slovakia' },
+        'slovakia':          { pl: 'słowacja',           en: 'slovakia' },
 
         // --- MIASTA I MIEJSCA ---
-        'amsterdam':      { pl: 'amsterdam',          en: 'amsterdam' },
-        'belgrad':        { pl: 'belgrad',            en: 'belgrade' },
-        'budapest':       { pl: 'budapeszt',          en: 'budapest' },
-        'bukareszt':      { pl: 'bukareszt',          en: 'bucharest' },
-        'catania':        { pl: 'katania',            en: 'catania' },
-        'etna':           { pl: 'etna',               en: 'etna' },
-        'gdansk':         { pl: 'gdańsk',             en: 'gdansk' },
-        'gdynia':         { pl: 'gdynia',             en: 'gdynia' },
-        'poznan':         { pl: 'poznań',             en: 'poznan' },
-        'prague':         { pl: 'praga',              en: 'prague' },
-        'rome':           { pl: 'rzym',               en: 'rome' },
-        'rzym':           { pl: 'rzym',               en: 'rome' },
-        'ryga':           { pl: 'ryga',               en: 'riga' },
-        'sicily':         { pl: 'sycylia',            en: 'sicily' },
-        'sopot':          { pl: 'sopot',              en: 'sopot' },
-        'venezia':        { pl: 'wenecja',            en: 'venice' },
-        'wenecja':        { pl: 'wenecja',            en: 'venice' },
-        'viena':          { pl: 'wiedeń',             en: 'vienna' },
-        'wieden':         { pl: 'wiedeń',             en: 'vienna' },
-        'wiedien':        { pl: 'wiedeń',             en: 'vienna' },
+        'amsterdam':         { pl: 'amsterdam',          en: 'amsterdam' },
+        'belgrad':           { pl: 'belgrad',            en: 'belgrade' },
+        'belgrade':          { pl: 'belgrad',            en: 'belgrade' },
+        'budapest':          { pl: 'budapeszt',          en: 'budapest' },
+        'budapeszt':         { pl: 'budapeszt',          en: 'budapest' },
+        'bukareszt':         { pl: 'bukareszt',          en: 'bucharest' },
+        'bucharest':         { pl: 'bukareszt',          en: 'bucharest' },
+        'catania':           { pl: 'katania',            en: 'catania' },
+        'katania':           { pl: 'katania',            en: 'catania' },
+        'etna':              { pl: 'etna',               en: 'etna' },
+        'gdansk':            { pl: 'gdańsk',             en: 'gdansk' },
+        'gdańsk':            { pl: 'gdańsk',             en: 'gdansk' },
+        'gdynia':            { pl: 'gdynia',             en: 'gdynia' },
+        'poznan':            { pl: 'poznań',             en: 'poznan' },
+        'poznań':            { pl: 'poznań',             en: 'poznan' },
+        'prague':            { pl: 'praga',              en: 'prague' },
+        'praga':             { pl: 'praga',              en: 'prague' },
+        'rome':              { pl: 'rzym',               en: 'rome' },
+        'rzym':              { pl: 'rzym',               en: 'rome' },
+        'ryga':              { pl: 'ryga',               en: 'riga' },
+        'riga':              { pl: 'ryga',               en: 'riga' },
+        'sicily':            { pl: 'sycylia',            en: 'sicily' },
+        'sycylia':           { pl: 'sycylia',            en: 'sicily' },
+        'sopot':             { pl: 'sopot',              en: 'sopot' },
+        'venezia':           { pl: 'wenecja',            en: 'venice' },
+        'wenecja':           { pl: 'wenecja',            en: 'venice' },
+        'venice':            { pl: 'wenecja',            en: 'venice' },
+        'viena':             { pl: 'wiedeń',             en: 'vienna' },
+        'wieden':            { pl: 'wiedeń',             en: 'vienna' },
+        'wiedien':           { pl: 'wiedeń',             en: 'vienna' },
+        'wiedeń':            { pl: 'wiedeń',             en: 'vienna' },
+        'vienna':            { pl: 'wiedeń',             en: 'vienna' },
 
         // --- MOTYWY, OBIEKTY, MOTORYZACJA ---
-        'batman':         { pl: 'batman',             en: 'batman' },
-        'beach':          { pl: 'plaża',              en: 'beach' },
-        'plaza':          { pl: 'plaża',              en: 'beach' },
-        'bear':           { pl: 'niedźwiedź',         en: 'bear' },
-        'bicycle':        { pl: 'rower',              en: 'bicycle' },
-        'rower':          { pl: 'rower',              en: 'bicycle' },
-        'bird':           { pl: 'ptak',               en: 'bird' },
-        'ptak':           { pl: 'ptak',               en: 'bird' },
-        'buty':           { pl: 'buty',               en: 'shoes' },
-        'car':            { pl: 'samochód',           en: 'car' },
-        'samochod':       { pl: 'samochód',           en: 'car' },
-        'cat':            { pl: 'kot',                en: 'cat' },
-        'kot':            { pl: 'kot',                en: 'cat' },
-        'dog':            { pl: 'pies',               en: 'dog' },
-        'pies':           { pl: 'pies',               en: 'dog' },
-        'flower':         { pl: 'kwiaty',             en: 'flowers' },
-        'kwiat':          { pl: 'kwiaty',             en: 'flowers' },
-        'kwiaty':         { pl: 'kwiaty',             en: 'flowers' },
-        'horse':          { pl: 'koń',                en: 'horse' },
-        'kon':            { pl: 'koń',                en: 'horse' },
-        'morze':          { pl: 'morze',              en: 'sea' },
-        'night':          { pl: 'noc',                en: 'night' },
-        'noc':            { pl: 'noc',                en: 'night' },
-        'pajak':          { pl: 'pająk',              en: 'spider' },
-        'spider':         { pl: 'pająk',              en: 'spider' },
-        'spiderman':      { pl: 'spiderman',          en: 'spiderman' },
-        'pociag':         { pl: 'pociąg',             en: 'train' },
-        'train':          { pl: 'pociąg',             en: 'train' },
-        'skateboard':     { pl: 'deskorolka',         en: 'skateboard' },
-        'winter':         { pl: 'zima',               en: 'winter' },
-        'zima':           { pl: 'zima',               en: 'winter' },
-        'znaki':          { pl: 'znaki',              en: 'signs' },
-        'zorza':          { pl: 'zorza',              en: 'aurora' },
-        'tagi':           { pl: 'tagi',               en: 'tags' },
+        'batman':            { pl: 'batman',             en: 'batman' },
+        'beach':             { pl: 'plaża',              en: 'beach' },
+        'plaza':             { pl: 'plaża',              en: 'beach' },
+        'plaża':             { pl: 'plaża',              en: 'beach' },
+        'bear':              { pl: 'niedźwiedź',         en: 'bear' },
+        'niedzwiedz':        { pl: 'niedźwiedź',         en: 'bear' },
+        'niedźwiedź':        { pl: 'niedźwiedź',         en: 'bear' },
+        'bicycle':           { pl: 'rower',              en: 'bicycle' },
+        'rower':             { pl: 'rower',              en: 'bicycle' },
+        'bird':              { pl: 'ptak',               en: 'bird' },
+        'ptak':              { pl: 'ptak',               en: 'bird' },
+        'buty':              { pl: 'buty',               en: 'shoes' },
+        'shoes':             { pl: 'buty',               en: 'shoes' },
+        'car':               { pl: 'samochód',           en: 'car' },
+        'samochod':          { pl: 'samochód',           en: 'car' },
+        'samochód':          { pl: 'samochód',           en: 'car' },
+        'cat':               { pl: 'kot',                en: 'cat' },
+        'kot':               { pl: 'kot',                en: 'cat' },
+        'dog':               { pl: 'pies',               en: 'dog' },
+        'pies':              { pl: 'pies',               en: 'dog' },
+        'flower':            { pl: 'kwiaty',             en: 'flowers' },
+        'flowers':           { pl: 'kwiaty',             en: 'flowers' },
+        'kwiat':             { pl: 'kwiaty',             en: 'flowers' },
+        'kwiaty':            { pl: 'kwiaty',             en: 'flowers' },
+        'horse':             { pl: 'koń',                en: 'horse' },
+        'kon':               { pl: 'koń',                en: 'horse' },
+        'koń':               { pl: 'koń',                en: 'horse' },
+        'morze':             { pl: 'morze',              en: 'sea' },
+        'sea':               { pl: 'morze',              en: 'sea' },
+        'night':             { pl: 'noc',                en: 'night' },
+        'noc':               { pl: 'noc',                en: 'night' },
+        'pajak':             { pl: 'pająk',              en: 'spider' },
+        'pająk':             { pl: 'pająk',              en: 'spider' },
+        'spider':            { pl: 'pająk',              en: 'spider' },
+        'spiderman':         { pl: 'spiderman',          en: 'spiderman' },
+        'pociag':            { pl: 'pociąg',             en: 'train' },
+        'pociąg':            { pl: 'pociąg',             en: 'train' },
+        'train':             { pl: 'pociąg',             en: 'train' },
+        'skateboard':        { pl: 'deskorolka',         en: 'skateboard' },
+        'deskorolka':        { pl: 'deskorolka',         en: 'skateboard' },
+        'winter':            { pl: 'zima',               en: 'winter' },
+        'zima':              { pl: 'zima',               en: 'winter' },
+        'znaki':             { pl: 'znaki',              en: 'signs' },
+        'signs':             { pl: 'znaki',              en: 'signs' },
+        'zorza':             { pl: 'zorza',              en: 'aurora' },
+        'aurora':            { pl: 'zorza',              en: 'aurora' },
+        'tagi':              { pl: 'tagi',               en: 'tags' },
+        'tags':              { pl: 'tagi',               en: 'tags' },
 
         // --- SPRZĘT ---
-        'fujifilm':       { pl: 'fujifilm',           en: 'fujifilm' },
-        'nikon':          { pl: 'nikon',              en: 'nikon' },
-        'olympus':        { pl: 'olympus',            en: 'olympus' },
-        'ricoh':          { pl: 'ricoh',              en: 'ricoh' },
-        'sony':           { pl: 'sony',               en: 'sony' }
+        'fujifilm':          { pl: 'fujifilm',           en: 'fujifilm' },
+        'nikon':             { pl: 'nikon',              en: 'nikon' },
+        'olympus':           { pl: 'olympus',            en: 'olympus' },
+        'ricoh':             { pl: 'ricoh',              en: 'ricoh' },
+        'sony':              { pl: 'sony',               en: 'sony' }
     };
 
     function getDisplayTag(rawTag, lang) {
+        if (!rawTag) return '';
         const key = rawTag.toLowerCase().trim();
         const entry = tagDictionary[key];
         return entry ? entry[lang] : rawTag;
     }
+
+    const getDefaultTags = () => {
+        const defaultKeys = ['street', 'portret', 'abstrakcja', 'monochrome', 'generator'];
+        return defaultKeys.map(k => getDisplayTag(k, currentLang));
+    };
+
+    const performSearch = () => {
+        if (!searchInput) return;
+        const term = searchInput.value.toLowerCase().trim();
+        if (term === 'generator') { window.location.href = 'generator/index.html'; return; }
+
+        document.querySelectorAll('.photo-card').forEach(card => {
+            const cats = (card.getAttribute('data-category') || "").toLowerCase().split(/\s+/);
+            const isMatch = term === "" ? card.classList.contains('highlight') : cats.some(cat => {
+                if (!cat) return false;
+                const entry = tagDictionary[cat];
+                if (entry) {
+                    return cat.startsWith(term) || 
+                           entry.pl.toLowerCase().startsWith(term) || 
+                           entry.en.toLowerCase().startsWith(term);
+                }
+                return cat.startsWith(term);
+            });
+            card.classList.toggle('hidden', !isMatch);
+        });
+        if (suggestionsBox) suggestionsBox.style.display = "none";
+    };
 
     // --- 0. LOGIKA JĘZYKOWA (PL / EN) ---
     const translations = {
@@ -231,8 +317,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (seoDescEl) seoDescEl.setAttribute('content', t.seoDesc);
 
         // Szukajka i przyciski akcji
-        const searchInputEl = document.getElementById('search-input');
-        if (searchInputEl) searchInputEl.placeholder = t.searchPlaceholder;
+        if (searchInput) searchInput.placeholder = t.searchPlaceholder;
         const searchBtnEl = document.getElementById('search-btn');
         if (searchBtnEl) searchBtnEl.innerText = t.searchBtn;
         const randomBtnEl = document.getElementById('random-btn');
@@ -288,6 +373,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 langEnBtn.classList.add('active');
                 langPlBtn.classList.remove('active');
+            }
+        }
+
+        // Tłumaczenie aktywnego tekstu w szukajce oraz podpowiedzi
+        if (searchInput) {
+            const val = searchInput.value.trim();
+            if (val !== '') {
+                const translatedTag = getDisplayTag(val, lang);
+                searchInput.value = translatedTag;
+                performSearch();
+            } else if (suggestionsBox && suggestionsBox.style.display === "block") {
+                suggestionsBox.innerHTML = getDefaultTags().map(t => `<li>${t}</li>`).join('');
             }
         }
     }
@@ -552,38 +649,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // --- 4. WYSZUKIWARKA I PRZYCISK LOSUJ ---
-    const searchInput = document.getElementById('search-input');
-    const searchBtn = document.querySelector('.search-btn');
-    const randomBtn = document.getElementById('random-btn');
-    const suggestionsBox = document.querySelector('.suggestions-list');
-
-    const getDefaultTags = () => {
-        const defaultKeys = ['street', 'portret', 'abstrakcja', 'monochrome', 'generator'];
-        return defaultKeys.map(k => getDisplayTag(k, currentLang));
-    };
-
-    const performSearch = () => {
-        if (!searchInput) return;
-        const term = searchInput.value.toLowerCase().trim();
-        if (term === 'generator') { window.location.href = 'generator/index.html'; return; }
-
-        document.querySelectorAll('.photo-card').forEach(card => {
-            const cats = (card.getAttribute('data-category') || "").toLowerCase().split(/\s+/);
-            const isMatch = term === "" ? card.classList.contains('highlight') : cats.some(cat => {
-                if (!cat) return false;
-                const entry = tagDictionary[cat];
-                if (entry) {
-                    return cat.startsWith(term) || 
-                           entry.pl.toLowerCase().startsWith(term) || 
-                           entry.en.toLowerCase().startsWith(term);
-                }
-                return cat.startsWith(term);
-            });
-            card.classList.toggle('hidden', !isMatch);
-        });
-        if (suggestionsBox) suggestionsBox.style.display = "none";
-    };
-
     // Logika przycisku Losuj
     if (randomBtn) {
         randomBtn.addEventListener('click', () => {
