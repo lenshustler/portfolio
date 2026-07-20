@@ -236,8 +236,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             seoTitle: "Alan Łysiak | Fotografia",
             seoDesc: "Alan Łysiak – Portfolio fotograficzne. | Street | Portret | Abstrakcja | Podwójne ekspozycję | Zobacz moje fotografie, ziny i projekty. Kontakt: lyskier@gmail.com",
             searchPlaceholder: "szukaj...",
-            searchBtn: "Search",
-            randomBtn: "Random",
+            searchBtn: "Szukaj",
+            randomBtn: "Losowo",
             contactLink: "Kontakt",
             privacyLink: "Prywatność",
             termsLink: "Regulamin",
@@ -252,8 +252,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             contactTitle: "Kontakt",
             contactDesc: "Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.",
             contactSub1: "Napisz wiadomość",
-            btnEmail: "Send Email",
-            btnProfile: "View Profile",
+            btnEmail: "Napisz wiadomość",
+            btnProfile: "Zobacz profil",
 
             // Modal Prywatność
             privacyTitle: "Polityka Prywatności",
