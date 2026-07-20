@@ -22,8 +22,8 @@
             <a href="index.html" class="site-name">Alan Łysiak</a>
         </div>
         <ul class="header-links">
-            <li><a href="index.html">Galeria</a></li>
-            <li><a href="#" class="modal-trigger" data-target="modal-contact">Kontakt</a></li>
+            <li><a href="index.html" data-i18n="navGallery">Galeria</a></li>
+            <li><a href="#" class="modal-trigger" data-target="modal-contact" data-i18n="navContact">Kontakt</a></li>
             <li class="ig-icon">
                 <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
@@ -35,20 +35,20 @@
     <main class="zine-container">
         <a href="zine1.html" class="zine-card">
             <img src="images/link_do_okladki_zine1.jpg" alt="Okładka Zine #01">
-            <span>FlaneGRyzm Vol.1</span>
+            <span data-i18n="zine1Title">FlaneGRyzm Vol.1</span>
         </a>
         <a href="zine2.html" class="zine-card">
             <img src="images/zine2.jpg" alt="Okładka Zine #02">
-            <span>Potrójna Ekspozycja</span>
+            <span data-i18n="zine2Title">Potrójna Ekspozycja</span>
         </a>
     </main>
 
     <footer>
         <ul class="footer-links">
-            <li><a href="index.html">Galeria</a></li>
-            <li><a href="#" class="modal-trigger" data-target="modal-privacy">Prywatność</a></li>
-            <li><a href="#" class="modal-trigger" data-target="modal-terms">Regulamin</a></li>
-            <li><a href="#" class="modal-trigger" data-target="modal-contact">Kontakt</a></li>
+            <li><a href="index.html" data-i18n="navGallery">Galeria</a></li>
+            <li><a href="#" class="modal-trigger" data-target="modal-privacy" data-i18n="navPrivacy">Prywatność</a></li>
+            <li><a href="#" class="modal-trigger" data-target="modal-terms" data-i18n="navTerms">Regulamin</a></li>
+            <li><a href="#" class="modal-trigger" data-target="modal-contact" data-i18n="navContact">Kontakt</a></li>
             <li class="ig-icon">
                 <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
             </li>
@@ -57,48 +57,61 @@
         <p class="footer-name">&copy; 2026 Alan Łysiak</p>
     </footer>
 
+    <!-- MODAL: KONTAKT -->
     <div id="modal-contact" class="custom-modal">
         <div class="custom-modal-content">
             <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
-            <h2>Kontakt</h2>
+            <h2 data-i18n="contactModalTitle">Kontakt</h2>
             <div class="custom-modal-body" style="-webkit-user-select: text !important; user-select: text !important;">
-                <p class="modal-description">Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.</p>
-                <div class="contact-section-label">Email</div>
+                <p class="modal-description" data-i18n="contactModalDesc">Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.</p>
+                
+                <div class="contact-section-label" data-i18n="labelEmail">Email</div>
                 <div class="contact-card">
                     <div class="contact-card-left">
                         <img src="images/logo.png" alt="Alan Łysiak Logo" class="contact-avatar">
-                        <div class="contact-info-block"><span class="contact-title">lyskier@gmail.com</span><span class="contact-subtitle">Napisz wiadomość</span></div>
+                        <div class="contact-info-block">
+                            <span class="contact-title">lyskier@gmail.com</span>
+                            <span class="contact-subtitle" data-i18n="contactEmailSub">Napisz wiadomość</span>
+                        </div>
                     </div>
-                    <a href="mailto:lyskier@gmail.com" class="contact-card-btn">Send Email</a>
+                    <a href="mailto:lyskier@gmail.com" class="contact-card-btn" data-i18n="btnSendEmail">Wyślij Email</a>
                 </div>
-                <div class="contact-section-label">Instagram</div>
+
+                <div class="contact-section-label" data-i18n="labelInstagram">Instagram</div>
                 <div class="contact-card">
                     <div class="contact-card-left">
                         <img src="images/insta-avatar.jpg" alt="Instagram Avatar" class="contact-avatar" onerror="this.src='images/logo.png'">
-                        <div class="contact-info-block"><span class="contact-title">@lenshustler</span><span class="contact-subtitle">Instagram</span></div>
+                        <div class="contact-info-block">
+                            <span class="contact-title">@lenshustler</span>
+                            <span class="contact-subtitle">Instagram</span>
+                        </div>
                     </div>
-                    <a href="https://instagram.com/lenshustler" target="_blank" class="contact-card-btn">View Profile</a>
+                    <a href="https://instagram.com/lenshustler" target="_blank" class="contact-card-btn" data-i18n="btnViewProfile">Zobacz Profil</a>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- MODAL: PRYWATNOŚĆ -->
     <div id="modal-privacy" class="custom-modal">
         <div class="custom-modal-content">
             <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
-            <h2>Polityka Prywatności</h2>
+            <h2 data-i18n="privacyModalTitle">Polityka Prywatności</h2>
             <div class="custom-modal-body">
-                <p>Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.</p>
-                <p style="margin-top: 15px;">Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.</p>
+                <p data-i18n="privacyP1">Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.</p>
+                <p style="margin-top: 15px;" data-i18n="privacyP2">Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.</p>
             </div>
         </div>
     </div>
+
+    <!-- MODAL: REGULAMIN -->
     <div id="modal-terms" class="custom-modal">
         <div class="custom-modal-content">
             <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
-            <h2>Regulamin strony</h2>
+            <h2 data-i18n="termsModalTitle">Regulamin strony</h2>
             <div class="custom-modal-body">
-                <p>Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.</p>
-                <p style="margin-top: 15px;">Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione.</p>
+                <p data-i18n="termsP1">Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.</p>
+                <p style="margin-top: 15px;" data-i18n="termsP2">Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione.</p>
             </div>
         </div>
     </div>
