@@ -17,6 +17,132 @@ document.addEventListener('DOMContentLoaded', async () => {
     let isMoving = false;
     let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
+    let currentLang = 'pl';
+
+    // --- SŁOWNIK TAGÓW (PL / EN) ---
+    const tagDictionary = {
+        // --- KATEGORIE I STYLE ---
+        'abstrakcja':     { pl: 'abstrakcja',          en: 'abstract' },
+        'street':         { pl: 'street',             en: 'street' },
+        'portret':        { pl: 'portret',            en: 'portrait' },
+        'krajobraz':      { pl: 'krajobraz',          en: 'landscape' },
+        'landscape':      { pl: 'krajobraz',          en: 'landscape' },
+        'czarnobiale':    { pl: 'czarno-białe',       en: 'black & white' },
+        'blackwhite':     { pl: 'czarno-białe',       en: 'black & white' },
+        'monochrome':     { pl: 'monochrom',          en: 'monochrome' },
+        'doublexposure':  { pl: 'podwójna ekspozycja', en: 'double exposure' },
+        'longexposure':   { pl: 'długa ekspozycja',    en: 'long exposure' },
+        'refractography': { pl: 'refraktografia',     en: 'refractography' },
+        'macro':          { pl: 'makro',              en: 'macro' },
+        'urban':          { pl: 'urban',              en: 'urban' },
+        'travel':         { pl: 'podróże',            en: 'travel' },
+        'wildlife':       { pl: 'dzika przyroda',     en: 'wildlife' },
+        'selfie':         { pl: 'selfie',             en: 'selfie' },
+        'generator':      { pl: 'generator',          en: 'generator' },
+
+        // --- KRAJE I REGIONY ---
+        'polska':         { pl: 'polska',             en: 'poland' },
+        'albania':        { pl: 'albania',            en: 'albania' },
+        'austria':        { pl: 'austria',            en: 'austria' },
+        'balkans':        { pl: 'bałkany',            en: 'balkans' },
+        'bosnia':         { pl: 'bośnia',             en: 'bosnia' },
+        'bulgaria':       { pl: 'bułgaria',           en: 'bulgaria' },
+        'chorwacja':      { pl: 'chorwacja',          en: 'croatia' },
+        'croatia':        { pl: 'chorwacja',          en: 'croatia' },
+        'cypr':           { pl: 'cypr',               en: 'cyprus' },
+        'czech':          { pl: 'czechy',             en: 'czechia' },
+        'estonia':        { pl: 'estonia',            en: 'estonia' },
+        'germany':        { pl: 'niemcy',             en: 'germany' },
+        'hiszpania':      { pl: 'hiszpania',          en: 'spain' },
+        'spain':          { pl: 'hiszpania',          en: 'spain' },
+        'holandia':       { pl: 'holandia',           en: 'netherlands' },
+        'netherlands':    { pl: 'holandia',           en: 'netherlands' },
+        'hungary':        { pl: 'węgry',              en: 'hungary' },
+        'wegry':          { pl: 'węgry',              en: 'hungary' },
+        'italy':          { pl: 'włochy',             en: 'italy' },
+        'wlochy':         { pl: 'włochy',             en: 'italy' },
+        'latvia':         { pl: 'łotwa',              en: 'latvia' },
+        'lotwa':          { pl: 'łotwa',              en: 'latvia' },
+        'lichtenstein':   { pl: 'liechtenstein',      en: 'liechtenstein' },
+        'lithuania':      { pl: 'litwa',              en: 'lithuania' },
+        'litwa':          { pl: 'litwa',              en: 'lithuania' },
+        'montenegro':     { pl: 'czarnogóra',         en: 'montenegro' },
+        'romania':        { pl: 'rumunia',            en: 'romania' },
+        'rumunia':        { pl: 'rumunia',            en: 'romania' },
+        'serbia':         { pl: 'serbia',             en: 'serbia' },
+        'slowacja':       { pl: 'słowacja',           en: 'slovakia' },
+
+        // --- MIASTA I MIEJSCA ---
+        'amsterdam':      { pl: 'amsterdam',          en: 'amsterdam' },
+        'belgrad':        { pl: 'belgrad',            en: 'belgrade' },
+        'budapest':       { pl: 'budapeszt',          en: 'budapest' },
+        'bukareszt':      { pl: 'bukareszt',          en: 'bucharest' },
+        'catania':        { pl: 'katania',            en: 'catania' },
+        'etna':           { pl: 'etna',               en: 'etna' },
+        'gdansk':         { pl: 'gdańsk',             en: 'gdansk' },
+        'gdynia':         { pl: 'gdynia',             en: 'gdynia' },
+        'poznan':         { pl: 'poznań',             en: 'poznan' },
+        'prague':         { pl: 'praga',              en: 'prague' },
+        'rome':           { pl: 'rzym',               en: 'rome' },
+        'rzym':           { pl: 'rzym',               en: 'rome' },
+        'ryga':           { pl: 'ryga',               en: 'riga' },
+        'sicily':         { pl: 'sycylia',            en: 'sicily' },
+        'sopot':          { pl: 'sopot',              en: 'sopot' },
+        'venezia':        { pl: 'wenecja',            en: 'venice' },
+        'wenecja':        { pl: 'wenecja',            en: 'venice' },
+        'viena':          { pl: 'wiedeń',             en: 'vienna' },
+        'wieden':         { pl: 'wiedeń',             en: 'vienna' },
+        'wiedien':        { pl: 'wiedeń',             en: 'vienna' },
+
+        // --- MOTYWY, OBIEKTY, MOTORYZACJA ---
+        'batman':         { pl: 'batman',             en: 'batman' },
+        'beach':          { pl: 'plaża',              en: 'beach' },
+        'plaza':          { pl: 'plaża',              en: 'beach' },
+        'bear':           { pl: 'niedźwiedź',         en: 'bear' },
+        'bicycle':        { pl: 'rower',              en: 'bicycle' },
+        'rower':          { pl: 'rower',              en: 'bicycle' },
+        'bird':           { pl: 'ptak',               en: 'bird' },
+        'ptak':           { pl: 'ptak',               en: 'bird' },
+        'buty':           { pl: 'buty',               en: 'shoes' },
+        'car':            { pl: 'samochód',           en: 'car' },
+        'samochod':       { pl: 'samochód',           en: 'car' },
+        'cat':            { pl: 'kot',                en: 'cat' },
+        'kot':            { pl: 'kot',                en: 'cat' },
+        'dog':            { pl: 'pies',               en: 'dog' },
+        'pies':           { pl: 'pies',               en: 'dog' },
+        'flower':         { pl: 'kwiaty',             en: 'flowers' },
+        'kwiat':          { pl: 'kwiaty',             en: 'flowers' },
+        'kwiaty':         { pl: 'kwiaty',             en: 'flowers' },
+        'horse':          { pl: 'koń',                en: 'horse' },
+        'kon':            { pl: 'koń',                en: 'horse' },
+        'morze':          { pl: 'morze',              en: 'sea' },
+        'night':          { pl: 'noc',                en: 'night' },
+        'noc':            { pl: 'noc',                en: 'night' },
+        'pajak':          { pl: 'pająk',              en: 'spider' },
+        'spider':         { pl: 'pająk',              en: 'spider' },
+        'spiderman':      { pl: 'spiderman',          en: 'spiderman' },
+        'pociag':         { pl: 'pociąg',             en: 'train' },
+        'train':          { pl: 'pociąg',             en: 'train' },
+        'skateboard':     { pl: 'deskorolka',         en: 'skateboard' },
+        'winter':         { pl: 'zima',               en: 'winter' },
+        'zima':           { pl: 'zima',               en: 'winter' },
+        'znaki':          { pl: 'znaki',              en: 'signs' },
+        'zorza':          { pl: 'zorza',              en: 'aurora' },
+        'tagi':           { pl: 'tagi',               en: 'tags' },
+
+        // --- SPRZĘT ---
+        'fujifilm':       { pl: 'fujifilm',           en: 'fujifilm' },
+        'nikon':          { pl: 'nikon',              en: 'nikon' },
+        'olympus':        { pl: 'olympus',            en: 'olympus' },
+        'ricoh':          { pl: 'ricoh',              en: 'ricoh' },
+        'sony':           { pl: 'sony',               en: 'sony' }
+    };
+
+    function getDisplayTag(rawTag, lang) {
+        const key = rawTag.toLowerCase().trim();
+        const entry = tagDictionary[key];
+        return entry ? entry[lang] : rawTag;
+    }
 
     // --- 0. LOGIKA JĘZYKOWA (PL / EN) ---
     const translations = {
@@ -92,6 +218,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const langEnBtn = document.getElementById('lang-en');
 
     function updateLanguage(lang) {
+        currentLang = lang;
         localStorage.setItem('site_lang', lang);
         const t = translations[lang];
         if (!t) return;
@@ -429,7 +556,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const searchBtn = document.querySelector('.search-btn');
     const randomBtn = document.getElementById('random-btn');
     const suggestionsBox = document.querySelector('.suggestions-list');
-    const defaultTags = ['street', 'portret', 'abstrakcja', 'monochrome', 'generator'];
+
+    const getDefaultTags = () => {
+        const defaultKeys = ['street', 'portret', 'abstrakcja', 'monochrome', 'generator'];
+        return defaultKeys.map(k => getDisplayTag(k, currentLang));
+    };
 
     const performSearch = () => {
         if (!searchInput) return;
@@ -437,8 +568,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (term === 'generator') { window.location.href = 'generator/index.html'; return; }
 
         document.querySelectorAll('.photo-card').forEach(card => {
-            const cats = (card.getAttribute('data-category') || "").toLowerCase().split(' ');
-            const isMatch = term === "" ? card.classList.contains('highlight') : cats.some(w => w.startsWith(term));
+            const cats = (card.getAttribute('data-category') || "").toLowerCase().split(/\s+/);
+            const isMatch = term === "" ? card.classList.contains('highlight') : cats.some(cat => {
+                if (!cat) return false;
+                const entry = tagDictionary[cat];
+                if (entry) {
+                    return cat.startsWith(term) || 
+                           entry.pl.toLowerCase().startsWith(term) || 
+                           entry.en.toLowerCase().startsWith(term);
+                }
+                return cat.startsWith(term);
+            });
             card.classList.toggle('hidden', !isMatch);
         });
         if (suggestionsBox) suggestionsBox.style.display = "none";
@@ -453,15 +593,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const cats = (card.getAttribute('data-category') || "").trim();
                 if (cats) {
                     cats.split(/\s+/).forEach(tag => {
-                        if (tag !== 'generator') allTags.add(tag);
+                        if (tag.toLowerCase() !== 'generator') allTags.add(tag);
                     });
                 }
             });
             const tagsArray = Array.from(allTags);
             if (tagsArray.length > 0) {
-                const randomTag = tagsArray[Math.floor(Math.random() * tagsArray.length)];
+                const randomRawTag = tagsArray[Math.floor(Math.random() * tagsArray.length)];
+                const displayTag = getDisplayTag(randomRawTag, currentLang);
                 if (searchInput) {
-                    searchInput.value = randomTag;
+                    searchInput.value = displayTag;
                     performSearch();
                 }
             }
@@ -471,7 +612,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (searchInput && suggestionsBox) {
         searchInput.addEventListener('click', () => {
             if (searchInput.value.trim() === "") {
-                suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}</li>`).join('');
+                suggestionsBox.innerHTML = getDefaultTags().map(t => `<li>${t}</li>`).join('');
                 suggestionsBox.style.display = "block";
             }
         });
@@ -479,14 +620,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase().trim();
             if (term === "") {
-                suggestionsBox.innerHTML = defaultTags.map(t => `<li>${t}</li>`).join('');
+                suggestionsBox.innerHTML = getDefaultTags().map(t => `<li>${t}</li>`).join('');
                 suggestionsBox.style.display = "block";
             } else {
                 const cards = document.querySelectorAll('.photo-card');
                 let matches = new Set();
                 cards.forEach(c => {
                     const catAttr = c.getAttribute('data-category') || "";
-                    catAttr.split(' ').forEach(cat => { if(cat.startsWith(term)) matches.add(cat) });
+                    catAttr.split(/\s+/).forEach(cat => {
+                        if (!cat) return;
+                        const entry = tagDictionary[cat.toLowerCase()];
+                        const displayVal = getDisplayTag(cat, currentLang);
+
+                        const matchesRaw = cat.toLowerCase().startsWith(term);
+                        const matchesPl = entry && entry.pl.toLowerCase().startsWith(term);
+                        const matchesEn = entry && entry.en.toLowerCase().startsWith(term);
+
+                        if (matchesRaw || matchesPl || matchesEn) {
+                            matches.add(displayVal);
+                        }
+                    });
                 });
                 
                 suggestionsBox.innerHTML = Array.from(matches).map(m => `<li>${m}</li>`).join('');
