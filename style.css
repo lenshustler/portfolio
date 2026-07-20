@@ -23,7 +23,7 @@ body {
 }
 
 /* ==========================================================================
-   2. NAGŁÓWEK (LOGO + WYSZUKIWARKA + LINKI + JĘZYKI)
+   2. NAGŁÓWEK (LOGO + WYSZUKIWARKA + LINKI + JĘZYKI + INSTAGRAM)
    ========================================================================== */
 header {
     display: flex;
@@ -85,9 +85,21 @@ header {
     color: #555555; 
 }
 
+/* --- Ikona Instagrama z efektami --- */
+.ig-icon a { 
+    display: flex; 
+    align-items: center; 
+    color: #000000; 
+}
+
 .ig-icon svg { 
     display: block; 
     color: #000000; 
+    transition: stroke 0.3s ease, transform 0.2s ease;
+}
+
+.ig-icon a:hover svg { 
+    stroke: url(#ig-gradient); /* Aktywacja gradientu po najechaniu */
 }
 
 /* --- Przełącznik języka (PL / EN) --- */
@@ -107,23 +119,26 @@ header {
     cursor: pointer;
     color: #888888;
     text-transform: uppercase;
-    transition: color 0.2s ease;
+    text-decoration: none;
+    font-weight: normal;
+    transition: color 0.2s ease, font-weight 0.2s ease;
 }
 
 .lang-btn:hover {
     color: #000000;
 }
 
+/* Aktywny język: tylko grubsza czcionka, bez podkreślenia */
 .lang-btn.active {
     color: #000000;
     font-weight: bold;
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    text-decoration: none;
 }
 
 .lang-divider {
     color: #cccccc;
     user-select: none;
+    font-weight: normal;
 }
 
 /* ==========================================================================
@@ -621,6 +636,7 @@ footer {
     .header-links { 
         gap: 18px; 
         flex-wrap: wrap;
+        align-items: center;
     }
 
     .header-links a { 
@@ -666,7 +682,7 @@ footer {
 
     .footer-links a { 
         font-size: 0.65rem; 
-    }
+    } 
     
     .lightbox-content { 
         max-height: 80vh !important; 
