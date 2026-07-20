@@ -208,13 +208,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         'sony':              { pl: 'sony',               en: 'sony' }
     };
 
-  // --- FUNKCJE POMOCNICZE WYSZUKIWARKI I TAGÓW ---
+    // --- FUNKCJE POMOCNICZE WYSZUKIWARKI I TAGÓW ---
     function getDisplayTag(rawTag, lang) {
         if (!rawTag) return '';
         const key = rawTag.toLowerCase().trim();
         const entry = tagDictionary[key];
         return entry ? entry[lang] : rawTag;
     }
+
+    const getDefaultTags = () => {
+        const defaultKeys = ['street', 'portret', 'abstrakcja', 'monochrome'];
+        return defaultKeys.map(k => getDisplayTag(k, currentLang));
+    };
 
     const performSearch = () => {
         if (!searchInput) return;
