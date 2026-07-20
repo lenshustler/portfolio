@@ -772,3 +772,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         .catch(() => counterEl.innerText = "200");
     }
 });
+document.addEventListener('DOMContentLoaded', () => {
+    const logo = document.querySelector('.site-logo');
+    
+    if (logo) {
+        logo.style.cursor = 'pointer';
+        
+        logo.addEventListener('click', () => {
+            const shutterSound = new Audio('images/shutter.mp3');
+            shutterSound.volume = 0.4;
+            shutterSound.play().catch(error => {
+                console.log("Odtwarzanie dźwięku zablokowane:", error);
+            });
+        });
+    }
+});
