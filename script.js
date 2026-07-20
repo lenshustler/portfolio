@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             contactTitle: "Kontakt",
             contactDesc: "Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.",
             contactSub1: "Napisz wiadomość",
-            btnEmail: "Napisz wiadomość",
+            btnEmail: "Wyślij e-mail",
             btnProfile: "Zobacz profil",
 
             // Modal Prywatność
