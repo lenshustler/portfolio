@@ -1,169 +1,344 @@
 <!DOCTYPE html>
+
 <html lang="pl">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     
+
     <title id="seo-title">Alan Łysiak | Fotografia</title>
+
     <meta id="seo-desc" name="description" content="Alan Łysiak – Portfolio fotograficzne. | Street | Portret | Abstrakcja | Podwójne ekspozycje | Zobacz moje fotografie, ziny i projekty. Kontakt: lyskier@gmail.com">
+
     <meta property="og:title" content="Alan Łysiak | Fotografia">
+
     <meta property="og:description" content="Zobacz moje portfolio">
+
     <meta property="og:type" content="website">
+
     
+
     <link rel="canonical" href="https://lysiak.photo/" />
+
     <link rel="icon" type="image/png" href="favicon.png?v=123">
+
     <link rel="stylesheet" href="style.css?v=46.0">
+
 </head>
+
 <body>
 
+
+
   <header>
+
 <div class="header-branding">
+
     <a href="index.html" class="logo-link">
+
         <img src="images/logo.png" alt="Logo" class="site-logo">
+
     </a>
+
     <a href="index.html" class="site-name">Alan Łysiak</a>
+
 </div>
+
+    
+
+<nav class="search-nav">
+        <input type="text" id="search-input" class="arnold-search" placeholder="szukaj..." autocomplete="off">
+        <button class="search-btn" id="search-btn">Szukaj</button>
+        <ul id="search-suggestions" class="suggestions-list"></ul>
+    </nav>
+
 
 
     <ul class="header-links">
+
         <li><a href="zine.html" class="link-zine">Zine</a></li>
+
         <li><a href="#" class="modal-trigger link-contact" data-target="modal-contact">Kontakt</a></li>
+
         
+
         <!-- PRZEŁĄCZNIK JĘZYKA -->
+
         <li class="lang-switcher">
+
             <button id="lang-pl" class="lang-btn active" type="button">PL</button>
+
             <span class="lang-divider">/</span>
+
             <button id="lang-en" class="lang-btn" type="button">EN</button>
+
         </li>
+
+
 
         <!-- IKONA INSTAGRAMA Z DEFINICJĄ GRADIENTU -->
+
         <li class="ig-icon">
+
             <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
+
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+
                     <defs>
+
                         <linearGradient id="ig-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+
                             <stop offset="0%" stop-color="#f09433" />
+
                             <stop offset="25%" stop-color="#e6683c" />
+
                             <stop offset="50%" stop-color="#dc2743" />
+
                             <stop offset="75%" stop-color="#cc2366" />
+
                             <stop offset="100%" stop-color="#bc1888" />
+
                         </linearGradient>
+
                     </defs>
+
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+
                 </svg>
+
             </a>
+
         </li>
+
     </ul>
+
 </header>
 
+
+
     <section id="gallery" class="gallery-section">
+
         <div class="gallery-grid">
+
             <div style="display: none;">
+
                 <h1>Portfolio fotograficzne Alan Łysiak</h1>
+
                 <p>&copy; 2026 Alan Łysiak.</p>
+
             </div>
+
         </div>
+
     </section>
 
+
+
     <footer>
+
         <ul class="footer-links">
+
             <li><a href="zine.html" class="link-zine">Zine</a></li>
+
             <li><a href="#" class="modal-trigger" id="link-privacy" data-target="modal-privacy">Prywatność</a></li>
+
             <li><a href="#" class="modal-trigger" id="link-terms" data-target="modal-terms">Regulamin</a></li>
+
             <li><a href="#" class="modal-trigger link-contact" data-target="modal-contact">Kontakt</a></li>
+
             <li class="ig-icon">
+
                 <a href="https://instagram.com/lenshustler" target="_blank" title="Instagram">
+
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+
                         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+
                         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+
                         <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+
                     </svg>
+
                 </a>
+
             </li>
+
         </ul>
 
+
+
         <div class="pentax-counter">
+
             <div class="counter-frame">
+
                 <span id="frame-count">00</span>
+
             </div> 
+
         </div>
+
+
 
         <p class="footer-name">&copy; 2026 Alan Łysiak</p>
+
     </footer>
 
+
+
     <div id="lightbox" class="lightbox">
+
         <img class="lightbox-content" id="lightbox-img" alt="Zdjęcie w powiększeniu">
+
         
+
         <div class="lightbox-controls">
+
             <button class="nav-arrow prev" id="lightbox-prev" aria-label="Poprzednie zdjęcie"></button>
+
             <button class="nav-arrow next" id="lightbox-next" aria-label="Następne zdjęcie"></button>
+
             <button class="close" id="lightbox-close" aria-label="Zamknij"></button>
+
         </div>
+
     </div>
+
+
 
     <!-- MODAL KONTAKT -->
+
     <div id="modal-contact" class="custom-modal">
+
         <div class="custom-modal-content">
+
             <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
+
             <h2 id="modal-contact-title">Kontakt</h2>
+
             <div class="custom-modal-body" style="-webkit-user-select: text !important; user-select: text !important;">
+
                 <p class="modal-description" id="modal-contact-desc">Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.</p>
+
                 
+
                 <div class="contact-section-label">Email</div>
+
                 <div class="contact-card">
+
                     <div class="contact-card-left">
+
                         <img src="images/logo.png" alt="Alan Łysiak Logo" class="contact-avatar">
+
                         <div class="contact-info-block">
+
                             <span class="contact-title">lyskier@gmail.com</span>
+
                             <span class="contact-subtitle" id="modal-contact-sub1">Napisz wiadomość</span>
+
                         </div>
+
                     </div>
+
                     <a href="mailto:lyskier@gmail.com" class="contact-card-btn" id="btn-send-email">Wyślij e-mail</a>
+
                 </div>
+
+
 
                 <div class="contact-section-label">Instagram</div>
+
                 <div class="contact-card">
+
                     <div class="contact-card-left">
+
                         <img src="images/insta-avatar.jpg" alt="Instagram Avatar" class="contact-avatar" onerror="this.src='images/logo.png'">
+
                         <div class="contact-info-block">
+
                             <span class="contact-title">@lenshustler</span>
+
                             <span class="contact-subtitle">Instagram</span>
+
                         </div>
+
                     </div>
+
                     <a href="https://instagram.com/lenshustler" target="_blank" class="contact-card-btn" id="btn-view-profile">Zobacz profil</a>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
+
+
 
     <!-- MODAL PRYWATNOŚĆ -->
+
     <div id="modal-privacy" class="custom-modal">
+
         <div class="custom-modal-content">
+
             <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
+
             <h2 id="modal-privacy-title">Polityka Prywatności</h2>
+
             <div class="custom-modal-body">
+
                 <p id="modal-privacy-p1">Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.</p>
+
                 <p style="margin-top: 15px;" id="modal-privacy-p2">Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.</p>
+
             </div>
+
         </div>
+
     </div>
 
+
+
     <!-- MODAL REGULAMIN -->
+
     <div id="modal-terms" class="custom-modal">
+
         <div class="custom-modal-content">
+
             <button class="custom-modal-close" aria-label="Zamknij okno">&times;</button>
+
             <h2 id="modal-terms-title">Regulamin strony</h2>
+
             <div class="custom-modal-body">
+
                 <p id="modal-terms-p1">Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.</p>
+
                 <p style="margin-top: 15px;" id="modal-terms-p2">Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione.</p>
+
             </div>
+
         </div>
+
     </div>
+
+
 
     <button id="back-to-top" title="Wróć na górę"></button>
 
+
+
     <script src="script.js?v=46.0"></script>
+
 </body>
-</html>
+
+</html>" 
+
