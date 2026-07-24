@@ -773,17 +773,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 document.addEventListener('DOMContentLoaded', () => {
-    const logo = document.querySelector('.site-logo');
+    const logoLinks = document.querySelectorAll('.logo-link, .site-logo');
     
-    if (logo) {
+    logoLinks.forEach(logo => {
         logo.style.cursor = 'pointer';
         
-        logo.addEventListener('click', () => {
+        logo.addEventListener('click', (e) => {
+            e.preventDefault(); // Zapobiega natychmiastowemu skokowi
+            
+            // Pobieramy docelowy adres (index.html)
+            const targetUrl = logo.tagName === 'A' ? logo.href : (logo.closest('a') ? logo.closest('a').href : 'index.html');
+            
+            // Odtwarzamy dźwięk migawki
             const shutterSound = new Audio('images/shutter.mp3');
             shutterSound.volume = 0.4;
             shutterSound.play().catch(error => {
                 console.log("Odtwarzanie dźwięku zablokowane:", error);
             });
+
+            // Czekamy 250 ms, żeby dźwięk zdążył się zacząć, i dopiero przechodzimy na stronę główną
+            setTimeout(() => {
+                window.location.href = targetUrl;
+            }, 250);
         });
-    }
+    });
 });
