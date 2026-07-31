@@ -1,39 +1,134 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- KONFIGURACJA SANITY ---
-    const PROJECT_ID = '6g67d261';
-    const DATASET = 'portfolio';
-    
-    // --- ELEMENTY DOM ---
-    const grid = document.querySelector('.gallery-grid');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const prevBtn = document.querySelector('.prev');
-    const nextBtn = document.querySelector('.next');
-    const closeBtn = document.querySelector('.close');
-    const searchInput = document.getElementById('search-input');
-    const searchBtn = document.querySelector('.search-btn');
-    const randomBtn = document.getElementById('random-btn');
-    const suggestionsBox = document.querySelector('.suggestions-list');
-    
-    const langPlBtn = document.getElementById('lang-pl');
-    const langEnBtn = document.getElementById('lang-en');
+    // --- KONFIGURACJA SANITY ---
+    const PROJECT_ID = '6g67d261';
+    const DATASET = 'portfolio';
+    
+    // --- ELEMENTY DOM ---
+    const grid = document.querySelector('.gallery-grid');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const prevBtn = document.querySelector('.prev');
+    const nextBtn = document.querySelector('.next');
+    const closeBtn = document.querySelector('.close');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.querySelector('.search-btn');
+    const randomBtn = document.getElementById('random-btn');
+    const suggestionsBox = document.querySelector('.suggestions-list');
+    
+    const langPlBtn = document.getElementById('lang-pl');
+    const langEnBtn = document.getElementById('lang-en');
 
-    // --- ZMIENNE STANOWE ---
-    let images = []; 
-    let visibleImages = []; 
-    let activeIdx = 0;
-    let clickTimer = null; 
+    // --- ZMIENNE STANOWE ---
+    let images = []; 
+    let visibleImages = []; 
+    let activeIdx = 0;
+    let clickTimer = null; 
 
-    let isMoving = false;
-    let startX = 0, startY = 0;
-    let currentX = 0, currentY = 0;
+    let isMoving = false;
+    let startX = 0, startY = 0;
+    let currentX = 0, currentY = 0;
 
-    // --- AUTOMATYCZNE WYKRYWANIE JĘZYKA PRZEGLĄDARKI LUB PAMIĘĆ ---
-    let currentLang = localStorage.getItem('site_lang') || localStorage.getItem('preferred_lang');
-    if (!currentLang) {
-        const browserLang = navigator.language || navigator.userLanguage || 'pl';
-        currentLang = browserLang.toLowerCase().startsWith('pl') ? 'pl' : 'en';
-    }
+    // --- AUTOMATYCZNE WYKRYWANIE JĘZYKA PRZEGLĄDARKI LUB PAMIĘĆ ---
+    let currentLang = localStorage.getItem('site_lang') || localStorage.getItem('preferred_lang');
+    if (!currentLang) {
+        const browserLang = navigator.language || navigator.userLanguage || 'pl';
+        currentLang = browserLang.toLowerCase().startsWith('pl') ? 'pl' : 'en';
+    }
+
+    // --- PEŁNY DWUKIERUNKOWY SŁOWNIK TAGÓW (PL / EN) ---
+    const tagDictionary = {   };
+
+    // --- LOGIKA ANIMACJI PISANIA W WYSZUKIWARCE (TYPEWRITER EFFECT) ---
+    const placeholderWords = {
+        pl: {
+            initial: 'szukaj...',
+            categories: [
+                'street', 
+                'portret', 
+                'abstrakcja', 
+                'monochrom', 
+                'podwójne ekspozycje', 
+                'krajobraz', 
+                'dzika przyroda'
+            ]
+        },
+        en: {
+            initial: 'search...',
+            categories: [
+                'street', 
+                'portrait', 
+                'abstraction', 
+                'monochrome', 
+                'double exposures', 
+                'landscape', 
+                'wildlife'
+            ]
+        }
+    };
+
+    let catIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let isShowingInitial = true;
+    let typingTimeout = null;
+
+    const typeSpeed = 100;
+    const deleteSpeed = 50;
+    const pauseTime = 1800;
+    const initialPauseTime = 2200;
+
+    function runTypewriter() {
+        if (!searchInput) return;
+
+        // Jeśli użytkownik trzyma kursor w polu i coś wpisał – nie przeszkadzamy
+        if (document.activeElement === searchInput && searchInput.value.trim() !== '') return;
+
+        const langData = placeholderWords[currentLang] || placeholderWords.pl;
+
+        if (isShowingInitial) {
+            searchInput.setAttribute('placeholder', langData.initial);
+            isShowingInitial = false;
+            typingTimeout = setTimeout(runTypewriter, initialPauseTime);
+            return;
+        }
+
+        const currentCategory = langData.categories[catIndex];
+
+        if (isDeleting) {
+            charIndex--;
+            searchInput.setAttribute('placeholder', currentCategory.substring(0, charIndex));
+        } else {
+            charIndex++;
+            searchInput.setAttribute('placeholder', currentCategory.substring(0, charIndex));
+        }
+
+        let currentSpeed = isDeleting ? deleteSpeed : typeSpeed;
+
+        if (!isDeleting && charIndex === currentCategory.length) {
+            currentSpeed = pauseTime;
+            isDeleting = true;
+        } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            let nextIndex;
+            do {
+                nextIndex = Math.floor(Math.random() * langData.categories.length);
+            } while (nextIndex === catIndex && langData.categories.length > 1);
+
+            catIndex = nextIndex;
+            currentSpeed = 350;
+        }
+
+        typingTimeout = setTimeout(runTypewriter, currentSpeed);
+    }
+
+    function resetTypewriter() {
+        clearTimeout(typingTimeout);
+        isDeleting = false;
+        charIndex = 0;
+        catIndex = 0;
+        isShowingInitial = true;
+        runTypewriter();
+    }
 
     // --- PEŁNY DWUKIERUNKOWY SŁOWNIK TAGÓW (PL / EN) ---
     const tagDictionary = {
@@ -208,7 +303,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'sony':              { pl: 'sony',               en: 'sony' }
     };
 
-     // --- FUNKCJE POMOCNICZE WYSZUKIWARKI I TAGÓW ---
+    // --- FUNKCJE POMOCNICZE WYSZUKIWARKI I TAGÓW ---
     function getDisplayTag(rawTag, lang) {
         if (!rawTag) return '';
         const key = rawTag.toLowerCase().trim();
@@ -354,7 +449,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const seoDescEl = document.getElementById('seo-desc');
         if (seoDescEl) seoDescEl.setAttribute('content', t.seoDesc);
 
-        if (searchInput) searchInput.placeholder = t.searchPlaceholder;
+        // Resetowanie animacji w szukajce pod nowy język
+        resetTypewriter();
+
         const searchBtnEl = document.getElementById('search-btn');
         if (searchBtnEl) searchBtnEl.innerText = t.searchBtn;
         const randomBtnEl = document.getElementById('random-btn');
@@ -429,6 +526,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (langPlBtn) langPlBtn.addEventListener('click', () => updateLanguage('pl'));
     if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('en'));
+
+    // Reakcja wyszukiwarki na skupienie kursora (focus / blur)
+    if (searchInput) {
+        searchInput.addEventListener('focus', () => {
+            clearTimeout(typingTimeout);
+            const langData = placeholderWords[currentLang] || placeholderWords.pl;
+            searchInput.setAttribute('placeholder', langData.initial);
+        });
+
+        searchInput.addEventListener('blur', () => {
+            if (searchInput.value.trim() === '') {
+                clearTimeout(typingTimeout);
+                isDeleting = false;
+                charIndex = 0;
+                isShowingInitial = false;
+                runTypewriter();
+            }
+        });
+    }
 
     // --- 1. LOGIKA OKIENEK (MODALI) ---
     const modalTriggers = document.querySelectorAll('.modal-trigger');
@@ -772,6 +888,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         .catch(() => counterEl.innerText = "200");
     }
 });
+
+// --- LOGO / PRZEJŚCIE Z DŹWIĘKIEM MIGAWKI ---
 document.addEventListener('DOMContentLoaded', () => {
     const logoLinks = document.querySelectorAll('.logo-link, .site-logo');
     
@@ -779,19 +897,16 @@ document.addEventListener('DOMContentLoaded', () => {
         logo.style.cursor = 'pointer';
         
         logo.addEventListener('click', (e) => {
-            e.preventDefault(); // Zapobiega natychmiastowemu skokowi
+            e.preventDefault(); 
             
-            // Pobieramy docelowy adres (index.html)
             const targetUrl = logo.tagName === 'A' ? logo.href : (logo.closest('a') ? logo.closest('a').href : 'index.html');
             
-            // Odtwarzamy dźwięk migawki
             const shutterSound = new Audio('images/shutter.mp3');
             shutterSound.volume = 0.4;
             shutterSound.play().catch(error => {
                 console.log("Odtwarzanie dźwięku zablokowane:", error);
             });
 
-            // Czekamy 250 ms, żeby dźwięk zdążył się zacząć, i dopiero przechodzimy na stronę główną
             setTimeout(() => {
                 window.location.href = targetUrl;
             }, 250);
