@@ -1,56 +1,58 @@
-// --- POMOCNICZE: Tasowanie Fishera-Yatesa ---
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+document.addEventListener('DOMContentLoaded', () => {
+    let preloadCache = [];
+
+    // --- POMOCNICZE: Tasowanie Fishera-Yatesa ---
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
     }
-    return array;
-}
 
-let preloadCache = [];
-
-// --- POBIERANIE Z SANITY ---
+    // --- POBIERANIE Z SANITY ---
     if (grid) {
         try {
             const QUERY = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, isHighlight, categories, "imageUrl": image.asset->url }`);
             const URL = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${QUERY}`;
             
-            const response = await fetch(URL);
-            const data = await response.json();
-            const photos = data.result;
+            fetch(URL)
+                .then(response => response.json())
+                .then(data => {
+                    const photos = data.result;
+                    if (photos && photos.length > 0) {
+                        shuffleArray(photos);
+                        grid.innerHTML = "";
 
-            if (photos && photos.length > 0) {
-                shuffleArray(photos);
-                grid.innerHTML = "";
+                        const seoDiv = document.createElement('div');
+                        seoDiv.style.display = 'none';
+                        seoDiv.innerHTML = '<h1>Portfolio fotograficzne Alan Łysiak</h1><p>&copy; 2026 Alan Łysiak. Wszystkie prawa zastrzeżone.</p>';
+                        grid.appendChild(seoDiv);
 
-                const seoDiv = document.createElement('div');
-                seoDiv.style.display = 'none';
-                seoDiv.innerHTML = '<h1>Portfolio fotograficzne Alan Łysiak</h1><p>&copy; 2026 Alan Łysiak. Wszystkie prawa zastrzeżone.</p>';
-                grid.appendChild(seoDiv);
+                        photos.forEach((photo) => {
+                            if (!photo.imageUrl) return;
 
-                photos.forEach((photo) => {
-                    if (!photo.imageUrl) return;
-
-                    const card = document.createElement('div');
-                    card.className = 'photo-card';
-                    card.classList.add(photo.isHighlight ? 'highlight' : 'hidden');
-                    card.setAttribute('data-category', (photo.categories || []).join(' '));
-                    
-                    const img = document.createElement('img');
-                    img.src = photo.imageUrl + "?auto=format&w=450&q=70";
-                    img.setAttribute('data-fullsrc', photo.imageUrl);
-                    img.setAttribute('draggable', 'false');
-                    img.loading = "lazy"; 
-                    img.alt = photo.title || "Zdjęcie";
-                    
-                    img.onclick = () => openLightboxFromImage(img);
-                    
-                    card.appendChild(img);
-                    grid.appendChild(card);
-                    images.push(img);
+                            const card = document.createElement('div');
+                            card.className = 'photo-card';
+                            card.classList.add(photo.isHighlight ? 'highlight' : 'hidden');
+                            card.setAttribute('data-category', (photo.categories || []).join(' '));
+                            
+                            const img = document.createElement('img');
+                            img.src = photo.imageUrl + "?auto=format&w=450&q=70";
+                            img.setAttribute('data-fullsrc', photo.imageUrl);
+                            img.setAttribute('draggable', 'false');
+                            img.loading = "lazy"; 
+                            img.alt = photo.title || "Zdjęcie";
+                            
+                            img.onclick = () => openLightboxFromImage(img);
+                            
+                            card.appendChild(img);
+                            grid.appendChild(card);
+                            images.push(img);
+                        });
+                        grid.style.opacity = "1";
+                    }
                 });
-                grid.style.opacity = "1";
-            }
         } catch (e) { 
             console.error("Błąd połączenia z Sanity:", e); 
         }
@@ -173,7 +175,7 @@ let preloadCache = [];
     document.addEventListener('keydown', (e) => {
         if (e.key === "Escape") {
             if (lightbox && lightbox.classList.contains('active') && closeBtn) closeBtn.onclick();
-            closeAllModals();
+            if (typeof closeAllModals === 'function') closeAllModals();
         }
         if (!lightbox || !lightbox.classList.contains('active')) return;
         if (e.key === "ArrowRight" && nextBtn) nextBtn.click();
@@ -183,55 +185,50 @@ let preloadCache = [];
     // --- WYSZUKIWARKA Z AUTO-UZUPEŁNIANIEM ORAZ LOSOWANIE ---
     if (randomBtn) {
         randomBtn.addEventListener('click', () => {
-            if (activeCategories.length > 0) {
+            if (typeof activeCategories !== 'undefined' && activeCategories.length > 0) {
                 const randomCatObj = activeCategories[Math.floor(Math.random() * activeCategories.length)];
-                const displayVal = randomCatObj[currentLang] || randomCatObj.pl;
+                const displayVal = randomCatObj[typeof currentLang !== 'undefined' ? currentLang : 'pl'] || randomCatObj.pl;
                 if (searchInput) {
                     searchInput.value = displayVal;
-                    performSearch();
+                    if (typeof performSearch === 'function') performSearch();
                 }
             }
         });
     }
 
-    let lastSearchLength = 0;
     if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            const val = searchInput.value;
-            
-            // Jeśli użytkownik cofa tekst (backspace), nie uruchamiamy autouzupełniania w przód
-            if (val.length < lastSearchLength) {
-                lastSearchLength = val.length;
-                performSearch();
+        searchInput.addEventListener('input', (e) => {
+            if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
+                if (typeof performSearch === 'function') performSearch();
                 return;
             }
-            lastSearchLength = val.length;
 
             const startPos = searchInput.selectionStart;
-            if (val && startPos === val.length) {
+            const val = searchInput.value;
+            if (val && startPos === val.length && typeof activeCategories !== 'undefined') {
                 const term = val.toLowerCase();
+                const langKey = typeof currentLang !== 'undefined' ? currentLang : 'pl';
                 const match = activeCategories
-                    .map(cat => cat[currentLang] || cat.pl)
+                    .map(cat => cat[langKey] || cat.pl)
                     .find(name => name.toLowerCase().startsWith(term));
 
                 if (match && match.toLowerCase() !== term) {
                     searchInput.value = match;
                     searchInput.setSelectionRange(term.length, match.length);
-                    lastSearchLength = match.length;
                 }
             }
-            performSearch();
+            if (typeof performSearch === 'function') performSearch();
         });
 
-        if (searchBtn) searchBtn.addEventListener('click', performSearch);
-        searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
+        if (searchBtn) searchBtn.addEventListener('click', () => { if (typeof performSearch === 'function') performSearch(); });
+        searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && typeof performSearch === 'function') performSearch(); });
     }
 
     // --- TYPEWRITER I DODATKI ---
-    if (searchInput) {
+    if (searchInput && typeof startTypewriter === 'function') {
         startTypewriter(); 
         searchInput.addEventListener('focus', () => {
-            clearTimeout(typewriterTimer);
+            if (typeof typewriterTimer !== 'undefined') clearTimeout(typewriterTimer);
             searchInput.placeholder = '';
         });
         searchInput.addEventListener('blur', () => {
