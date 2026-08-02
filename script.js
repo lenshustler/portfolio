@@ -680,11 +680,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    if (searchInput) {
-        searchInput.addEventListener('input', () => {
+    if searchInput.addEventListener('input', () => {
             const term = searchInput.value.toLowerCase().trim();
             
-            if (term === '') {
+            // Sprawdzamy, czy wpisano mniej niż 2 znaki
+            if (term.length < 2) {
                 if (suggestionsContainer) {
                     suggestionsContainer.innerHTML = '';
                     suggestionsContainer.style.display = 'none';
