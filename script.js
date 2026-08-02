@@ -680,7 +680,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    if searchInput.addEventListener('input', () => {
+  if (searchInput) {
+        searchInput.addEventListener('input', () => {
             const term = searchInput.value.toLowerCase().trim();
             
             // Sprawdzamy, czy wpisano mniej niż 2 znaki
