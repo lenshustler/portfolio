@@ -11,9 +11,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nextBtn = document.querySelector('.next');
     const closeBtn = document.querySelector('.close');
     const searchInput = document.getElementById('search-input');
-    const searchBtn = document.querySelector('.search-btn');
+    const searchBtn = document.getElementById('search-btn');
     const randomBtn = document.getElementById('random-btn');
-    const suggestionsBox = document.querySelector('.suggestions-list');
     
     const langPlBtn = document.getElementById('lang-pl');
     const langEnBtn = document.getElementById('lang-en');
@@ -28,9 +27,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
 
-    // --- WYBRANE KATEGORIE DO PODPOWIEDZI I PRZYCISKU LOSOWO (TUTAJ JE EDYTUJESZ) ---
-const activeCategories = [
-        // Główne style i motywy
+    // --- WYBRANE KATEGORIE DO AUTOUZUPEŁNIANIA I PRZYCISKU LOSOWO ---
+    const activeCategories = [
         { pl: 'street',             en: 'street' },
         { pl: 'portret',            en: 'portrait' },
         { pl: 'abstrakcja',         en: 'abstract' },
@@ -43,7 +41,6 @@ const activeCategories = [
         { pl: 'dzika przyroda',      en: 'wildlife' },
         { pl: 'plaża',              en: 'beach' },
         { pl: 'zima',               en: 'winter' },
-        // Kraje z tagów
         { pl: 'polska',             en: 'poland' },
         { pl: 'albania',            en: 'albania' },
         { pl: 'austria',            en: 'austria' },
@@ -74,10 +71,10 @@ const activeCategories = [
     let charIdx = 0;
     let isDeleting = false;
     
-    const typewriterPhrases = {
-        pl: ['szukaj...', 'street', 'portret', 'abstrakcja', 'monochrom', 'podwójna ekspozycja', 'krajobraz'],
-        en: ['search...', 'street', 'portrait', 'abstract', 'monochrome', 'double exposure', 'landscape']
-    };
+   const typewriterPhrases = {
+    pl: ['szukaj...', 'street', 'portret', 'abstrakcja', 'monochrom', 'podwójna ekspozycja', 'krajobraz', 'gdynia', 'polska'],
+    en: ['search...', 'street', 'portrait', 'abstract', 'monochrome', 'double exposure', 'landscape', 'gdynia', 'poland']
+};
 
     function startTypewriter() {
         if (!searchInput) return;
@@ -108,14 +105,12 @@ const activeCategories = [
         typewriterTimer = setTimeout(startTypewriter, speed);
     }
 
-    // --- AUTOMATYCZNE WYKRYWANIE JĘZYKA PRZEGLĄDARKI LUB PAMIĘĆ ---
     let currentLang = localStorage.getItem('site_lang') || localStorage.getItem('preferred_lang');
     if (!currentLang) {
         const browserLang = navigator.language || navigator.userLanguage || 'pl';
         currentLang = browserLang.toLowerCase().startsWith('pl') ? 'pl' : 'en';
     }
 
-    // --- SŁOWNIK TAGÓW (PL / EN) ---
     const tagDictionary = {
         'abstrakcja':        { pl: 'abstrakcja',         en: 'abstract' },
         'abstract':          { pl: 'abstrakcja',         en: 'abstract' },
@@ -128,13 +123,12 @@ const activeCategories = [
         'blackwhite':        { pl: 'czarno-białe',       en: 'black & white' },
         'black & white':     { pl: 'czarno-białe',       en: 'black & white' },
         'monochrome':        { pl: 'monochrom',          en: 'monochrome' },
-        'monochrom':         { pl: 'monochrom',          en: 'monochrome' },
         'doublexposure':     { pl: 'podwójna ekspozycja', en: 'double exposure' },
         'double exposure':   { pl: 'podwójna ekspozycja', en: 'double exposure' },
         'longexposure':      { pl: 'długa ekspozycja',    en: 'long exposure' },
         'long exposure':     { pl: 'długa ekspozycja',    en: 'long exposure' },
         'refractography':    { pl: 'refraktografia',      en: 'refractography' },
-        'refraktografia':    { pl: 'refraktografia',      en: 'refractography' },
+        'refraktografia':    { pl: 'refraktografia',      en: 'refraktografia' },
         'macro':             { pl: 'makro',               en: 'macro' },
         'makro':             { pl: 'makro',               en: 'macro' },
         'urban':             { pl: 'urban',               en: 'urban' },
@@ -188,7 +182,7 @@ const activeCategories = [
         'czarnogora':        { pl: 'czarnogóra',          en: 'montenegro' },
         'czarnogóra':        { pl: 'czarnogóra',          en: 'montenegro' },
         'romania':           { pl: 'rumunia',             en: 'romania' },
-        'rumunia':           { pl: 'rumunia',             en: 'romania' },
+        'rumunia':           { pl: 'rumunia',             en: 'rumania' },
         'serbia':            { pl: 'serbia',              en: 'serbia' },
         'slowacja':          { pl: 'słowacja',            en: 'slovakia' },
         'słowacja':          { pl: 'słowacja',            en: 'slovakia' },
@@ -309,10 +303,8 @@ const activeCategories = [
             });
             card.classList.toggle('hidden', !isMatch);
         });
-        if (suggestionsBox) suggestionsBox.style.display = "none";
     };
 
-    // --- LOGIKA JĘZYKOWA (PL / EN) ---
     const translations = {
         pl: {
             seoTitle: "Alan Łysiak | Fotografia",
@@ -417,9 +409,9 @@ const activeCategories = [
         const mTermsTitle = document.getElementById('modal-terms-title');
         if (mTermsTitle) mTermsTitle.innerText = t.termsTitle;
         const mTermsP1 = document.getElementById('modal-terms-p1');
-        if (mTermsP1) mTermsP1.innerText = t.termsP1;
+        if (mTermsP1) mTermsP1.innerText = t.privacyP1; // fallback
         const mTermsP2 = document.getElementById('modal-terms-p2');
-        if (mTermsP2) mTermsP2.innerText = t.termsP2;
+        if (mTermsP2) mTermsP2.innerText = t.privacyP2;
 
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
@@ -457,7 +449,7 @@ const activeCategories = [
     if (langPlBtn) langPlBtn.addEventListener('click', () => updateLanguage('pl'));
     if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('en'));
 
-    // --- 1. MODALE ---
+    // --- MODALE ---
     const modalTriggers = document.querySelectorAll('.modal-trigger');
     const modalCloses = document.querySelectorAll('.custom-modal-close');
     const modals = document.querySelectorAll('.custom-modal');
@@ -488,7 +480,7 @@ const activeCategories = [
     modalCloses.forEach(el => el.addEventListener('click', closeAllModals));
     modals.forEach(modal => modal.addEventListener('click', (e) => { if (e.target === modal) closeAllModals(); }));
 
-    // --- 2. POBIERANIE Z SANITY ---
+    // --- POBIERANIE Z SANITY ---
     if (grid) {
         try {
             const QUERY = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, isHighlight, categories, "imageUrl": image.asset->url }`);
@@ -535,7 +527,7 @@ const activeCategories = [
         }
     }
 
-    // --- 3. LIGHTBOX ---
+    // --- LIGHTBOX ---
     function openLightboxFromImage(clickedImg) {
         visibleImages = Array.from(document.querySelectorAll('.photo-card:not(.hidden) img'));
         activeIdx = visibleImages.indexOf(clickedImg);
@@ -658,7 +650,7 @@ const activeCategories = [
         if (e.key === "ArrowLeft" && prevBtn) prevBtn.click();
     });
 
-    // --- 4. WYSZUKIWARKA, PODPOWIEDZI Z WYBRANEJ LISTY ORAZ LOSOWANIE ---
+    // --- WYSZUKIWARKA Z AUTO-UZUPEŁNIANIEM (INLINE AUTOCOMPLETE) ORAZ LOSOWANIE ---
     if (randomBtn) {
         randomBtn.addEventListener('click', () => {
             if (activeCategories.length > 0) {
@@ -672,54 +664,34 @@ const activeCategories = [
         });
     }
 
-    if (searchInput && suggestionsBox) {
-        const showFilteredSuggestions = (term) => {
-            const matches = activeCategories
-                .map(cat => cat[currentLang] || cat.pl)
-                .filter(name => name.toLowerCase().startsWith(term));
-
-            suggestionsBox.innerHTML = matches.map(m => `<li>${m}</li>`).join('');
-            suggestionsBox.style.display = matches.length > 0 ? "block" : "none";
-        };
-
-        searchInput.addEventListener('click', () => {
-            if (searchInput.value.trim() === "") {
-                const allNames = activeCategories.map(cat => cat[currentLang] || cat.pl);
-                suggestionsBox.innerHTML = allNames.map(m => `<li>${m}</li>`).join('');
-                suggestionsBox.style.display = "block";
-            }
-        });
-
+    if (searchInput) {
         searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase().trim();
-            if (term === "") {
-                const allNames = activeCategories.map(cat => cat[currentLang] || cat.pl);
-                suggestionsBox.innerHTML = allNames.map(m => `<li>${m}</li>`).join('');
-                suggestionsBox.style.display = "block";
-            } else {
-                showFilteredSuggestions(term);
+            if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
+                performSearch();
+                return;
             }
-        });
 
-        document.addEventListener('click', (e) => {
-            if (e.target !== searchInput && !suggestionsBox.contains(e.target)) {
-                suggestionsBox.style.display = "none";
+            const startPos = searchInput.selectionStart;
+            const val = searchInput.value;
+            if (val && startPos === val.length) {
+                const term = val.toLowerCase();
+                const match = activeCategories
+                    .map(cat => cat[currentLang] || cat.pl)
+                    .find(name => name.toLowerCase().startsWith(term));
+
+                if (match && match.toLowerCase() !== term) {
+                    searchInput.value = match;
+                    searchInput.setSelectionRange(term.length, match.length);
+                }
             }
+            performSearch();
         });
 
         if (searchBtn) searchBtn.addEventListener('click', performSearch);
         searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
-        
-        suggestionsBox.addEventListener('click', (e) => {
-            if (e.target.tagName === 'LI') {
-                searchInput.value = e.target.textContent;
-                performSearch();
-                suggestionsBox.style.display = "none";
-            }
-        });
     }
 
-    // --- 5. TYPEWRITER I DODATKI ---
+    // --- TYPEWRITER I DODATKI ---
     if (searchInput) {
         startTypewriter(); 
         searchInput.addEventListener('focus', () => {
