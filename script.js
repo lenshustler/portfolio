@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.querySelector('.search-btn');
     const randomBtn = document.getElementById('random-btn');
-    const suggestionsBox = document.querySelector('.suggestions-list');
     
     const langPlBtn = document.getElementById('lang-pl');
     const langEnBtn = document.getElementById('lang-en');
@@ -28,16 +27,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
 
-    // --- ZMIENNE TYPEWRITER (przeniesione na górę, aby uniknąć ReferenceError) ---
+    // --- SŁOWA DO ANIMACJE TYPEWRITER (TUTAJ MOŻESZ JE EDYTOWAĆ) ---
     let typewriterTimer;
     let typeIdx = 0;
     let charIdx = 0;
     let isDeleting = false;
     
-    const typewriterPhrases = {
-        pl: ['szukaj...', 'street...', 'portret...', 'abstrakcja...', 'monochrom...'],
-        en: ['search...', 'street...', 'portrait...', 'abstract...', 'monochrome...']
-    };
+const typewriterPhrases = {
+    pl: ['szukaj...', 'street', 'portret', 'abstrakcja', 'monochrom', 'podwójna ekspozycja', 'krajobraz'],
+    en: ['search...', 'street', 'portrait', 'abstract', 'monochrome', 'double exposure', 'landscape']
+};
 
     function startTypewriter() {
         if (!searchInput) return;
@@ -75,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentLang = browserLang.toLowerCase().startsWith('pl') ? 'pl' : 'en';
     }
 
-    // --- PEŁNY DWUKIERUNKOWY SŁOWNIK TAGÓW (PL / EN) ---
+    // --- SŁOWNIK TAGÓW (PL / EN) ---
     const tagDictionary = {
         'abstrakcja':        { pl: 'abstrakcja',         en: 'abstract' },
         'abstract':          { pl: 'abstrakcja',         en: 'abstract' },
@@ -170,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'poznan':            { pl: 'poznań',              en: 'poznan' },
         'poznań':            { pl: 'poznań',              en: 'poznan' },
         'prague':            { pl: 'praga',               en: 'prague' },
-        'praga':             { pl: 'praga',               en: 'prague' },
+        'praga':             { pl: 'praga',               en: 'praga' },
         'rome':              { pl: 'rzym',                en: 'rome' },
         'rzym':              { pl: 'rzym',                en: 'rome' },
         'ryga':              { pl: 'ryga',                en: 'riga' },
@@ -227,7 +226,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'train':             { pl: 'pociąg',              en: 'train' },
         'skateboard':        { pl: 'deskorolka',          en: 'skateboard' },
         'deskorolka':        { pl: 'deskorolka',          en: 'skateboard' },
-        'winter':            { pl: 'zima',                en: 'winter' },
+        'winter':            { pl: 'zima',                en: 'zima' },
         'zima':              { pl: 'zima',                en: 'winter' },
         'znaki':             { pl: 'znaki',               en: 'signs' },
         'signs':             { pl: 'znaki',               en: 'signs' },
@@ -250,11 +249,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return entry ? entry[lang] : rawTag;
     }
 
-    const getDefaultTags = () => {
-        const defaultKeys = ['street', 'portret', 'abstrakcja', 'monochrome'];
-        return defaultKeys.map(k => getDisplayTag(k, currentLang));
-    };
-
     const performSearch = () => {
         if (!searchInput) return;
         const term = searchInput.value.toLowerCase().trim();
@@ -274,7 +268,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             card.classList.toggle('hidden', !isMatch);
         });
-        if (suggestionsBox) suggestionsBox.style.display = "none";
     };
 
     // --- LOGIKA JĘZYKOWA (PL / EN) ---
@@ -286,43 +279,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             searchBtn: "Szukaj",
             randomBtn: "Losowo",
             backToTop: "Wróć na górę",
-            navGallery: "Galeria",
             contactLink: "Kontakt",
             privacyLink: "Prywatność",
             termsLink: "Regulamin",
-            navPrivacy: "Prywatność",
-            navTerms: "Regulamin",
-            navContact: "Kontakt",
-            backToGallery: "← Powrót do galerii",
-            zine1Title: "FlaneGRyzm Vol.1",
-            zine1PageTitle: "FlaneGRyzm Vol.1",
-            zine1Description: "Limitowany zine ze zdjęciami ulicznymi z lat 2024–2026. Druk na papierze 170g.",
-            zine2Title: "Potrójna Ekspozycja",
-            zine2PageTitle: "Potrójna Ekspozycja",
-            zine2Description: "Eksperymentalny cykl fotografii analogowej z wielokrotnym naświetlaniem.",
-            buyButton: "Zamów egzemplarz",
-            btnSendEmail: "Wyślij Email",
-            btnViewProfile: "Zobacz Profil",
-            outOfStock: "Nakład wyprzedany",
             prevImg: "Poprzednie zdjęcie",
             nextImg: "Następne zdjęcie",
             closeModal: "Zamknij",
             contactTitle: "Kontakt",
-            contactModalTitle: "Kontakt",
             contactDesc: "Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.",
-            contactModalDesc: "Masz jakieś pytania lub chcesz podjąć współpracę? Napisz bezpośrednio na mój email.",
             contactSub1: "Napisz wiadomość",
-            contactEmailSub: "Napisz wiadomość",
             btnEmail: "Wyślij e-mail",
             btnProfile: "Zobacz profil",
-            labelEmail: "Email",
-            labelInstagram: "Instagram",
             privacyTitle: "Polityka Prywatności",
-            privacyModalTitle: "Polityka Prywatności",
-            privacyP1: "Ta strona szanuje Twoją prywatność. Używamy plików cookies (ciasteczek) oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.",
+            privacyP1: "Ta strona szanuje Twoją prywatność. Używamy plików cookies oraz pamięci lokalnej przeglądarki wyłącznie w celach technicznych – do prawidłowego działania strony oraz obsługi licznika odwiedzin.",
             privacyP2: "Strona nie zbiera, nie przetwarza ani nie przekazuje Twoich danych osobowych firmom zewnętrznym w celach marketingowych.",
             termsTitle: "Regulamin strony",
-            termsModalTitle: "Regulamin strony",
             termsP1: "Wszystkie fotografie oraz materiały prezentowane na tej stronie są własnością Alana Łysiaka i są chronione międzynarodowym prawem autorskim.",
             termsP2: "Kopiowanie, pobieranie, rozpowszechnianie, modyfikowanie lub jakiekolwiek komercyjne wykorzystanie zdjęć bez uprzedniej pisemnej zgody autora jest całkowicie zabronione."
         },
@@ -333,43 +304,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             searchBtn: "Search",
             randomBtn: "Random",
             backToTop: "Back to top",
-            navGallery: "Gallery",
             contactLink: "Contact",
             privacyLink: "Privacy",
             termsLink: "Terms",
-            navPrivacy: "Privacy",
-            navTerms: "Terms",
-            navContact: "Contact",
-            backToGallery: "← Back to gallery",
-            zine1Title: "FlaneGRyzm Vol.1",
-            zine1PageTitle: "FlaneGRyzm Vol.1",
-            zine1Description: "Limited edition photo zine featuring street photography from 2024–2026. Printed on 170g paper.",
-            zine2Title: "Triple Exposure",
-            zine2PageTitle: "Triple Exposure",
-            zine2Description: "An experimental series of analog multiple-exposure photography.",
-            buyButton: "Order a copy",
-            btnSendEmail: "Send Email",
-            btnViewProfile: "View Profile",
-            outOfStock: "Sold out",
             prevImg: "Previous photo",
             nextImg: "Next photo",
             closeModal: "Close",
             contactTitle: "Contact",
-            contactModalTitle: "Contact",
             contactDesc: "Have questions or want to collaborate? Feel free to write directly to my email.",
-            contactModalDesc: "Have questions or want to collaborate? Feel free to write directly to my email.",
             contactSub1: "Send a message",
-            contactEmailSub: "Send a message",
             btnEmail: "Send Email",
             btnProfile: "View Profile",
-            labelEmail: "Email",
-            labelInstagram: "Instagram",
             privacyTitle: "Privacy Policy",
-            privacyModalTitle: "Privacy Policy",
             privacyP1: "This website respects your privacy. We use cookies and local storage solely for technical purposes – to ensure proper site functionality and visit counter operations.",
             privacyP2: "The site does not collect, process, or share your personal data with third parties for marketing purposes.",
             termsTitle: "Terms of Service",
-            termsModalTitle: "Terms of Service",
             termsP1: "All photographs and materials presented on this website are the property of Alan Łysiak and are protected by international copyright laws.",
             termsP2: "Copying, downloading, distributing, modifying, or any commercial use of these photographs without prior written permission from the author is strictly prohibited."
         }
@@ -448,11 +397,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (searchInput) {
             const val = searchInput.value.trim();
             if (val !== '') {
-                const translatedTag = getDisplayTag(val, lang);
-                searchInput.value = translatedTag;
+                searchInput.value = getDisplayTag(val, lang);
                 performSearch();
-            } else if (suggestionsBox && suggestionsBox.style.display === "block") {
-                suggestionsBox.innerHTML = getDefaultTags().map(t => `<li>${t}</li>`).join('');
             }
         }
 
@@ -464,13 +410,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Inicjalizacja języka
     updateLanguage(currentLang);
 
     if (langPlBtn) langPlBtn.addEventListener('click', () => updateLanguage('pl'));
     if (langEnBtn) langEnBtn.addEventListener('click', () => updateLanguage('en'));
 
-    // --- 1. LOGIKA OKIENEK (MODALI) ---
+    // --- 1. MODALE ---
     const modalTriggers = document.querySelectorAll('.modal-trigger');
     const modalCloses = document.querySelectorAll('.custom-modal-close');
     const modals = document.querySelectorAll('.custom-modal');
@@ -478,7 +423,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateBodyScroll() {
         const anyModalActive = document.querySelectorAll('.custom-modal.active').length > 0;
         const lightboxActive = lightbox && lightbox.classList.contains('active');
-        
         if (anyModalActive || lightboxActive) {
             document.documentElement.classList.add('modal-open');
         } else {
@@ -487,35 +431,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function closeAllModals() {
-        modals.forEach(modal => {
-            if (modal) modal.classList.remove('active');
-        });
+        modals.forEach(modal => { if (modal) modal.classList.remove('active'); });
         updateBodyScroll();
     }
 
     modalTriggers.forEach(trigger => {
         trigger.addEventListener('click', (e) => {
             e.preventDefault(); 
-            const targetId = trigger.getAttribute('data-target');
-            const targetModal = document.getElementById(targetId);
-            if (targetModal) {
-                targetModal.classList.add('active');
-                updateBodyScroll();
-            }
+            const targetModal = document.getElementById(trigger.getAttribute('data-target'));
+            if (targetModal) { targetModal.classList.add('active'); updateBodyScroll(); }
         });
     });
 
-    modalCloses.forEach(closeBtnEl => {
-        closeBtnEl.addEventListener('click', closeAllModals);
-    });
+    modalCloses.forEach(el => el.addEventListener('click', closeAllModals));
+    modals.forEach(modal => modal.addEventListener('click', (e) => { if (e.target === modal) closeAllModals(); }));
 
-    modals.forEach(modal => {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeAllModals();
-        });
-    });
-
-    // --- 2. POBIERANIE DANYCH Z SANITY ---
+    // --- 2. POBIERANIE Z SANITY ---
     if (grid) {
         try {
             const QUERY = encodeURIComponent(`*[_type == "photo"] | order(_createdAt desc) { title, isHighlight, categories, "imageUrl": image.asset->url }`);
@@ -556,30 +487,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                     images.push(img);
                 });
                 grid.style.opacity = "1";
-            } else {
-                console.log("Brak zdjęć do wyświetlenia w bazie Sanity.");
             }
         } catch (e) { 
             console.error("Błąd połączenia z Sanity:", e); 
         }
     }
 
-    // --- 3. LOGIKA LIGHTBOXA ---
+    // --- 3. LIGHTBOX ---
     function openLightboxFromImage(clickedImg) {
         visibleImages = Array.from(document.querySelectorAll('.photo-card:not(.hidden) img'));
         activeIdx = visibleImages.indexOf(clickedImg);
-        
         if (activeIdx === -1) activeIdx = 0;
         updateLightbox();
-        if (lightbox) {
-            lightbox.classList.add('active');
-            updateBodyScroll();
-        }
+        if (lightbox) { lightbox.classList.add('active'); updateBodyScroll(); }
     }
 
     function resetZoom() {
-        currentX = 0;
-        currentY = 0;
+        currentX = 0; currentY = 0;
         if (lightboxImg) {
             lightboxImg.classList.remove('zoomed');
             lightboxImg.style.transform = 'translate3d(0px, 0px, 0px) scale(1.0)';
@@ -588,29 +512,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function preloadAdjacentImages(isMobile) {
         if (visibleImages.length <= 1) return;
-        
         const config = isMobile ? "?auto=format&w=1000&q=82" : "?auto=format&w=1600&q=82";
         const nextIdx = (activeIdx + 1) % visibleImages.length;
         const prevIdx = (activeIdx - 1 + visibleImages.length) % visibleImages.length;
         
-        const nextCache = new Image();
-        nextCache.src = visibleImages[nextIdx].getAttribute('data-fullsrc') + config;
-        
-        const prevCache = new Image();
-        prevCache.src = visibleImages[prevIdx].getAttribute('data-fullsrc') + config;
+        const nextCache = new Image(); nextCache.src = visibleImages[nextIdx].getAttribute('data-fullsrc') + config;
+        const prevCache = new Image(); prevCache.src = visibleImages[prevIdx].getAttribute('data-fullsrc') + config;
     }
 
     function updateLightbox() {
         if (visibleImages.length > 0 && lightboxImg) {
             lightboxImg.style.opacity = '0';
-            
             setTimeout(() => {
                 const baseUrl = visibleImages[activeIdx].getAttribute('data-fullsrc');
                 const isMobile = window.innerWidth < 768;
-                
                 const config = isMobile ? "?auto=format&w=1000&q=82" : "?auto=format&w=1600&q=82";
                 lightboxImg.src = baseUrl + config;
-                
                 resetZoom();
                 preloadAdjacentImages(isMobile); 
             }, 40);
@@ -619,19 +536,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (lightboxImg) {
         lightboxImg.decoding = "async";
-        
-        lightboxImg.onload = () => {
-            lightboxImg.style.opacity = '1';
-        };
+        lightboxImg.onload = () => { lightboxImg.style.opacity = '1'; };
 
         lightboxImg.addEventListener('click', (e) => {
             e.stopPropagation();
-
             if (clickTimer) {
                 clearTimeout(clickTimer);
                 clickTimer = null;
-
-                // Podwójne kliknięcie powiększa / resetuje powiększenie
                 lightboxImg.classList.toggle('zoomed');
                 if (lightboxImg.classList.contains('zoomed')) {
                     lightboxImg.style.transform = 'translate3d(0px, 0px, 0px) scale(2.0)';
@@ -641,9 +552,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 clickTimer = setTimeout(() => {
                     clickTimer = null;
-                    if (!lightboxImg.classList.contains('zoomed') && nextBtn) {
-                        nextBtn.click();
-                    }
+                    if (!lightboxImg.classList.contains('zoomed') && nextBtn) nextBtn.click();
                 }, 250);
             }
         });
@@ -658,16 +567,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         lightboxImg.addEventListener('touchmove', (e) => {
             if (!isMoving || !lightboxImg.classList.contains('zoomed')) return;
-            
             currentX = e.touches[0].clientX - startX;
             currentY = e.touches[0].clientY - startY;
-
             const maxDrag = window.innerWidth * 0.4;
-            if (currentX > maxDrag) currentX = maxDrag;
-            if (currentX < -maxDrag) currentX = -maxDrag;
-            if (currentY > maxDrag) currentY = maxDrag;
-            if (currentY < -maxDrag) currentY = -maxDrag;
-
+            if (currentX > maxDrag) currentX = maxDrag; if (currentX < -maxDrag) currentX = -maxDrag;
+            if (currentY > maxDrag) currentY = maxDrag; if (currentY < -maxDrag) currentY = -maxDrag;
             lightboxImg.style.transform = `translate3d(${currentX}px, ${currentY}px, 0px) scale(2.0)`;
         }, { passive: true });
 
@@ -683,10 +587,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (closeBtn) { 
         closeBtn.onclick = () => { 
-            if (lightbox) {
-                lightbox.classList.remove('active'); 
-                updateBodyScroll();
-            }
+            if (lightbox) { lightbox.classList.remove('active'); updateBodyScroll(); }
             resetZoom(); 
         }; 
     }
@@ -707,9 +608,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.addEventListener('keydown', (e) => {
         if (e.key === "Escape") {
-            if (lightbox && lightbox.classList.contains('active') && closeBtn) {
-                closeBtn.onclick();
-            }
+            if (lightbox && lightbox.classList.contains('active') && closeBtn) closeBtn.onclick();
             closeAllModals();
         }
         if (!lightbox || !lightbox.classList.contains('active')) return;
@@ -733,79 +632,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             const tagsArray = Array.from(allTags);
             if (tagsArray.length > 0) {
                 const randomRawTag = tagsArray[Math.floor(Math.random() * tagsArray.length)];
-                const displayTag = getDisplayTag(randomRawTag, currentLang);
                 if (searchInput) {
-                    searchInput.value = displayTag;
+                    searchInput.value = getDisplayTag(randomRawTag, currentLang);
                     performSearch();
                 }
             }
         });
     }
 
-    if (searchInput && suggestionsBox) {
-        searchInput.addEventListener('click', () => {
-            if (searchInput.value.trim() === "") {
-                suggestionsBox.innerHTML = getDefaultTags().map(t => `<li>${t}</li>`).join('');
-                suggestionsBox.style.display = "block";
-            }
-        });
-
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase().trim();
-            if (term === "") {
-                suggestionsBox.innerHTML = getDefaultTags().map(t => `<li>${t}</li>`).join('');
-                suggestionsBox.style.display = "block";
-            } else {
-                const cards = document.querySelectorAll('.photo-card');
-                let matches = new Set();
-                cards.forEach(c => {
-                    const catAttr = c.getAttribute('data-category') || "";
-                    catAttr.split(/\s+/).forEach(cat => {
-                        if (!cat) return;
-                        const entry = tagDictionary[cat.toLowerCase()];
-                        const displayVal = getDisplayTag(cat, currentLang);
-
-                        const matchesRaw = cat.toLowerCase().startsWith(term);
-                        const matchesPl = entry && entry.pl.toLowerCase().startsWith(term);
-                        const matchesEn = entry && entry.en.toLowerCase().startsWith(term);
-
-                        if (matchesRaw || matchesPl || matchesEn) {
-                            matches.add(displayVal);
-                        }
-                    });
-                });
-                
-                suggestionsBox.innerHTML = Array.from(matches).map(m => `<li>${m}</li>`).join('');
-                suggestionsBox.style.display = matches.size > 0 ? "block" : "none";
-            }
-        });
-
-        document.addEventListener('click', (e) => {
-            if (e.target !== searchInput && !suggestionsBox.contains(e.target)) {
-                suggestionsBox.style.display = "none";
-            }
-        });
-
+    if (searchInput) {
         if (searchBtn) searchBtn.addEventListener('click', performSearch);
         searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
-        
-        suggestionsBox.addEventListener('click', (e) => {
-            if (e.target.tagName === 'LI') {
-                searchInput.value = e.target.textContent;
-                performSearch();
-            }
-        });
     }
 
-    // --- 5. DODATKI (TYPEWRITER, SCROLL, LICZNIK) ---
+    // --- 5. TYPEWRITER I DODATKI ---
     if (searchInput) {
         startTypewriter(); 
-        
         searchInput.addEventListener('focus', () => {
             clearTimeout(typewriterTimer);
             searchInput.placeholder = '';
         });
-        
         searchInput.addEventListener('blur', () => {
             if (searchInput.value.trim() === '') {
                 startTypewriter();
@@ -829,24 +675,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Obsługa dźwięku migawki dla logo
 document.addEventListener('DOMContentLoaded', () => {
     const logoLinks = document.querySelectorAll('.logo-link, .site-logo');
-    
     logoLinks.forEach(logo => {
         logo.style.cursor = 'pointer';
-        
         logo.addEventListener('click', (e) => {
             e.preventDefault(); 
-            
             const targetUrl = logo.tagName === 'A' ? logo.href : (logo.closest('a') ? logo.closest('a').href : 'index.html');
-            
             const shutterSound = new Audio('images/shutter.mp3');
             shutterSound.volume = 0.4;
-            shutterSound.play().catch(error => {
-                console.log("Odtwarzanie dźwięku zablokowane:", error);
-            });
-
-            setTimeout(() => {
-                window.location.href = targetUrl;
-            }, 250);
+            shutterSound.play().catch(error => { console.log("Odtwarzanie dźwięku zablokowane:", error); });
+            setTimeout(() => { window.location.href = targetUrl; }, 250);
         });
     });
 });
