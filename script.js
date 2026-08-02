@@ -1,214 +1,248 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- KONFIGURACJA SANITY ---
-    const PROJECT_ID = '6g67d261';
-    const DATASET = 'portfolio';
-    
-    // --- ELEMENTY DOM ---
-    const grid = document.querySelector('.gallery-grid');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const prevBtn = document.querySelector('.prev');
-    const nextBtn = document.querySelector('.next');
-    const closeBtn = document.querySelector('.close');
-    const searchInput = document.getElementById('search-input');
-    const searchBtn = document.querySelector('.search-btn');
-    const randomBtn = document.getElementById('random-btn');
-    const suggestionsBox = document.querySelector('.suggestions-list');
-    
-    const langPlBtn = document.getElementById('lang-pl');
-    const langEnBtn = document.getElementById('lang-en');
+    // --- KONFIGURACJA SANITY ---
+    const PROJECT_ID = '6g67d261';
+    const DATASET = 'portfolio';
+    
+    // --- ELEMENTY DOM ---
+    const grid = document.querySelector('.gallery-grid');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const prevBtn = document.querySelector('.prev');
+    const nextBtn = document.querySelector('.next');
+    const closeBtn = document.querySelector('.close');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.querySelector('.search-btn');
+    const randomBtn = document.getElementById('random-btn');
+    const suggestionsBox = document.querySelector('.suggestions-list');
+    
+    const langPlBtn = document.getElementById('lang-pl');
+    const langEnBtn = document.getElementById('lang-en');
 
-    // --- ZMIENNE STANOWE ---
-    let images = []; 
-    let visibleImages = []; 
-    let activeIdx = 0;
-    let clickTimer = null; 
+    // --- ZMIENNE STANOWE ---
+    let images = []; 
+    let visibleImages = []; 
+    let activeIdx = 0;
+    let clickTimer = null; 
 
-    let isMoving = false;
-    let startX = 0, startY = 0;
-    let currentX = 0, currentY = 0;
+    let isMoving = false;
+    let startX = 0, startY = 0;
+    let currentX = 0, currentY = 0;
 
-    // --- AUTOMATYCZNE WYKRYWANIE JĘZYKA PRZEGLĄDARKI LUB PAMIĘĆ ---
-    let currentLang = localStorage.getItem('site_lang') || localStorage.getItem('preferred_lang');
-    if (!currentLang) {
-        const browserLang = navigator.language || navigator.userLanguage || 'pl';
-        currentLang = browserLang.toLowerCase().startsWith('pl') ? 'pl' : 'en';
-    }
+    // --- ZMIENNE TYPEWRITER (przeniesione na górę, aby uniknąć ReferenceError) ---
+    let typewriterTimer;
+    let typeIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    
+    const typewriterPhrases = {
+        pl: ['szukaj...', 'street...', 'portret...', 'abstrakcja...', 'monochrom...'],
+        en: ['search...', 'street...', 'portrait...', 'abstract...', 'monochrome...']
+    };
 
-    // --- PEŁNY DWUKIERUNKOWY SŁOWNIK TAGÓW (PL / EN) ---
-    const tagDictionary = {
-        // --- KATEGORIE I STYLE ---
-        'abstrakcja':        { pl: 'abstrakcja',          en: 'abstract' },
-        'abstract':          { pl: 'abstrakcja',          en: 'abstract' },
-        'street':            { pl: 'street',             en: 'street' },
-        'portret':           { pl: 'portret',            en: 'portrait' },
-        'portrait':          { pl: 'portret',            en: 'portrait' },
-        'krajobraz':         { pl: 'krajobraz',          en: 'landscape' },
-        'landscape':         { pl: 'krajobraz',          en: 'landscape' },
-        'czarnobiale':       { pl: 'czarno-białe',       en: 'black & white' },
-        'blackwhite':        { pl: 'czarno-białe',       en: 'black & white' },
-        'black & white':     { pl: 'czarno-białe',       en: 'black & white' },
-        'monochrome':        { pl: 'monochrom',          en: 'monochrome' },
-        'monochrom':         { pl: 'monochrom',          en: 'monochrome' },
-        'doublexposure':     { pl: 'podwójna ekspozycja', en: 'double exposure' },
-        'double exposure':   { pl: 'podwójna ekspozycja', en: 'double exposure' },
-        'longexposure':      { pl: 'długa ekspozycja',    en: 'long exposure' },
-        'long exposure':     { pl: 'długa ekspozycja',    en: 'long exposure' },
-        'refractography':    { pl: 'refraktografia',     en: 'refractography' },
-        'refraktografia':    { pl: 'refraktografia',     en: 'refractography' },
-        'macro':             { pl: 'makro',              en: 'macro' },
-        'makro':             { pl: 'makro',              en: 'macro' },
-        'urban':             { pl: 'urban',              en: 'urban' },
-        'travel':            { pl: 'podróże',            en: 'travel' },
-        'podroze':           { pl: 'podróże',            en: 'travel' },
-        'podróże':           { pl: 'podróże',            en: 'travel' },
-        'wildlife':          { pl: 'dzika przyroda',     en: 'wildlife' },
-        'dzika przyroda':    { pl: 'dzika przyroda',     en: 'wildlife' },
-        'selfie':            { pl: 'selfie',             en: 'selfie' },
-        'generator':         { pl: 'generator',          en: 'generator' },
+    function startTypewriter() {
+        if (!searchInput) return;
+        clearTimeout(typewriterTimer);
+        
+        const phrases = typewriterPhrases[currentLang] || typewriterPhrases.pl;
+        const currentPhrase = phrases[typeIdx];
+        
+        if (isDeleting) {
+            searchInput.placeholder = currentPhrase.substring(0, charIdx - 1);
+            charIdx--;
+        } else {
+            searchInput.placeholder = currentPhrase.substring(0, charIdx + 1);
+            charIdx++;
+        }
 
-        // --- KRAJE I REGIONY ---
-        'polska':            { pl: 'polska',             en: 'poland' },
-        'poland':            { pl: 'polska',             en: 'poland' },
-        'albania':           { pl: 'albania',            en: 'albania' },
-        'austria':           { pl: 'austria',            en: 'austria' },
-        'balkans':           { pl: 'bałkany',            en: 'balkans' },
-        'balkany':           { pl: 'bałkany',            en: 'balkans' },
-        'bałkany':           { pl: 'bałkany',            en: 'balkans' },
-        'bosnia':            { pl: 'bośnia',             en: 'bosnia' },
-        'bośnia':            { pl: 'bośnia',             en: 'bosnia' },
-        'bulgaria':          { pl: 'bułgaria',           en: 'bulgaria' },
-        'bułgaria':          { pl: 'bułgaria',           en: 'bulgaria' },
-        'chorwacja':         { pl: 'chorwacja',          en: 'croatia' },
-        'croatia':           { pl: 'chorwacja',          en: 'croatia' },
-        'cypr':              { pl: 'cypr',               en: 'cyprus' },
-        'cyprus':            { pl: 'cypr',               en: 'cyprus' },
-        'czech':             { pl: 'czechy',             en: 'czechia' },
-        'czechy':            { pl: 'czechy',             en: 'czechia' },
-        'czechia':           { pl: 'czechy',             en: 'czechia' },
-        'estonia':           { pl: 'estonia',            en: 'estonia' },
-        'germany':           { pl: 'niemcy',             en: 'germany' },
-        'niemcy':            { pl: 'niemcy',             en: 'germany' },
-        'hiszpania':         { pl: 'hiszpania',          en: 'spain' },
-        'spain':             { pl: 'hiszpania',          en: 'spain' },
-        'holandia':          { pl: 'holandia',           en: 'netherlands' },
-        'netherlands':       { pl: 'holandia',           en: 'netherlands' },
-        'hungary':           { pl: 'węgry',              en: 'hungary' },
-        'wegry':             { pl: 'węgry',              en: 'hungary' },
-        'węgry':             { pl: 'węgry',              en: 'hungary' },
-        'italy':             { pl: 'włochy',             en: 'italy' },
-        'wlochy':            { pl: 'włochy',             en: 'italy' },
-        'włochy':            { pl: 'włochy',             en: 'italy' },
-        'latvia':            { pl: 'łotwa',              en: 'latvia' },
-        'lotwa':             { pl: 'łotwa',              en: 'latvia' },
-        'łotwa':             { pl: 'łotwa',              en: 'latvia' },
-        'lichtenstein':      { pl: 'liechtenstein',      en: 'liechtenstein' },
-        'liechtenstein':     { pl: 'liechtenstein',      en: 'liechtenstein' },
-        'lithuania':         { pl: 'litwa',              en: 'lithuania' },
-        'litwa':             { pl: 'litwa',              en: 'lithuania' },
-        'montenegro':        { pl: 'czarnogóra',         en: 'montenegro' },
-        'czarnogora':        { pl: 'czarnogóra',         en: 'montenegro' },
-        'czarnogóra':        { pl: 'czarnogóra',         en: 'montenegro' },
-        'romania':           { pl: 'rumunia',            en: 'romania' },
-        'rumunia':           { pl: 'rumunia',            en: 'romania' },
-        'serbia':            { pl: 'serbia',             en: 'serbia' },
-        'slowacja':          { pl: 'słowacja',           en: 'slovakia' },
-        'słowacja':          { pl: 'słowacja',           en: 'slovakia' },
-        'slovakia':          { pl: 'słowacja',           en: 'slovakia' },
+        let speed = isDeleting ? 50 : 120;
 
-        // --- MIASTA I MIEJSCA ---
-        'amsterdam':         { pl: 'amsterdam',          en: 'amsterdam' },
-        'belgrad':           { pl: 'belgrad',            en: 'belgrade' },
-        'belgrade':          { pl: 'belgrad',            en: 'belgrade' },
-        'budapest':          { pl: 'budapeszt',          en: 'budapest' },
-        'budapeszt':         { pl: 'budapeszt',          en: 'budapest' },
-        'bukareszt':         { pl: 'bukareszt',          en: 'bucharest' },
-        'bucharest':         { pl: 'bukareszt',          en: 'bucharest' },
-        'catania':           { pl: 'katania',            en: 'catania' },
-        'katania':           { pl: 'katania',            en: 'catania' },
-        'etna':              { pl: 'etna',               en: 'etna' },
-        'gdansk':            { pl: 'gdańsk',             en: 'gdansk' },
-        'gdańsk':            { pl: 'gdańsk',             en: 'gdansk' },
-        'gdynia':            { pl: 'gdynia',             en: 'gdynia' },
-        'poznan':            { pl: 'poznań',             en: 'poznan' },
-        'poznań':            { pl: 'poznań',             en: 'poznan' },
-        'prague':            { pl: 'praga',              en: 'prague' },
-        'praga':             { pl: 'praga',              en: 'prague' },
-        'rome':              { pl: 'rzym',               en: 'rome' },
-        'rzym':              { pl: 'rzym',               en: 'rome' },
-        'ryga':              { pl: 'ryga',               en: 'riga' },
-        'riga':              { pl: 'ryga',               en: 'riga' },
-        'sicily':            { pl: 'sycylia',            en: 'sicily' },
-        'sycylia':           { pl: 'sycylia',            en: 'sicily' },
-        'sopot':             { pl: 'sopot',              en: 'sopot' },
-        'venezia':           { pl: 'wenecja',            en: 'venice' },
-        'wenecja':           { pl: 'wenecja',            en: 'venice' },
-        'venice':            { pl: 'wenecja',            en: 'venice' },
-        'viena':             { pl: 'wiedeń',             en: 'vienna' },
-        'wieden':            { pl: 'wiedeń',             en: 'vienna' },
-        'wiedien':           { pl: 'wiedeń',             en: 'vienna' },
-        'wiedeń':            { pl: 'wiedeń',             en: 'vienna' },
-        'vienna':            { pl: 'wiedeń',             en: 'vienna' },
+        if (!isDeleting && charIdx === currentPhrase.length) {
+            speed = 2000;
+            isDeleting = true;
+        } else if (isDeleting && charIdx === 0) {
+            isDeleting = false;
+            typeIdx = (typeIdx + 1) % phrases.length;
+            speed = 500;
+        }
 
-        // --- MOTYWY, OBIEKTY, MOTORYZACJA ---
-        'batman':            { pl: 'batman',             en: 'batman' },
-        'beach':             { pl: 'plaża',              en: 'beach' },
-        'plaza':             { pl: 'plaża',              en: 'beach' },
-        'plaża':             { pl: 'plaża',              en: 'beach' },
-        'bear':              { pl: 'niedźwiedź',         en: 'bear' },
-        'niedzwiedz':        { pl: 'niedźwiedź',         en: 'bear' },
-        'niedźwiedź':        { pl: 'niedźwiedź',         en: 'bear' },
-        'bicycle':           { pl: 'rower',              en: 'bicycle' },
-        'rower':             { pl: 'rower',              en: 'bicycle' },
-        'bird':              { pl: 'ptak',               en: 'bird' },
-        'ptak':              { pl: 'ptak',               en: 'bird' },
-        'buty':              { pl: 'buty',               en: 'shoes' },
-        'shoes':             { pl: 'buty',               en: 'shoes' },
-        'car':               { pl: 'samochód',           en: 'car' },
-        'samochod':          { pl: 'samochód',           en: 'car' },
-        'samochód':          { pl: 'samochód',           en: 'car' },
-        'cat':               { pl: 'kot',                en: 'cat' },
-        'kot':               { pl: 'kot',                en: 'cat' },
-        'dog':               { pl: 'pies',               en: 'dog' },
-        'pies':              { pl: 'pies',               en: 'dog' },
-        'flower':            { pl: 'kwiaty',             en: 'flowers' },
-        'flowers':           { pl: 'kwiaty',             en: 'flowers' },
-        'kwiat':             { pl: 'kwiaty',             en: 'flowers' },
-        'kwiaty':            { pl: 'kwiaty',             en: 'flowers' },
-        'horse':             { pl: 'koń',                en: 'horse' },
-        'kon':               { pl: 'koń',                en: 'horse' },
-        'koń':               { pl: 'koń',                en: 'horse' },
-        'morze':             { pl: 'morze',              en: 'sea' },
-        'sea':               { pl: 'morze',              en: 'sea' },
-        'night':             { pl: 'noc',                en: 'night' },
-        'noc':               { pl: 'noc',                en: 'night' },
-        'pajak':             { pl: 'pająk',              en: 'spider' },
-        'pająk':             { pl: 'pająk',              en: 'spider' },
-        'spider':            { pl: 'pająk',              en: 'spider' },
-        'spiderman':         { pl: 'spiderman',          en: 'spiderman' },
-        'pociag':            { pl: 'pociąg',             en: 'train' },
-        'pociąg':            { pl: 'pociąg',             en: 'train' },
-        'train':             { pl: 'pociąg',             en: 'train' },
-        'skateboard':        { pl: 'deskorolka',         en: 'skateboard' },
-        'deskorolka':        { pl: 'deskorolka',         en: 'skateboard' },
-        'winter':            { pl: 'zima',               en: 'winter' },
-        'zima':              { pl: 'zima',               en: 'winter' },
-        'znaki':             { pl: 'znaki',              en: 'signs' },
-        'signs':             { pl: 'znaki',              en: 'signs' },
-        'zorza':             { pl: 'zorza',              en: 'aurora' },
-        'aurora':            { pl: 'zorza',              en: 'aurora' },
-        'tagi':              { pl: 'tagi',               en: 'tags' },
-        'tags':              { pl: 'tagi',               en: 'tags' },
+        typewriterTimer = setTimeout(startTypewriter, speed);
+    }
 
-        // --- SPRZĘT ---
-        'fujifilm':          { pl: 'fujifilm',           en: 'fujifilm' },
-        'nikon':             { pl: 'nikon',              en: 'nikon' },
-        'olympus':           { pl: 'olympus',            en: 'olympus' },
-        'ricoh':             { pl: 'ricoh',              en: 'ricoh' },
-        'sony':              { pl: 'sony',               en: 'sony' }
-    };
+    // --- AUTOMATYCZNE WYKRYWANIE JĘZYKA PRZEGLĄDARKI LUB PAMIĘĆ ---
+    let currentLang = localStorage.getItem('site_lang') || localStorage.getItem('preferred_lang');
+    if (!currentLang) {
+        const browserLang = navigator.language || navigator.userLanguage || 'pl';
+        currentLang = browserLang.toLowerCase().startsWith('pl') ? 'pl' : 'en';
+    }
 
-// --- FUNKCJE POMOCNICZE WYSZUKIWARKI I TAGÓW ---
+    // --- PEŁNY DWUKIERUNKOWY SŁOWNIK TAGÓW (PL / EN) ---
+    const tagDictionary = {
+        'abstrakcja':        { pl: 'abstrakcja',         en: 'abstract' },
+        'abstract':          { pl: 'abstrakcja',         en: 'abstract' },
+        'street':            { pl: 'street',             en: 'street' },
+        'portret':           { pl: 'portret',            en: 'portrait' },
+        'portrait':          { pl: 'portret',            en: 'portrait' },
+        'krajobraz':         { pl: 'krajobraz',          en: 'landscape' },
+        'landscape':         { pl: 'krajobraz',          en: 'landscape' },
+        'czarnobiale':       { pl: 'czarno-białe',       en: 'black & white' },
+        'blackwhite':        { pl: 'czarno-białe',       en: 'black & white' },
+        'black & white':     { pl: 'czarno-białe',       en: 'black & white' },
+        'monochrome':        { pl: 'monochrom',          en: 'monochrome' },
+        'monochrom':         { pl: 'monochrom',          en: 'monochrome' },
+        'doublexposure':     { pl: 'podwójna ekspozycja', en: 'double exposure' },
+        'double exposure':   { pl: 'podwójna ekspozycja', en: 'double exposure' },
+        'longexposure':      { pl: 'długa ekspozycja',    en: 'long exposure' },
+        'long exposure':     { pl: 'długa ekspozycja',    en: 'long exposure' },
+        'refractography':    { pl: 'refraktografia',      en: 'refractography' },
+        'refraktografia':    { pl: 'refraktografia',      en: 'refractography' },
+        'macro':             { pl: 'makro',               en: 'macro' },
+        'makro':             { pl: 'makro',               en: 'macro' },
+        'urban':             { pl: 'urban',               en: 'urban' },
+        'travel':            { pl: 'podróże',             en: 'travel' },
+        'podroze':           { pl: 'podróże',             en: 'travel' },
+        'podróże':           { pl: 'podróże',             en: 'travel' },
+        'wildlife':          { pl: 'dzika przyroda',      en: 'wildlife' },
+        'dzika przyroda':    { pl: 'dzika przyroda',      en: 'wildlife' },
+        'selfie':            { pl: 'selfie',              en: 'selfie' },
+        'generator':         { pl: 'generator',           en: 'generator' },
+
+        'polska':            { pl: 'polska',              en: 'poland' },
+        'poland':            { pl: 'polska',              en: 'poland' },
+        'albania':           { pl: 'albania',             en: 'albania' },
+        'austria':           { pl: 'austria',             en: 'austria' },
+        'balkans':           { pl: 'bałkany',             en: 'balkans' },
+        'balkany':           { pl: 'bałkany',             en: 'balkans' },
+        'bałkany':           { pl: 'bałkany',             en: 'balkans' },
+        'bosnia':            { pl: 'bośnia',              en: 'bosnia' },
+        'bośnia':            { pl: 'bośnia',              en: 'bosnia' },
+        'bulgaria':          { pl: 'bułgaria',            en: 'bulgaria' },
+        'bułgaria':          { pl: 'bułgaria',            en: 'bulgaria' },
+        'chorwacja':         { pl: 'chorwacja',           en: 'croatia' },
+        'croatia':           { pl: 'chorwacja',           en: 'croatia' },
+        'cypr':              { pl: 'cypr',                en: 'cyprus' },
+        'cyprus':            { pl: 'cypr',                en: 'cyprus' },
+        'czech':             { pl: 'czechy',              en: 'czechia' },
+        'czechy':            { pl: 'czechy',              en: 'czechia' },
+        'czechia':           { pl: 'czechy',              en: 'czechia' },
+        'estonia':           { pl: 'estonia',             en: 'estonia' },
+        'germany':           { pl: 'niemcy',              en: 'germany' },
+        'niemcy':            { pl: 'niemcy',              en: 'germany' },
+        'hiszpania':         { pl: 'hiszpania',           en: 'spain' },
+        'spain':             { pl: 'hiszpania',           en: 'spain' },
+        'holandia':          { pl: 'holandia',            en: 'netherlands' },
+        'netherlands':       { pl: 'holandia',            en: 'netherlands' },
+        'hungary':           { pl: 'węgry',               en: 'hungary' },
+        'wegry':             { pl: 'węgry',               en: 'hungary' },
+        'węgry':             { pl: 'węgry',               en: 'hungary' },
+        'italy':             { pl: 'włochy',              en: 'italy' },
+        'wlochy':            { pl: 'włochy',              en: 'italy' },
+        'włochy':            { pl: 'włochy',              en: 'italy' },
+        'latvia':            { pl: 'łotwa',               en: 'latvia' },
+        'lotwa':             { pl: 'łotwa',               en: 'latvia' },
+        'łotwa':             { pl: 'łotwa',               en: 'latvia' },
+        'lichtenstein':      { pl: 'liechtenstein',       en: 'liechtenstein' },
+        'liechtenstein':     { pl: 'liechtenstein',       en: 'liechtenstein' },
+        'lithuania':         { pl: 'litwa',               en: 'lithuania' },
+        'litwa':             { pl: 'litwa',               en: 'lithuania' },
+        'montenegro':        { pl: 'czarnogóra',          en: 'montenegro' },
+        'czarnogora':        { pl: 'czarnogóra',          en: 'montenegro' },
+        'czarnogóra':        { pl: 'czarnogóra',          en: 'montenegro' },
+        'romania':           { pl: 'rumunia',             en: 'romania' },
+        'rumunia':           { pl: 'rumunia',             en: 'romania' },
+        'serbia':            { pl: 'serbia',              en: 'serbia' },
+        'slowacja':          { pl: 'słowacja',            en: 'slovakia' },
+        'słowacja':          { pl: 'słowacja',            en: 'slovakia' },
+        'slovakia':          { pl: 'słowacja',            en: 'slovakia' },
+
+        'amsterdam':         { pl: 'amsterdam',           en: 'amsterdam' },
+        'belgrad':           { pl: 'belgrad',             en: 'belgrade' },
+        'belgrade':          { pl: 'belgrad',             en: 'belgrade' },
+        'budapest':          { pl: 'budapeszt',           en: 'budapest' },
+        'budapeszt':         { pl: 'budapeszt',           en: 'budapest' },
+        'bukareszt':         { pl: 'bukareszt',           en: 'bucharest' },
+        'bucharest':         { pl: 'bukareszt',           en: 'bucharest' },
+        'catania':           { pl: 'katania',             en: 'catania' },
+        'katania':           { pl: 'katania',             en: 'catania' },
+        'etna':              { pl: 'etna',                en: 'etna' },
+        'gdansk':            { pl: 'gdańsk',              en: 'gdansk' },
+        'gdańsk':            { pl: 'gdańsk',              en: 'gdansk' },
+        'gdynia':            { pl: 'gdynia',              en: 'gdynia' },
+        'poznan':            { pl: 'poznań',              en: 'poznan' },
+        'poznań':            { pl: 'poznań',              en: 'poznan' },
+        'prague':            { pl: 'praga',               en: 'prague' },
+        'praga':             { pl: 'praga',               en: 'prague' },
+        'rome':              { pl: 'rzym',                en: 'rome' },
+        'rzym':              { pl: 'rzym',                en: 'rome' },
+        'ryga':              { pl: 'ryga',                en: 'riga' },
+        'riga':              { pl: 'ryga',                en: 'riga' },
+        'sicily':            { pl: 'sycylia',             en: 'sicily' },
+        'sycylia':           { pl: 'sycylia',             en: 'sicily' },
+        'sopot':             { pl: 'sopot',               en: 'sopot' },
+        'venezia':           { pl: 'wenecja',             en: 'venice' },
+        'wenecja':           { pl: 'wenecja',             en: 'venice' },
+        'venice':            { pl: 'wenecja',             en: 'venice' },
+        'viena':             { pl: 'wiedeń',              en: 'vienna' },
+        'wieden':            { pl: 'wiedeń',              en: 'vienna' },
+        'wiedien':           { pl: 'wiedeń',              en: 'vienna' },
+        'wiedeń':            { pl: 'wiedeń',              en: 'vienna' },
+        'vienna':            { pl: 'wiedeń',              en: 'vienna' },
+
+        'batman':            { pl: 'batman',              en: 'batman' },
+        'beach':             { pl: 'plaża',               en: 'beach' },
+        'plaza':             { pl: 'plaża',               en: 'beach' },
+        'plaża':             { pl: 'plaża',               en: 'beach' },
+        'bear':              { pl: 'niedźwiedź',          en: 'bear' },
+        'niedzwiedz':        { pl: 'niedźwiedź',          en: 'bear' },
+        'niedźwiedź':        { pl: 'niedźwiedź',          en: 'bear' },
+        'bicycle':           { pl: 'rower',               en: 'bicycle' },
+        'rower':             { pl: 'rower',               en: 'bicycle' },
+        'bird':              { pl: 'ptak',                en: 'bird' },
+        'ptak':              { pl: 'ptak',                en: 'bird' },
+        'buty':              { pl: 'buty',                en: 'shoes' },
+        'shoes':             { pl: 'buty',                en: 'shoes' },
+        'car':               { pl: 'samochód',            en: 'car' },
+        'samochod':          { pl: 'samochód',            en: 'car' },
+        'samochód':          { pl: 'samochód',            en: 'car' },
+        'cat':               { pl: 'kot',                 en: 'cat' },
+        'kot':               { pl: 'kot',                 en: 'cat' },
+        'dog':               { pl: 'pies',                en: 'dog' },
+        'pies':              { pl: 'pies',                en: 'dog' },
+        'flower':            { pl: 'kwiaty',              en: 'flowers' },
+        'flowers':           { pl: 'kwiaty',              en: 'flowers' },
+        'kwiat':             { pl: 'kwiaty',              en: 'flowers' },
+        'kwiaty':            { pl: 'kwiaty',              en: 'flowers' },
+        'horse':             { pl: 'koń',                 en: 'horse' },
+        'kon':               { pl: 'koń',                 en: 'horse' },
+        'koń':               { pl: 'koń',                 en: 'horse' },
+        'morze':             { pl: 'morze',               en: 'sea' },
+        'sea':               { pl: 'morze',               en: 'sea' },
+        'night':             { pl: 'noc',                 en: 'night' },
+        'noc':               { pl: 'noc',                 en: 'night' },
+        'pajak':             { pl: 'pająk',               en: 'spider' },
+        'pająk':             { pl: 'pająk',               en: 'spider' },
+        'spider':            { pl: 'pająk',               en: 'spider' },
+        'spiderman':         { pl: 'spiderman',           en: 'spiderman' },
+        'pociag':            { pl: 'pociąg',              en: 'train' },
+        'pociąg':            { pl: 'pociąg',              en: 'train' },
+        'train':             { pl: 'pociąg',              en: 'train' },
+        'skateboard':        { pl: 'deskorolka',          en: 'skateboard' },
+        'deskorolka':        { pl: 'deskorolka',          en: 'skateboard' },
+        'winter':            { pl: 'zima',                en: 'winter' },
+        'zima':              { pl: 'zima',                en: 'winter' },
+        'znaki':             { pl: 'znaki',               en: 'signs' },
+        'signs':             { pl: 'znaki',               en: 'signs' },
+        'zorza':             { pl: 'zorza',               en: 'aurora' },
+        'aurora':            { pl: 'zorza',               en: 'aurora' },
+        'tagi':              { pl: 'tagi',                en: 'tags' },
+        'tags':              { pl: 'tagi',                en: 'tags' },
+
+        'fujifilm':          { pl: 'fujifilm',            en: 'fujifilm' },
+        'nikon':             { pl: 'nikon',               en: 'nikon' },
+        'olympus':           { pl: 'olympus',             en: 'olympus' },
+        'ricoh':             { pl: 'ricoh',               en: 'ricoh' },
+        'sony':              { pl: 'sony',                en: 'sony' }
+    };
+
     function getDisplayTag(rawTag, lang) {
         if (!rawTag) return '';
         const key = rawTag.toLowerCase().trim();
@@ -341,7 +375,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-  function updateLanguage(lang) {
+    function updateLanguage(lang) {
         currentLang = lang;
         localStorage.setItem('site_lang', lang);
         localStorage.setItem('preferred_lang', lang);
@@ -353,9 +387,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (seoTitleEl) seoTitleEl.innerText = t.seoTitle;
         const seoDescEl = document.getElementById('seo-desc');
         if (seoDescEl) seoDescEl.setAttribute('content', t.seoDesc);
-
-        // Usunięte na rzecz animacji typewriter w wyszukiwarce
-        // if (searchInput) searchInput.placeholder = t.searchPlaceholder;
 
         const searchBtnEl = document.getElementById('search-btn');
         if (searchBtnEl) searchBtnEl.innerText = t.searchBtn;
@@ -425,7 +456,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
-        // Reset i ponowny start animacji typewriter przy zmianie języka
         typeIdx = 0;
         charIdx = 0;
         isDeleting = false;
@@ -596,24 +626,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         lightboxImg.addEventListener('click', (e) => {
             e.stopPropagation();
-            const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
             if (clickTimer) {
                 clearTimeout(clickTimer);
                 clickTimer = null;
 
-                if (isTouchDevice) {
-                    lightboxImg.classList.toggle('zoomed');
-                    if (lightboxImg.classList.contains('zoomed')) {
-                        lightboxImg.style.transform = 'translate3d(0px, 0px, 0px) scale(2.0)';
-                    } else {
-                        resetZoom();
-                    }
+                // Podwójne kliknięcie powiększa / resetuje powiększenie
+                lightboxImg.classList.toggle('zoomed');
+                if (lightboxImg.classList.contains('zoomed')) {
+                    lightboxImg.style.transform = 'translate3d(0px, 0px, 0px) scale(2.0)';
+                } else {
+                    resetZoom();
                 }
-                    } else {
+            } else {
                 clickTimer = setTimeout(() => {
                     clickTimer = null;
-                    // Jeśli obraz nie jest powiększony, kliknięcie przechodzi do następnego zdjęcia
                     if (!lightboxImg.classList.contains('zoomed') && nextBtn) {
                         nextBtn.click();
                     }
@@ -770,64 +797,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // --- 5. DODATKI ---
-    // --- EFEKT TYPEWRITER W WYSZUKIWARCE ---
-    let typewriterTimer;
-    let typeIdx = 0;
-    let charIdx = 0;
-    let isDeleting = false;
-    
-    // Hasła do animacji dostosowane do Twoich tagów
-    const typewriterPhrases = {
-        pl: ['szukaj...', 'street...', 'portret...', 'abstrakcja...', 'monochrom...'],
-        en: ['search...', 'street...', 'portrait...', 'abstract...', 'monochrome...']
-    };
-
-    function startTypewriter() {
-        if (!searchInput) return;
-        clearTimeout(typewriterTimer);
-        
-        const phrases = typewriterPhrases[currentLang] || typewriterPhrases.pl;
-        const currentPhrase = phrases[typeIdx];
-        
-        if (isDeleting) {
-            searchInput.placeholder = currentPhrase.substring(0, charIdx - 1);
-            charIdx--;
-        } else {
-            searchInput.placeholder = currentPhrase.substring(0, charIdx + 1);
-            charIdx++;
-        }
-
-        let speed = isDeleting ? 50 : 120;
-
-        if (!isDeleting && charIdx === currentPhrase.length) {
-            speed = 2000; // Dłuższa pauza po wpisaniu całego słowa
-            isDeleting = true;
-        } else if (isDeleting && charIdx === 0) {
-            isDeleting = false;
-            typeIdx = (typeIdx + 1) % phrases.length;
-            speed = 500; // Krótka pauza przed rozpoczęciem nowego słowa
-        }
-
-        typewriterTimer = setTimeout(startTypewriter, speed);
-    }
-
+    // --- 5. DODATKI (TYPEWRITER, SCROLL, LICZNIK) ---
     if (searchInput) {
-        startTypewriter(); // Start animacji
+        startTypewriter(); 
         
-        // Zatrzymujemy animację, gdy użytkownik kliknie w pole (chce coś wpisać)
         searchInput.addEventListener('focus', () => {
             clearTimeout(typewriterTimer);
             searchInput.placeholder = '';
         });
         
-        // Wznawiamy, jeśli po wyjściu z pola nic nie wpisano
         searchInput.addEventListener('blur', () => {
             if (searchInput.value.trim() === '') {
                 startTypewriter();
             }
         });
     }
+
     const btt = document.getElementById('back-to-top');
     window.addEventListener('scroll', () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; });
     if (btt) btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -840,6 +825,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         .catch(() => counterEl.innerText = "200");
     }
 });
+
+// Obsługa dźwięku migawki dla logo
 document.addEventListener('DOMContentLoaded', () => {
     const logoLinks = document.querySelectorAll('.logo-link, .site-logo');
     
@@ -847,19 +834,16 @@ document.addEventListener('DOMContentLoaded', () => {
         logo.style.cursor = 'pointer';
         
         logo.addEventListener('click', (e) => {
-            e.preventDefault(); // Zapobiega natychmiastowemu skokowi
+            e.preventDefault(); 
             
-            // Pobieramy docelowy adres (index.html)
             const targetUrl = logo.tagName === 'A' ? logo.href : (logo.closest('a') ? logo.closest('a').href : 'index.html');
             
-            // Odtwarzamy dźwięk migawki
             const shutterSound = new Audio('images/shutter.mp3');
             shutterSound.volume = 0.4;
             shutterSound.play().catch(error => {
                 console.log("Odtwarzanie dźwięku zablokowane:", error);
             });
 
-            // Czekamy 250 ms, żeby dźwięk zdążył się zacząć, i dopiero przechodzimy na stronę główną
             setTimeout(() => {
                 window.location.href = targetUrl;
             }, 250);
