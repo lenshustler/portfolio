@@ -250,7 +250,7 @@ header {
     width: 100%; 
     height: 100%; 
     object-fit: cover; 
-    cursor: pointer; 
+    cursor: zoom-in; /* ZMIENIONE: Lupa przy najechaniu na miniaturkę */
     transition: transform 0.3s ease; 
     backface-visibility: hidden; 
     -webkit-backface-visibility: hidden; 
@@ -370,7 +370,7 @@ footer {
     max-height: 95vh; 
     object-fit: contain;
     transition: transform 0.3s ease, opacity 0.06s ease-in-out;
-    cursor: default; 
+    cursor: e-resize; /* ZMIENIONE: Kursor strzałki w prawo dla zdjęcia w lightboxie */
     touch-action: none; 
     will-change: transform, opacity; 
     opacity: 1;
