@@ -699,10 +699,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return val.startsWith(term);
             });
 
-            if (matches.length > 0 && suggestionsContainer) {
+           if (matches.length > 0 && suggestionsContainer) {
                 suggestionsContainer.innerHTML = matches.map(cat => {
                     const text = cat[currentLang] || cat.pl;
-                    return `<div class="suggestion-item" style="padding: 8px 12px; cursor: pointer; background: var(--bg-color, #fff); border-bottom: 1px solid rgba(0,0,0,0.05);">${text}</div>`;
+                    return `<div class="suggestion-item" style="padding: 8px 12px; cursor: pointer; background: var(--bg-color, #fff); color: var(--text-color, #000); border-bottom: 1px solid rgba(0,0,0,0.05); transition: background-color 0.2s, color 0.2s;" onmouseenter="this.style.backgroundColor='#000'; this.style.color='#fff';" onmouseleave="this.style.backgroundColor='var(--bg-color, #fff)'; this.style.color='var(--text-color, #000)';">${text}</div>`;
                 }).join('');
                 suggestionsContainer.style.display = 'block';
             } else if (suggestionsContainer) {
