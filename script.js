@@ -29,13 +29,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentX = 0, currentY = 0;
 
     // --- WYBRANE KATEGORIE DO PODPOWIEDZI I PRZYCISKU LOSOWO (TUTAJ JE EDYTUJESZ) ---
-    const activeCategories = [
+const activeCategories = [
+        // Główne style i motywy
         { pl: 'street',             en: 'street' },
         { pl: 'portret',            en: 'portrait' },
         { pl: 'abstrakcja',         en: 'abstract' },
         { pl: 'monochrom',          en: 'monochrome' },
+        { pl: 'czarno-białe',       en: 'black & white' },
         { pl: 'podwójna ekspozycja', en: 'double exposure' },
-        { pl: 'krajobraz',          en: 'landscape' }
+        { pl: 'krajobraz',          en: 'landscape' },
+        { pl: 'gdynia',             en: 'gdynia' },
+        { pl: 'kwiaty',             en: 'flowers' },
+        { pl: 'dzika przyroda',      en: 'wildlife' },
+        { pl: 'plaża',              en: 'beach' },
+        { pl: 'zima',               en: 'winter' },
+        // Kraje z tagów
+        { pl: 'polska',             en: 'poland' },
+        { pl: 'albania',            en: 'albania' },
+        { pl: 'austria',            en: 'austria' },
+        { pl: 'bałkany',            en: 'balkans' },
+        { pl: 'bośnia',             en: 'bosnia' },
+        { pl: 'bułgaria',           en: 'bulgaria' },
+        { pl: 'chorwacja',          en: 'croatia' },
+        { pl: 'cypr',               en: 'cyprus' },
+        { pl: 'czechy',             en: 'czechia' },
+        { pl: 'estonia',            en: 'estonia' },
+        { pl: 'niemcy',             en: 'germany' },
+        { pl: 'hiszpania',          en: 'spain' },
+        { pl: 'holandia',           en: 'netherlands' },
+        { pl: 'węgry',              en: 'hungary' },
+        { pl: 'włochy',             en: 'italy' },
+        { pl: 'łotwa',              en: 'latvia' },
+        { pl: 'liechtenstein',      en: 'liechtenstein' },
+        { pl: 'litwa',              en: 'lithuania' },
+        { pl: 'czarnogóra',         en: 'montenegro' },
+        { pl: 'rumunia',            en: 'romania' },
+        { pl: 'serbia',             en: 'serbia' },
+        { pl: 'słowacja',           en: 'slovakia' }
     ];
 
     // --- SŁOWA DO ANIMACJI TYPEWRITER ---
