@@ -650,17 +650,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.key === "ArrowLeft" && prevBtn) prevBtn.click();
     });
 
-    // --- WYSZUKIWARKA Z LISTĄ PODPOWIEDZI (DROPDOWN) ORAZ LOSOWANIE ---
+ // --- WYSZUKIWARKA Z LISTĄ PODPOWIEDZI (DROPDOWN) ORAZ LOSOWANIE ---
     let suggestionsContainer = document.querySelector('.search-suggestions');
     if (!suggestionsContainer && searchInput) {
+        // Tworzymy dedykowany kontener wokół samego inputa, aby podpowiedzi zawsze były idealnie pod nim
+        const inputWrapper = document.createElement('div');
+        inputWrapper.style.position = 'relative';
+        inputWrapper.style.width = '100%';
+        
+        searchInput.parentNode.insertBefore(inputWrapper, searchInput);
+        inputWrapper.appendChild(searchInput);
+
         suggestionsContainer = document.createElement('div');
         suggestionsContainer.className = 'search-suggestions';
         suggestionsContainer.style.position = 'absolute';
         suggestionsContainer.style.zIndex = '1000';
-        if (searchInput.parentElement) {
-            searchInput.parentElement.style.position = 'relative';
-            searchInput.parentElement.appendChild(suggestionsContainer);
-        }
+        suggestionsContainer.style.top = '100%';
+        suggestionsContainer.style.left = '0';
+        suggestionsContainer.style.width = '100%';
+        inputWrapper.appendChild(suggestionsContainer);
     }
 
     if (randomBtn) {
