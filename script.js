@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
 
-    // --- WYBRANE KATEGORIE DO AUTOUZUPEŁNIANIA I PRZYCISKU LOSOWO ---
+    // --- WYBRANE KATEGORIE DO PODPOWIEDZI I PRZYCISKU LOSOWO ---
     const activeCategories = [
         { pl: 'street',             en: 'street' },
         { pl: 'portret',            en: 'portrait' },
@@ -650,7 +650,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.key === "ArrowLeft" && prevBtn) prevBtn.click();
     });
 
-    // --- WYSZUKIWARKA Z AUTO-UZUPEŁNIANIEM (INLINE AUTOCOMPLETE) ORAZ LOSOWANIE ---
+    // --- WYSZUKIWARKA Z LISTĄ PODPOWIEDZI (DROPDOWN) ORAZ LOSOWANIE ---
+    let suggestionsContainer = document.querySelector('.search-suggestions');
+    if (!suggestionsContainer && searchInput) {
+        suggestionsContainer = document.createElement('div');
+        suggestionsContainer.className = 'search-suggestions';
+        suggestionsContainer.style.position = 'absolute';
+        suggestionsContainer.style.zIndex = '1000';
+        if (searchInput.parentElement) {
+            searchInput.parentElement.style.position = 'relative';
+            searchInput.parentElement.appendChild(suggestionsContainer);
+        }
+    }
+
     if (randomBtn) {
         randomBtn.addEventListener('click', () => {
             if (activeCategories.length > 0) {
@@ -658,6 +670,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const displayVal = randomCatObj[currentLang] || randomCatObj.pl;
                 if (searchInput) {
                     searchInput.value = displayVal;
+                    if (suggestionsContainer) {
+                        suggestionsContainer.innerHTML = '';
+                        suggestionsContainer.style.display = 'none';
+                    }
                     performSearch();
                 }
             }
@@ -665,33 +681,75 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
-                performSearch();
+        searchInput.addEventListener('input', () => {
+            const term = searchInput.value.toLowerCase().trim();
+            
+            if (term === '') {
+                if (suggestionsContainer) {
+                    suggestionsContainer.innerHTML = '';
+                    suggestionsContainer.style.display = 'none';
+                }
                 return;
             }
 
-            const startPos = searchInput.selectionStart;
-            const val = searchInput.value;
-            if (val && startPos === val.length) {
-                const term = val.toLowerCase();
-                const match = activeCategories
-                    .map(cat => cat[currentLang] || cat.pl)
-                    .find(name => name.toLowerCase().startsWith(term));
+            const matches = activeCategories.filter(cat => {
+                const val = (cat[currentLang] || cat.pl).toLowerCase();
+                return val.includes(term);
+            });
 
-                if (match && match.toLowerCase() !== term) {
-                    searchInput.value = match;
-                    searchInput.setSelectionRange(term.length, match.length);
-                }
+            if (matches.length > 0 && suggestionsContainer) {
+                suggestionsContainer.innerHTML = matches.map(cat => {
+                    const text = cat[currentLang] || cat.pl;
+                    return `<div class="suggestion-item" style="padding: 8px 12px; cursor: pointer; background: var(--bg-color, #fff); border-bottom: 1px solid rgba(0,0,0,0.05);">${text}</div>`;
+                }).join('');
+                suggestionsContainer.style.display = 'block';
+            } else if (suggestionsContainer) {
+                suggestionsContainer.innerHTML = '';
+                suggestionsContainer.style.display = 'none';
             }
-            performSearch();
+            // UWAGA: Brak performSearch() podczas samego pisania – zdjęcia nie filtrują się automatycznie.
         });
 
-        if (searchBtn) searchBtn.addEventListener('click', performSearch);
-        searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
+        if (suggestionsContainer) {
+            suggestionsContainer.addEventListener('click', (e) => {
+                const item = e.target.closest('.suggestion-item');
+                if (item) {
+                    searchInput.value = item.innerText;
+                    suggestionsContainer.innerHTML = '';
+                    suggestionsContainer.style.display = 'none';
+                    performSearch(); // Filtrowanie dopiero po wyborze z listy
+                }
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (searchInput && suggestionsContainer && !searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                suggestionsContainer.style.display = 'none';
+            }
+        });
+
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                if (suggestionsContainer) {
+                    suggestionsContainer.innerHTML = '';
+                    suggestionsContainer.style.display = 'none';
+                }
+                performSearch();
+            });
+        }
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                if (suggestionsContainer) {
+                    suggestionsContainer.innerHTML = '';
+                    suggestionsContainer.style.display = 'none';
+                }
+                performSearch();
+            }
+        });
     }
 
-    // --- TYPEWRITER I DODATKI ---
+    // --- TYPEWRITER ---
     if (searchInput) {
         startTypewriter(); 
         searchInput.addEventListener('focus', () => {
@@ -699,7 +757,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             searchInput.placeholder = '';
         });
         searchInput.addEventListener('blur', () => {
-            if (searchInput.value.trim() === '') {
+            if (searchInput.value.trim() === '' && searchInput.placeholder === '') {
                 startTypewriter();
             }
         });
