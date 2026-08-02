@@ -694,7 +694,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const matches = activeCategories.filter(cat => {
                 const val = (cat[currentLang] || cat.pl).toLowerCase();
-                return val.includes(term);
+                // Używamy startsWith, aby szukać tylko od początku słowa
+                return val.startsWith(term);
             });
 
             if (matches.length > 0 && suggestionsContainer) {
