@@ -99,7 +99,7 @@ header {
 }
 
 .ig-icon a:hover svg { 
-    stroke: url(#ig-gradient); /* Aktywacja gradientu po najechaniu */
+    stroke: url(#ig-gradient); 
 }
 
 /* --- Przełącznik języka (PL / EN) --- */
@@ -128,7 +128,6 @@ header {
     color: #000000;
 }
 
-/* Aktywny język: tylko grubsza czcionka, bez podkreślenia */
 .lang-btn.active {
     color: #000000;
     font-weight: bold;
@@ -191,6 +190,7 @@ header {
     color: #ffffff; 
 }
 
+.search-suggestions,
 .suggestions-list {
     position: absolute; 
     top: 100%; 
@@ -205,15 +205,18 @@ header {
     left: 20px; 
 }
 
+.suggestion-item,
 .suggestions-list li { 
     padding: 12px 15px; 
     font-size: 0.7rem; 
+    font-family: 'Courier New', Courier, monospace;
     text-transform: uppercase; 
     cursor: pointer; 
     border-bottom: 1px solid #eee; 
     transition: background-color 0.2s, color 0.2s; 
 }
 
+.suggestion-item:hover,
 .suggestions-list li:hover { 
     background-color: #000000; 
     color: #ffffff; 
@@ -250,7 +253,7 @@ header {
     width: 100%; 
     height: 100%; 
     object-fit: cover; 
-    cursor: zoom-in; /* ZMIENIONE: Lupa przy najechaniu na miniaturkę */
+    cursor: zoom-in; 
     transition: transform 0.3s ease; 
     backface-visibility: hidden; 
     -webkit-backface-visibility: hidden; 
@@ -370,7 +373,7 @@ footer {
     max-height: 95vh; 
     object-fit: contain;
     transition: transform 0.3s ease, opacity 0.06s ease-in-out;
-    cursor: e-resize; /* ZMIENIONE: Kursor strzałki w prawo dla zdjęcia w lightboxie */
+    cursor: default; 
     touch-action: none; 
     will-change: transform, opacity; 
     opacity: 1;
@@ -657,6 +660,7 @@ footer {
         text-align: center; 
     }
 
+    .search-suggestions,
     .suggestions-list { 
         left: 0; 
         max-width: 100%; 
