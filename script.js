@@ -71,10 +71,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     let charIdx = 0;
     let isDeleting = false;
     
-   const typewriterPhrases = {
-    pl: ['szukaj...', 'street', 'portret', 'abstrakcja', 'monochrom', 'podwójna ekspozycja', 'krajobraz', 'gdynia', 'polska'],
-    en: ['search...', 'street', 'portrait', 'abstract', 'monochrome', 'double exposure', 'landscape', 'gdynia', 'poland']
-};
+    const typewriterPhrases = {
+        pl: ['szukaj...', 'street', 'portret', 'abstrakcja', 'monochrom', 'podwójna ekspozycja', 'krajobraz', 'gdynia', 'polska'],
+        en: ['search...', 'street', 'portrait', 'abstract', 'monochrome', 'double exposure', 'landscape', 'gdynia', 'poland']
+    };
 
     function startTypewriter() {
         if (!searchInput) return;
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const tagDictionary = {
-        'abstrakcja':        { pl: 'abstrakcja',         en: 'abstract' },
+        'abstrakcja':         { pl: 'abstrakcja',         en: 'abstract' },
         'abstract':          { pl: 'abstrakcja',         en: 'abstract' },
         'street':            { pl: 'street',             en: 'street' },
         'portret':           { pl: 'portret',            en: 'portrait' },
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'czarnogora':        { pl: 'czarnogóra',          en: 'montenegro' },
         'czarnogóra':        { pl: 'czarnogóra',          en: 'montenegro' },
         'romania':           { pl: 'rumunia',             en: 'romania' },
-        'rumunia':           { pl: 'rumunia',             en: 'rumania' },
+        'rumunia':           { pl: 'rumunia',             en: 'romania' },
         'serbia':            { pl: 'serbia',              en: 'serbia' },
         'slowacja':          { pl: 'słowacja',            en: 'slovakia' },
         'słowacja':          { pl: 'słowacja',            en: 'slovakia' },
