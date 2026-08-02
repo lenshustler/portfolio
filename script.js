@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.querySelector('.search-btn');
     const randomBtn = document.getElementById('random-btn');
+    const suggestionsBox = document.querySelector('.suggestions-list');
     
     const langPlBtn = document.getElementById('lang-pl');
     const langEnBtn = document.getElementById('lang-en');
@@ -27,16 +28,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
 
-    // --- SŁOWA DO ANIMACJE TYPEWRITER (TUTAJ MOŻESZ JE EDYTOWAĆ) ---
+    // --- WYBRANE KATEGORIE DO PODPOWIEDZI I PRZYCISKU LOSOWO (TUTAJ JE EDYTUJESZ) ---
+    const activeCategories = [
+        { pl: 'street',             en: 'street' },
+        { pl: 'portret',            en: 'portrait' },
+        { pl: 'abstrakcja',         en: 'abstract' },
+        { pl: 'monochrom',          en: 'monochrome' },
+        { pl: 'podwójna ekspozycja', en: 'double exposure' },
+        { pl: 'krajobraz',          en: 'landscape' }
+    ];
+
+    // --- SŁOWA DO ANIMACJI TYPEWRITER ---
     let typewriterTimer;
     let typeIdx = 0;
     let charIdx = 0;
     let isDeleting = false;
     
-const typewriterPhrases = {
-    pl: ['szukaj...', 'street', 'portret', 'abstrakcja', 'monochrom', 'podwójna ekspozycja', 'krajobraz'],
-    en: ['search...', 'street', 'portrait', 'abstract', 'monochrome', 'double exposure', 'landscape']
-};
+    const typewriterPhrases = {
+        pl: ['szukaj...', 'street', 'portret', 'abstrakcja', 'monochrom', 'podwójna ekspozycja', 'krajobraz'],
+        en: ['search...', 'street', 'portrait', 'abstract', 'monochrome', 'double exposure', 'landscape']
+    };
 
     function startTypewriter() {
         if (!searchInput) return;
@@ -168,7 +179,7 @@ const typewriterPhrases = {
         'gdynia':            { pl: 'gdynia',              en: 'gdynia' },
         'poznan':            { pl: 'poznań',              en: 'poznan' },
         'poznań':            { pl: 'poznań',              en: 'poznan' },
-        'prague':            { pl: 'praga',               en: 'prague' },
+        'prague':            { pl: 'praga',               en: 'praga' },
         'praga':             { pl: 'praga',               en: 'praga' },
         'rome':              { pl: 'rzym',                en: 'rome' },
         'rzym':              { pl: 'rzym',                en: 'rome' },
@@ -268,6 +279,7 @@ const typewriterPhrases = {
             });
             card.classList.toggle('hidden', !isMatch);
         });
+        if (suggestionsBox) suggestionsBox.style.display = "none";
     };
 
     // --- LOGIKA JĘZYKOWA (PL / EN) ---
@@ -616,33 +628,65 @@ const typewriterPhrases = {
         if (e.key === "ArrowLeft" && prevBtn) prevBtn.click();
     });
 
-    // --- 4. WYSZUKIWARKA I PRZYCISK LOSUJ ---
+    // --- 4. WYSZUKIWARKA, PODPOWIEDZI Z WYBRANEJ LISTY ORAZ LOSOWANIE ---
     if (randomBtn) {
         randomBtn.addEventListener('click', () => {
-            const cards = document.querySelectorAll('.photo-card');
-            const allTags = new Set();
-            cards.forEach(card => {
-                const cats = (card.getAttribute('data-category') || "").trim();
-                if (cats) {
-                    cats.split(/\s+/).forEach(tag => {
-                        if (tag.toLowerCase() !== 'generator') allTags.add(tag);
-                    });
-                }
-            });
-            const tagsArray = Array.from(allTags);
-            if (tagsArray.length > 0) {
-                const randomRawTag = tagsArray[Math.floor(Math.random() * tagsArray.length)];
+            if (activeCategories.length > 0) {
+                const randomCatObj = activeCategories[Math.floor(Math.random() * activeCategories.length)];
+                const displayVal = randomCatObj[currentLang] || randomCatObj.pl;
                 if (searchInput) {
-                    searchInput.value = getDisplayTag(randomRawTag, currentLang);
+                    searchInput.value = displayVal;
                     performSearch();
                 }
             }
         });
     }
 
-    if (searchInput) {
+    if (searchInput && suggestionsBox) {
+        const showFilteredSuggestions = (term) => {
+            const matches = activeCategories
+                .map(cat => cat[currentLang] || cat.pl)
+                .filter(name => name.toLowerCase().startsWith(term));
+
+            suggestionsBox.innerHTML = matches.map(m => `<li>${m}</li>`).join('');
+            suggestionsBox.style.display = matches.length > 0 ? "block" : "none";
+        };
+
+        searchInput.addEventListener('click', () => {
+            if (searchInput.value.trim() === "") {
+                const allNames = activeCategories.map(cat => cat[currentLang] || cat.pl);
+                suggestionsBox.innerHTML = allNames.map(m => `<li>${m}</li>`).join('');
+                suggestionsBox.style.display = "block";
+            }
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+            if (term === "") {
+                const allNames = activeCategories.map(cat => cat[currentLang] || cat.pl);
+                suggestionsBox.innerHTML = allNames.map(m => `<li>${m}</li>`).join('');
+                suggestionsBox.style.display = "block";
+            } else {
+                showFilteredSuggestions(term);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target !== searchInput && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.style.display = "none";
+            }
+        });
+
         if (searchBtn) searchBtn.addEventListener('click', performSearch);
         searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') performSearch(); });
+        
+        suggestionsBox.addEventListener('click', (e) => {
+            if (e.target.tagName === 'LI') {
+                searchInput.value = e.target.textContent;
+                performSearch();
+                suggestionsBox.style.display = "none";
+            }
+        });
     }
 
     // --- 5. TYPEWRITER I DODATKI ---
