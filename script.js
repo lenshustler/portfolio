@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    function updateLanguage(lang) {
+  function updateLanguage(lang) {
         currentLang = lang;
         localStorage.setItem('site_lang', lang);
         localStorage.setItem('preferred_lang', lang);
@@ -354,7 +354,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const seoDescEl = document.getElementById('seo-desc');
         if (seoDescEl) seoDescEl.setAttribute('content', t.seoDesc);
 
-        if (searchInput) searchInput.placeholder = t.searchPlaceholder;
+        // Usunięte na rzecz animacji typewriter w wyszukiwarce
+        // if (searchInput) searchInput.placeholder = t.searchPlaceholder;
+
         const searchBtnEl = document.getElementById('search-btn');
         if (searchBtnEl) searchBtnEl.innerText = t.searchBtn;
         const randomBtnEl = document.getElementById('random-btn');
@@ -421,6 +423,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else if (suggestionsBox && suggestionsBox.style.display === "block") {
                 suggestionsBox.innerHTML = getDefaultTags().map(t => `<li>${t}</li>`).join('');
             }
+        }
+
+        // Reset i ponowny start animacji typewriter przy zmianie języka
+        typeIdx = 0;
+        charIdx = 0;
+        isDeleting = false;
+        if (searchInput && document.activeElement !== searchInput) {
+            startTypewriter();
         }
     }
 
@@ -600,11 +610,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                         resetZoom();
                     }
                 }
-            } else {
+                    } else {
                 clickTimer = setTimeout(() => {
                     clickTimer = null;
-                    if (!lightboxImg.classList.contains('zoomed') && closeBtn) {
-                        closeBtn.onclick();
+                    // Jeśli obraz nie jest powiększony, kliknięcie przechodzi do następnego zdjęcia
+                    if (!lightboxImg.classList.contains('zoomed') && nextBtn) {
+                        nextBtn.click();
                     }
                 }, 250);
             }
@@ -760,6 +771,63 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // --- 5. DODATKI ---
+    // --- EFEKT TYPEWRITER W WYSZUKIWARCE ---
+    let typewriterTimer;
+    let typeIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    
+    // Hasła do animacji dostosowane do Twoich tagów
+    const typewriterPhrases = {
+        pl: ['szukaj...', 'street...', 'portret...', 'abstrakcja...', 'monochrom...'],
+        en: ['search...', 'street...', 'portrait...', 'abstract...', 'monochrome...']
+    };
+
+    function startTypewriter() {
+        if (!searchInput) return;
+        clearTimeout(typewriterTimer);
+        
+        const phrases = typewriterPhrases[currentLang] || typewriterPhrases.pl;
+        const currentPhrase = phrases[typeIdx];
+        
+        if (isDeleting) {
+            searchInput.placeholder = currentPhrase.substring(0, charIdx - 1);
+            charIdx--;
+        } else {
+            searchInput.placeholder = currentPhrase.substring(0, charIdx + 1);
+            charIdx++;
+        }
+
+        let speed = isDeleting ? 50 : 120;
+
+        if (!isDeleting && charIdx === currentPhrase.length) {
+            speed = 2000; // Dłuższa pauza po wpisaniu całego słowa
+            isDeleting = true;
+        } else if (isDeleting && charIdx === 0) {
+            isDeleting = false;
+            typeIdx = (typeIdx + 1) % phrases.length;
+            speed = 500; // Krótka pauza przed rozpoczęciem nowego słowa
+        }
+
+        typewriterTimer = setTimeout(startTypewriter, speed);
+    }
+
+    if (searchInput) {
+        startTypewriter(); // Start animacji
+        
+        // Zatrzymujemy animację, gdy użytkownik kliknie w pole (chce coś wpisać)
+        searchInput.addEventListener('focus', () => {
+            clearTimeout(typewriterTimer);
+            searchInput.placeholder = '';
+        });
+        
+        // Wznawiamy, jeśli po wyjściu z pola nic nie wpisano
+        searchInput.addEventListener('blur', () => {
+            if (searchInput.value.trim() === '') {
+                startTypewriter();
+            }
+        });
+    }
     const btt = document.getElementById('back-to-top');
     window.addEventListener('scroll', () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; });
     if (btt) btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
