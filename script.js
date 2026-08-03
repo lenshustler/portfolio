@@ -653,7 +653,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 // --- WYSZUKIWARKA Z LISTĄ PODPOWIEDZI (DROPDOWN) ORAZ LOSOWANIE ---
 let suggestionsContainer = document.querySelector('.search-suggestions');
 if (!suggestionsContainer && searchInput) {
-    // Tworzymy dedykowany kontener wokół samego inputa, aby podpowiedzi zawsze były idealnie pod nim
     const inputWrapper = document.createElement('div');
     inputWrapper.style.position = 'relative';
     inputWrapper.style.width = '100%';
@@ -671,7 +670,17 @@ if (!suggestionsContainer && searchInput) {
     inputWrapper.appendChild(suggestionsContainer);
 }
 
-const randomBtn = document.getElementById('random-btn');
+// Bezpieczne pobranie lub automatyczne utworzenie przycisku Random
+let randomBtn = document.getElementById('random-btn');
+if (!randomBtn && searchBtn && searchBtn.parentNode) {
+    randomBtn = document.createElement('button');
+    randomBtn.id = 'random-btn';
+    randomBtn.type = 'button';
+    randomBtn.innerText = (typeof currentLang !== 'undefined' && currentLang === 'en') ? 'Random' : 'Losuj';
+    randomBtn.className = searchBtn.className;
+    searchBtn.parentNode.insertBefore(randomBtn, searchBtn.nextSibling);
+}
+
 if (randomBtn) {
     randomBtn.addEventListener('click', () => {
         if (typeof activeCategories !== 'undefined' && activeCategories.length > 0) {
@@ -695,7 +704,6 @@ if (searchInput) {
     searchInput.addEventListener('input', () => {
         const term = searchInput.value.toLowerCase().trim();
         
-        // Sprawdzamy, czy wpisano mniej niż 2 znaki
         if (term.length < 2) {
             if (suggestionsContainer) {
                 suggestionsContainer.innerHTML = '';
@@ -706,7 +714,6 @@ if (searchInput) {
 
         const matches = activeCategories.filter(cat => {
             const val = (cat[currentLang] || cat.pl).toLowerCase();
-            // Używamy startsWith, aby szukać tylko od początku słowa
             return val.startsWith(term);
         });
 
@@ -720,7 +727,6 @@ if (searchInput) {
             suggestionsContainer.innerHTML = '';
             suggestionsContainer.style.display = 'none';
         }
-        // UWAGA: Brak performSearch() podczas samego pisania – zdjęcia nie filtrują się automatycznie.
     });
 
     if (suggestionsContainer) {
@@ -731,7 +737,7 @@ if (searchInput) {
                 suggestionsContainer.innerHTML = '';
                 suggestionsContainer.style.display = 'none';
                 if (typeof performSearch === 'function') {
-                    performSearch(); // Filtrowanie dopiero po wyborze z listy
+                    performSearch();
                 }
             }
         });
