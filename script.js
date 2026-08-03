@@ -650,7 +650,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.key === "ArrowLeft" && prevBtn) prevBtn.click();
     });
 
-// --- WYSZUKIWARKA Z LISTĄ PODPOWIEDZI (DROPDOWN) ORAZ LOSOWANIE ---
+// --- WYSZUKIWARKA Z LISTą PODPOWIEDZI (DROPDOWN) ORAZ LOSOWANIE ---
 let suggestionsContainer = document.querySelector('.search-suggestions');
 if (!suggestionsContainer && searchInput) {
     const inputWrapper = document.createElement('div');
@@ -683,9 +683,10 @@ if (!randomBtn && searchBtn && searchBtn.parentNode) {
 
 if (randomBtn) {
     randomBtn.addEventListener('click', () => {
-        if (typeof activeCategories !== 'undefined' && activeCategories.length > 0) {
+        if (typeof activeCategories !== 'undefined' && Array.isArray(activeCategories) && activeCategories.length > 0) {
             const randomCatObj = activeCategories[Math.floor(Math.random() * activeCategories.length)];
-            const displayVal = randomCatObj[currentLang] || randomCatObj.pl;
+            const langKey = (typeof currentLang !== 'undefined') ? currentLang : 'pl';
+            const displayVal = randomCatObj[langKey] || randomCatObj.pl;
             if (searchInput) {
                 searchInput.value = displayVal;
                 if (suggestionsContainer) {
@@ -704,7 +705,7 @@ if (searchInput) {
     searchInput.addEventListener('input', () => {
         const term = searchInput.value.toLowerCase().trim();
         
-        if (term.length < 2) {
+        if (term.length < 2 || typeof activeCategories === 'undefined' || !Array.isArray(activeCategories)) {
             if (suggestionsContainer) {
                 suggestionsContainer.innerHTML = '';
                 suggestionsContainer.style.display = 'none';
@@ -713,13 +714,15 @@ if (searchInput) {
         }
 
         const matches = activeCategories.filter(cat => {
-            const val = (cat[currentLang] || cat.pl).toLowerCase();
-            return val.startsWith(term);
+            const langKey = (typeof currentLang !== 'undefined') ? currentLang : 'pl';
+            const val = (cat[langKey] || cat.pl).toLowerCase();
+            return val.includes(term); // Użycie includes dla elastycznego dopasowania
         });
 
         if (matches.length > 0 && suggestionsContainer) {
             suggestionsContainer.innerHTML = matches.map(cat => {
-                const text = cat[currentLang] || cat.pl;
+                const langKey = (typeof currentLang !== 'undefined') ? currentLang : 'pl';
+                const text = cat[langKey] || cat.pl;
                 return `<div class="suggestion-item" style="padding: 8px 12px; cursor: pointer; background: var(--bg-color, #fff); color: var(--text-color, #000); border-bottom: 1px solid rgba(0,0,0,0.05); transition: background-color 0.2s, color 0.2s;" onmouseenter="this.style.backgroundColor='#000'; this.style.color='#fff';" onmouseleave="this.style.backgroundColor='var(--bg-color, #fff)'; this.style.color='var(--text-color, #000)';">${text}</div>`;
             }).join('');
             suggestionsContainer.style.display = 'block';
@@ -814,22 +817,18 @@ if (counterEl) {
 document.addEventListener('DOMContentLoaded', () => {
     const logoLinks = document.querySelectorAll('.logo-link, .site-logo');
     
-    // Wstępnie ładujemy plik audio raz na starcie
     const shutterSound = new Audio('images/shutter.mp3');
     shutterSound.volume = 0.4;
     shutterSound.preload = 'auto';
 
     logoLinks.forEach(logo => {
         logo.style.cursor = 'pointer';
-        // Dodajemy płynne przejście dla animacji
         logo.style.transition = 'transform 0.3s ease';
 
-        // Lekkie powiększenie po najechaniu myszką
         logo.addEventListener('mouseenter', () => {
             logo.style.transform = 'scale(1.05)';
         });
 
-        // Powrót do normalnego rozmiaru po zjechaniu myszką
         logo.addEventListener('mouseleave', () => {
             logo.style.transform = 'scale(1)';
         });
