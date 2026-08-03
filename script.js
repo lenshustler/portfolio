@@ -653,7 +653,6 @@ document.addEventListener('DOMContentLoaded', async () => {
  // --- WYSZUKIWARKA Z LISTĄ PODPOWIEDZI (DROPDOWN) ORAZ LOSOWANIE ---
     let suggestionsContainer = document.querySelector('.search-suggestions');
     if (!suggestionsContainer && searchInput) {
-        // Tworzymy dedykowany kontener wokół samego inputa, aby podpowiedzi zawsze były idealnie pod nim
         const inputWrapper = document.createElement('div');
         inputWrapper.style.position = 'relative';
         inputWrapper.style.width = '100%';
@@ -692,7 +691,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         searchInput.addEventListener('input', () => {
             const term = searchInput.value.toLowerCase().trim();
             
-            // Sprawdzamy, czy wpisano mniej niż 2 znaki
             if (term.length < 2) {
                 if (suggestionsContainer) {
                     suggestionsContainer.innerHTML = '';
@@ -703,7 +701,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const matches = activeCategories.filter(cat => {
                 const val = (cat[currentLang] || cat.pl).toLowerCase();
-                // Używamy startsWith, aby szukać tylko od początku słowa
                 return val.startsWith(term);
             });
 
@@ -717,7 +714,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 suggestionsContainer.innerHTML = '';
                 suggestionsContainer.style.display = 'none';
             }
-            // UWAGA: Brak performSearch() podczas samego pisania – zdjęcia nie filtrują się automatycznie.
         });
 
         if (suggestionsContainer) {
@@ -727,7 +723,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     searchInput.value = item.innerText;
                     suggestionsContainer.innerHTML = '';
                     suggestionsContainer.style.display = 'none';
-                    performSearch(); // Filtrowanie dopiero po wyborze z listy
+                    performSearch(); 
                 }
             });
         }
@@ -790,22 +786,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 document.addEventListener('DOMContentLoaded', () => {
     const logoLinks = document.querySelectorAll('.logo-link, .site-logo');
     
-    // Wstępnie ładujemy plik audio raz na starcie
     const shutterSound = new Audio('images/shutter.mp3');
     shutterSound.volume = 0.4;
     shutterSound.preload = 'auto';
 
     logoLinks.forEach(logo => {
         logo.style.cursor = 'pointer';
-        // Dodajemy płynne przejście dla animacji
         logo.style.transition = 'transform 0.3s ease';
 
-        // Lekkie powiększenie po najechaniu myszką
         logo.addEventListener('mouseenter', () => {
             logo.style.transform = 'scale(1.05)';
         });
 
-        // Powrót do normalnego rozmiaru po zjechaniu myszką
         logo.addEventListener('mouseleave', () => {
             logo.style.transform = 'scale(1)';
         });
