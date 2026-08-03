@@ -789,29 +789,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Obsługa dźwięku migawki dla logo
 document.addEventListener('DOMContentLoaded', () => {
     const logoLinks = document.querySelectorAll('.logo-link, .site-logo');
-    
-    // Wstępnie ładujemy plik audio raz na starcie (dzięki temu działa za pierwszym razem)
-    const shutterSound = new Audio('images/shutter.mp3');
-    shutterSound.volume = 0.4;
-    shutterSound.preload = 'auto';
-
     logoLinks.forEach(logo => {
         logo.style.cursor = 'pointer';
         logo.addEventListener('click', (e) => {
             e.preventDefault(); 
             const targetUrl = logo.tagName === 'A' ? logo.href : (logo.closest('a') ? logo.closest('a').href : 'index.html');
-            
-            // Zerujemy czas, żeby dźwięk zagrał od początku
-            shutterSound.currentTime = 0;
-            
-            shutterSound.play().catch(error => { 
-                console.log("Odtwarzanie dźwięku zablokowane:", error); 
-            });
-            
-            // 300ms opóźnienia, żeby dźwięk migawki zdążył wybrzmieć przed przejściem do strony
-            setTimeout(() => { 
-                window.location.href = targetUrl; 
-            }, 300);
+            const shutterSound = new Audio('images/shutter.mp3');
+            shutterSound.volume = 0.4;
+            shutterSound.play().catch(error => { console.log("Odtwarzanie dźwięku zablokowane:", error); });
+            setTimeout(() => { window.location.href = targetUrl; }, 250);
         });
     });
 });
