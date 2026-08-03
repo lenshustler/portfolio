@@ -651,109 +651,114 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
  // --- WYSZUKIWARKA Z LISTĄ PODPOWIEDZI (DROPDOWN) ORAZ LOSOWANIE ---
-    let suggestionsContainer = document.querySelector('.search-suggestions');
-    if (!suggestionsContainer && searchInput) {
-        const inputWrapper = document.createElement('div');
-        inputWrapper.style.position = 'relative';
-        inputWrapper.style.width = '100%';
-        
-        searchInput.parentNode.insertBefore(inputWrapper, searchInput);
-        inputWrapper.appendChild(searchInput);
+let suggestionsContainer = document.querySelector('.search-suggestions');
+if (!suggestionsContainer && searchInput) {
+    const inputWrapper = document.createElement('div');
+    inputWrapper.className = 'search-input-wrapper';
+    inputWrapper.style.position = 'relative';
+    inputWrapper.style.display = 'inline-flex';
+    inputWrapper.style.flex = '1';
+    
+    searchInput.parentNode.insertBefore(inputWrapper, searchInput);
+    inputWrapper.appendChild(searchInput);
 
-        suggestionsContainer = document.createElement('div');
-        suggestionsContainer.className = 'search-suggestions';
-        suggestionsContainer.style.position = 'absolute';
-        suggestionsContainer.style.zIndex = '1000';
-        suggestionsContainer.style.top = '100%';
-        suggestionsContainer.style.left = '0';
-        suggestionsContainer.style.width = '100%';
-        inputWrapper.appendChild(suggestionsContainer);
-    }
+    // Sam input rozciąga się na 100% szerokości wrappera
+    searchInput.style.width = '100%';
 
-    if (randomBtn) {
-        randomBtn.addEventListener('click', () => {
-            if (activeCategories.length > 0) {
-                const randomCatObj = activeCategories[Math.floor(Math.random() * activeCategories.length)];
-                const displayVal = randomCatObj[currentLang] || randomCatObj.pl;
-                if (searchInput) {
-                    searchInput.value = displayVal;
-                    if (suggestionsContainer) {
-                        suggestionsContainer.innerHTML = '';
-                        suggestionsContainer.style.display = 'none';
-                    }
-                    performSearch();
-                }
-            }
-        });
-    }
+    suggestionsContainer = document.createElement('div');
+    suggestionsContainer.className = 'search-suggestions';
+    suggestionsContainer.style.position = 'absolute';
+    suggestionsContainer.style.zIndex = '1000';
+    suggestionsContainer.style.top = '100%';
+    suggestionsContainer.style.left = '0';
+    suggestionsContainer.style.width = '100%';
+    inputWrapper.appendChild(suggestionsContainer);
+}
 
-  if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            const term = searchInput.value.toLowerCase().trim();
-            
-            if (term.length < 2) {
+if (randomBtn) {
+    randomBtn.addEventListener('click', () => {
+        if (activeCategories.length > 0) {
+            const randomCatObj = activeCategories[Math.floor(Math.random() * activeCategories.length)];
+            const displayVal = randomCatObj[currentLang] || randomCatObj.pl;
+            if (searchInput) {
+                searchInput.value = displayVal;
                 if (suggestionsContainer) {
                     suggestionsContainer.innerHTML = '';
                     suggestionsContainer.style.display = 'none';
                 }
-                return;
+                performSearch();
             }
+        }
+    });
+}
 
-            const matches = activeCategories.filter(cat => {
-                const val = (cat[currentLang] || cat.pl).toLowerCase();
-                return val.startsWith(term);
-            });
-
-           if (matches.length > 0 && suggestionsContainer) {
-                suggestionsContainer.innerHTML = matches.map(cat => {
-                    const text = cat[currentLang] || cat.pl;
-                    return `<div class="suggestion-item" style="padding: 8px 12px; cursor: pointer; background: var(--bg-color, #fff); color: var(--text-color, #000); border-bottom: 1px solid rgba(0,0,0,0.05); transition: background-color 0.2s, color 0.2s;" onmouseenter="this.style.backgroundColor='#000'; this.style.color='#fff';" onmouseleave="this.style.backgroundColor='var(--bg-color, #fff)'; this.style.color='var(--text-color, #000)';">${text}</div>`;
-                }).join('');
-                suggestionsContainer.style.display = 'block';
-            } else if (suggestionsContainer) {
+if (searchInput) {
+    searchInput.addEventListener('input', () => {
+        const term = searchInput.value.toLowerCase().trim();
+        
+        if (term.length < 2) {
+            if (suggestionsContainer) {
                 suggestionsContainer.innerHTML = '';
                 suggestionsContainer.style.display = 'none';
             }
-        });
-
-        if (suggestionsContainer) {
-            suggestionsContainer.addEventListener('click', (e) => {
-                const item = e.target.closest('.suggestion-item');
-                if (item) {
-                    searchInput.value = item.innerText;
-                    suggestionsContainer.innerHTML = '';
-                    suggestionsContainer.style.display = 'none';
-                    performSearch(); 
-                }
-            });
+            return;
         }
 
-        document.addEventListener('click', (e) => {
-            if (searchInput && suggestionsContainer && !searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+        const matches = activeCategories.filter(cat => {
+            const val = (cat[currentLang] || cat.pl).toLowerCase();
+            return val.startsWith(term);
+        });
+
+        if (matches.length > 0 && suggestionsContainer) {
+            suggestionsContainer.innerHTML = matches.map(cat => {
+                const text = cat[currentLang] || cat.pl;
+                return `<div class="suggestion-item" style="padding: 8px 12px; cursor: pointer; background: var(--bg-color, #fff); color: var(--text-color, #000); border-bottom: 1px solid rgba(0,0,0,0.05); transition: background-color 0.2s, color 0.2s;" onmouseenter="this.style.backgroundColor='#000'; this.style.color='#fff';" onmouseleave="this.style.backgroundColor='var(--bg-color, #fff)'; this.style.color='var(--text-color, #000)';">${text}</div>`;
+            }).join('');
+            suggestionsContainer.style.display = 'block';
+        } else if (suggestionsContainer) {
+            suggestionsContainer.innerHTML = '';
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+
+    if (suggestionsContainer) {
+        suggestionsContainer.addEventListener('click', (e) => {
+            const item = e.target.closest('.suggestion-item');
+            if (item) {
+                searchInput.value = item.innerText;
+                suggestionsContainer.innerHTML = '';
                 suggestionsContainer.style.display = 'none';
-            }
-        });
-
-        if (searchBtn) {
-            searchBtn.addEventListener('click', () => {
-                if (suggestionsContainer) {
-                    suggestionsContainer.innerHTML = '';
-                    suggestionsContainer.style.display = 'none';
-                }
-                performSearch();
-            });
-        }
-
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                if (suggestionsContainer) {
-                    suggestionsContainer.innerHTML = '';
-                    suggestionsContainer.style.display = 'none';
-                }
-                performSearch();
+                performSearch(); 
             }
         });
     }
+
+    document.addEventListener('click', (e) => {
+        if (searchInput && suggestionsContainer && !searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+
+    if (searchBtn) {
+        searchBtn.addEventListener('click', () => {
+            if (suggestionsContainer) {
+                suggestionsContainer.innerHTML = '';
+                suggestionsContainer.style.display = 'none';
+            }
+            performSearch();
+        });
+    }
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            if (suggestionsContainer) {
+                suggestionsContainer.innerHTML = '';
+                suggestionsContainer.style.display = 'none';
+            }
+            performSearch();
+        }
+    });
+}
 
     // --- TYPEWRITER ---
     if (searchInput) {
