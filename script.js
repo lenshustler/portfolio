@@ -786,18 +786,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Obsługa dźwięku migawki dla logo
+// Obsługa dźwięku migawki oraz efektu powiększenia dla logo
 document.addEventListener('DOMContentLoaded', () => {
     const logoLinks = document.querySelectorAll('.logo-link, .site-logo');
+    
+    // Wstępnie ładujemy plik audio raz na starcie
+    const shutterSound = new Audio('images/shutter.mp3');
+    shutterSound.volume = 0.4;
+    shutterSound.preload = 'auto';
+
     logoLinks.forEach(logo => {
         logo.style.cursor = 'pointer';
+        // Dodajemy płynne przejście dla animacji
+        logo.style.transition = 'transform 0.3s ease';
+
+        // Lekkie powiększenie po najechaniu myszką
+        logo.addEventListener('mouseenter', () => {
+            logo.style.transform = 'scale(1.05)';
+        });
+
+        // Powrót do normalnego rozmiaru po zjechaniu myszką
+        logo.addEventListener('mouseleave', () => {
+            logo.style.transform = 'scale(1)';
+        });
+
         logo.addEventListener('click', (e) => {
             e.preventDefault(); 
             const targetUrl = logo.tagName === 'A' ? logo.href : (logo.closest('a') ? logo.closest('a').href : 'index.html');
-            const shutterSound = new Audio('images/shutter.mp3');
-            shutterSound.volume = 0.4;
-            shutterSound.play().catch(error => { console.log("Odtwarzanie dźwięku zablokowane:", error); });
-            setTimeout(() => { window.location.href = targetUrl; }, 250);
+            
+            shutterSound.currentTime = 0;
+            shutterSound.play().catch(error => { 
+                console.log("Odtwarzanie dźwięku zablokowane:", error); 
+            });
+            
+            setTimeout(() => { 
+                window.location.href = targetUrl; 
+            }, 300);
         });
     });
 });
