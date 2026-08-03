@@ -650,141 +650,159 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.key === "ArrowLeft" && prevBtn) prevBtn.click();
     });
 
- // --- WYSZUKIWARKA Z LISTĄ PODPOWIEDZI (DROPDOWN) ORAZ LOSOWANIE ---
-    let suggestionsContainer = document.querySelector('.search-suggestions');
-    if (!suggestionsContainer && searchInput) {
-        // Tworzymy dedykowany kontener wokół samego inputa, aby podpowiedzi zawsze były idealnie pod nim
-        const inputWrapper = document.createElement('div');
-        inputWrapper.style.position = 'relative';
-        inputWrapper.style.width = '100%';
-        
-        searchInput.parentNode.insertBefore(inputWrapper, searchInput);
-        inputWrapper.appendChild(searchInput);
+// --- WYSZUKIWARKA Z LISTĄ PODPOWIEDZI (DROPDOWN) ORAZ LOSOWANIE ---
+let suggestionsContainer = document.querySelector('.search-suggestions');
+if (!suggestionsContainer && searchInput) {
+    // Tworzymy dedykowany kontener wokół samego inputa, aby podpowiedzi zawsze były idealnie pod nim
+    const inputWrapper = document.createElement('div');
+    inputWrapper.style.position = 'relative';
+    inputWrapper.style.width = '100%';
+    
+    searchInput.parentNode.insertBefore(inputWrapper, searchInput);
+    inputWrapper.appendChild(searchInput);
 
-        suggestionsContainer = document.createElement('div');
-        suggestionsContainer.className = 'search-suggestions';
-        suggestionsContainer.style.position = 'absolute';
-        suggestionsContainer.style.zIndex = '1000';
-        suggestionsContainer.style.top = '100%';
-        suggestionsContainer.style.left = '0';
-        suggestionsContainer.style.width = '100%';
-        inputWrapper.appendChild(suggestionsContainer);
-    }
+    suggestionsContainer = document.createElement('div');
+    suggestionsContainer.className = 'search-suggestions';
+    suggestionsContainer.style.position = 'absolute';
+    suggestionsContainer.style.zIndex = '1000';
+    suggestionsContainer.style.top = '100%';
+    suggestionsContainer.style.left = '0';
+    suggestionsContainer.style.width = '100%';
+    inputWrapper.appendChild(suggestionsContainer);
+}
 
-    if (randomBtn) {
-        randomBtn.addEventListener('click', () => {
-            if (activeCategories.length > 0) {
-                const randomCatObj = activeCategories[Math.floor(Math.random() * activeCategories.length)];
-                const displayVal = randomCatObj[currentLang] || randomCatObj.pl;
-                if (searchInput) {
-                    searchInput.value = displayVal;
-                    if (suggestionsContainer) {
-                        suggestionsContainer.innerHTML = '';
-                        suggestionsContainer.style.display = 'none';
-                    }
+const randomBtn = document.getElementById('random-btn');
+if (randomBtn) {
+    randomBtn.addEventListener('click', () => {
+        if (typeof activeCategories !== 'undefined' && activeCategories.length > 0) {
+            const randomCatObj = activeCategories[Math.floor(Math.random() * activeCategories.length)];
+            const displayVal = randomCatObj[currentLang] || randomCatObj.pl;
+            if (searchInput) {
+                searchInput.value = displayVal;
+                if (suggestionsContainer) {
+                    suggestionsContainer.innerHTML = '';
+                    suggestionsContainer.style.display = 'none';
+                }
+                if (typeof performSearch === 'function') {
                     performSearch();
                 }
             }
-        });
-    }
+        }
+    });
+}
 
-  if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            const term = searchInput.value.toLowerCase().trim();
-            
-            // Sprawdzamy, czy wpisano mniej niż 2 znaki
-            if (term.length < 2) {
-                if (suggestionsContainer) {
-                    suggestionsContainer.innerHTML = '';
-                    suggestionsContainer.style.display = 'none';
-                }
-                return;
-            }
-
-            const matches = activeCategories.filter(cat => {
-                const val = (cat[currentLang] || cat.pl).toLowerCase();
-                // Używamy startsWith, aby szukać tylko od początku słowa
-                return val.startsWith(term);
-            });
-
-           if (matches.length > 0 && suggestionsContainer) {
-                suggestionsContainer.innerHTML = matches.map(cat => {
-                    const text = cat[currentLang] || cat.pl;
-                    return `<div class="suggestion-item" style="padding: 8px 12px; cursor: pointer; background: var(--bg-color, #fff); color: var(--text-color, #000); border-bottom: 1px solid rgba(0,0,0,0.05); transition: background-color 0.2s, color 0.2s;" onmouseenter="this.style.backgroundColor='#000'; this.style.color='#fff';" onmouseleave="this.style.backgroundColor='var(--bg-color, #fff)'; this.style.color='var(--text-color, #000)';">${text}</div>`;
-                }).join('');
-                suggestionsContainer.style.display = 'block';
-            } else if (suggestionsContainer) {
+if (searchInput) {
+    searchInput.addEventListener('input', () => {
+        const term = searchInput.value.toLowerCase().trim();
+        
+        // Sprawdzamy, czy wpisano mniej niż 2 znaki
+        if (term.length < 2) {
+            if (suggestionsContainer) {
                 suggestionsContainer.innerHTML = '';
                 suggestionsContainer.style.display = 'none';
             }
-            // UWAGA: Brak performSearch() podczas samego pisania – zdjęcia nie filtrują się automatycznie.
+            return;
+        }
+
+        const matches = activeCategories.filter(cat => {
+            const val = (cat[currentLang] || cat.pl).toLowerCase();
+            // Używamy startsWith, aby szukać tylko od początku słowa
+            return val.startsWith(term);
         });
 
-        if (suggestionsContainer) {
-            suggestionsContainer.addEventListener('click', (e) => {
-                const item = e.target.closest('.suggestion-item');
-                if (item) {
-                    searchInput.value = item.innerText;
-                    suggestionsContainer.innerHTML = '';
-                    suggestionsContainer.style.display = 'none';
+        if (matches.length > 0 && suggestionsContainer) {
+            suggestionsContainer.innerHTML = matches.map(cat => {
+                const text = cat[currentLang] || cat.pl;
+                return `<div class="suggestion-item" style="padding: 8px 12px; cursor: pointer; background: var(--bg-color, #fff); color: var(--text-color, #000); border-bottom: 1px solid rgba(0,0,0,0.05); transition: background-color 0.2s, color 0.2s;" onmouseenter="this.style.backgroundColor='#000'; this.style.color='#fff';" onmouseleave="this.style.backgroundColor='var(--bg-color, #fff)'; this.style.color='var(--text-color, #000)';">${text}</div>`;
+            }).join('');
+            suggestionsContainer.style.display = 'block';
+        } else if (suggestionsContainer) {
+            suggestionsContainer.innerHTML = '';
+            suggestionsContainer.style.display = 'none';
+        }
+        // UWAGA: Brak performSearch() podczas samego pisania – zdjęcia nie filtrują się automatycznie.
+    });
+
+    if (suggestionsContainer) {
+        suggestionsContainer.addEventListener('click', (e) => {
+            const item = e.target.closest('.suggestion-item');
+            if (item) {
+                searchInput.value = item.innerText;
+                suggestionsContainer.innerHTML = '';
+                suggestionsContainer.style.display = 'none';
+                if (typeof performSearch === 'function') {
                     performSearch(); // Filtrowanie dopiero po wyborze z listy
                 }
-            });
-        }
+            }
+        });
+    }
 
-        document.addEventListener('click', (e) => {
-            if (searchInput && suggestionsContainer && !searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+    document.addEventListener('click', (e) => {
+        if (searchInput && suggestionsContainer && !searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+
+    if (searchBtn) {
+        searchBtn.addEventListener('click', () => {
+            if (suggestionsContainer) {
+                suggestionsContainer.innerHTML = '';
                 suggestionsContainer.style.display = 'none';
             }
-        });
-
-        if (searchBtn) {
-            searchBtn.addEventListener('click', () => {
-                if (suggestionsContainer) {
-                    suggestionsContainer.innerHTML = '';
-                    suggestionsContainer.style.display = 'none';
-                }
-                performSearch();
-            });
-        }
-
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                if (suggestionsContainer) {
-                    suggestionsContainer.innerHTML = '';
-                    suggestionsContainer.style.display = 'none';
-                }
+            if (typeof performSearch === 'function') {
                 performSearch();
             }
         });
     }
 
-    // --- TYPEWRITER ---
-    if (searchInput) {
-        startTypewriter(); 
-        searchInput.addEventListener('focus', () => {
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            if (suggestionsContainer) {
+                suggestionsContainer.innerHTML = '';
+                suggestionsContainer.style.display = 'none';
+            }
+            if (typeof performSearch === 'function') {
+                performSearch();
+            }
+        }
+    });
+}
+
+// --- TYPEWRITER ---
+if (searchInput) {
+    if (typeof startTypewriter === 'function') {
+        startTypewriter();
+    }
+    searchInput.addEventListener('focus', () => {
+        if (typeof typewriterTimer !== 'undefined') {
             clearTimeout(typewriterTimer);
-            searchInput.placeholder = '';
-        });
-        searchInput.addEventListener('blur', () => {
-            if (searchInput.value.trim() === '' && searchInput.placeholder === '') {
+        }
+        searchInput.placeholder = '';
+    });
+    searchInput.addEventListener('blur', () => {
+        if (searchInput.value.trim() === '' && searchInput.placeholder === '') {
+            if (typeof startTypewriter === 'function') {
                 startTypewriter();
             }
-        });
-    }
+        }
+    });
+}
 
-    const btt = document.getElementById('back-to-top');
-    window.addEventListener('scroll', () => { if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; });
-    if (btt) btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    const counterEl = document.getElementById('frame-count');
-    if (counterEl) {
-        fetch('https://abacus.jasoncameron.dev/hit/alan_lysiak_portfolio/pentax_v1')
-        .then(r => r.json())
-        .then(d => counterEl.innerText = (200 + (d.value || 0)).toString().padStart(2, '0'))
-        .catch(() => counterEl.innerText = "200");
-    }
+const btt = document.getElementById('back-to-top');
+window.addEventListener('scroll', () => { 
+    if (btt) btt.style.display = window.scrollY > 400 ? "block" : "none"; 
 });
+if (btt) {
+    btt.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+const counterEl = document.getElementById('frame-count');
+if (counterEl) {
+    fetch('https://abacus.jasoncameron.dev/hit/alan_lysiak_portfolio/pentax_v1')
+    .then(r => r.json())
+    .then(d => counterEl.innerText = (200 + (d.value || 0)).toString().padStart(2, '0'))
+    .catch(() => counterEl.innerText = "200");
+}
 
 // Obsługa dźwięku migawki oraz efektu powiększenia dla logo
 document.addEventListener('DOMContentLoaded', () => {
