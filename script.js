@@ -1,281 +1,83 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- KONFIGURACJA SANITY ---
-    const PROJECT_ID = '6g67d261';
-    const DATASET = 'portfolio';
+    // --- ZMIENNE GLOBALNE I KONFIGURACJA SANITY ---
+    const PROJECT_ID = 'twoje_project_id'; // Podmień na swoje ID z Sanity
+    const DATASET = 'production';
     
-    // --- ELEMENTY DOM ---
-    const grid = document.querySelector('.gallery-grid');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const prevBtn = document.querySelector('.prev');
-    const nextBtn = document.querySelector('.next');
-    const closeBtn = document.querySelector('.close');
+    const grid = document.getElementById('photo-grid');
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
     const randomBtn = document.getElementById('random-btn');
-    
     const langPlBtn = document.getElementById('lang-pl');
     const langEnBtn = document.getElementById('lang-en');
+    
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const closeBtn = document.getElementById('lightbox-close');
+    const prevBtn = document.getElementById('lightbox-prev');
+    const nextBtn = document.getElementById('lightbox-next');
 
-    // --- ZMIENNE STANOWE ---
-    let images = []; 
-    let visibleImages = []; 
+    let images = [];
+    let visibleImages = [];
     let activeIdx = 0;
-    let clickTimer = null; 
-
+    let currentLang = localStorage.getItem('site_lang') || 'pl';
+    let clickTimer = null;
     let isMoving = false;
-    let startX = 0, startY = 0;
-    let currentX = 0, currentY = 0;
+    let startX = 0, startY = 0, currentX = 0, currentY = 0;
 
-    // --- WYBRANE KATEGORIE DO PODPOWIEDZI I PRZYCISKU LOSOWO ---
+    // Słownik tagów / kategorii (możesz rozszerzyć w miarę potrzeb)
+    const tagDictionary = {
+        street: { pl: "ulica", en: "street" },
+        portrait: { pl: "portret", en: "portrait" },
+        abstract: { pl: "abstrakcja", en: "abstract" },
+        darkroom: { pl: "ciemnia", en: "darkroom" },
+        film: { pl: "analog", en: "film" },
+        double: { pl: "podwójna ekspozycja", en: "double exposure" }
+    };
+
     const activeCategories = [
-        { pl: 'street',             en: 'street' },
-        { pl: 'portret',            en: 'portrait' },
-        { pl: 'abstrakcja',         en: 'abstract' },
-        { pl: 'monochrom',          en: 'monochrome' },
-        { pl: 'czarno-białe',       en: 'black & white' },
-        { pl: 'podwójna ekspozycja', en: 'double exposure' },
-        { pl: 'krajobraz',          en: 'landscape' },
-        { pl: 'gdynia',             en: 'gdynia' },
-        { pl: 'kwiaty',             en: 'flowers' },
-        { pl: 'dzika przyroda',      en: 'wildlife' },
-        { pl: 'plaża',              en: 'beach' },
-        { pl: 'zima',               en: 'winter' },
-        { pl: 'polska',             en: 'poland' },
-        { pl: 'albania',            en: 'albania' },
-        { pl: 'austria',            en: 'austria' },
-        { pl: 'bałkany',            en: 'balkans' },
-        { pl: 'bośnia',             en: 'bosnia' },
-        { pl: 'bułgaria',           en: 'bulgaria' },
-        { pl: 'chorwacja',          en: 'croatia' },
-        { pl: 'cypr',               en: 'cyprus' },
-        { pl: 'czechy',             en: 'czechia' },
-        { pl: 'estonia',            en: 'estonia' },
-        { pl: 'niemcy',             en: 'germany' },
-        { pl: 'hiszpania',          en: 'spain' },
-        { pl: 'holandia',           en: 'netherlands' },
-        { pl: 'węgry',              en: 'hungary' },
-        { pl: 'włochy',             en: 'italy' },
-        { pl: 'łotwa',              en: 'latvia' },
-        { pl: 'liechtenstein',      en: 'liechtenstein' },
-        { pl: 'litwa',              en: 'lithuania' },
-        { pl: 'czarnogóra',         en: 'montenegro' },
-        { pl: 'rumunia',            en: 'romania' },
-        { pl: 'serbia',             en: 'serbia' },
-        { pl: 'słowacja',           en: 'slovakia' }
+        { pl: "ulica", en: "street" },
+        { pl: "portret", en: "portrait" },
+        { pl: "abstrakcja", en: "abstract" },
+        { pl: "ciemnia", en: "darkroom" },
+        { pl: "analog", en: "film" }
     ];
 
-    // --- SŁOWA DO ANIMACJI TYPEWRITER ---
-    let typewriterTimer;
+    // --- TYPEWRITER (EFEKT PISANIA) ---
+    const placeholderTexts = {
+        pl: ["szukaj: ulica...", "szukaj: portret...", "szukaj: abstrakcja...", "szukaj: analog..."],
+        en: ["search: street...", "search: portrait...", "search: abstract...", "search: film..."]
+    };
     let typeIdx = 0;
     let charIdx = 0;
     let isDeleting = false;
-    
-    const typewriterPhrases = {
-        pl: ['szukaj...', 'street', 'portret', 'abstrakcja', 'monochrom', 'podwójna ekspozycja', 'krajobraz', 'gdynia', 'polska'],
-        en: ['search...', 'street', 'portrait', 'abstract', 'monochrome', 'double exposure', 'landscape', 'gdynia', 'poland']
-    };
+    let typewriterTimer = null;
 
     function startTypewriter() {
-        if (!searchInput) return;
-        clearTimeout(typewriterTimer);
-        
-        const phrases = typewriterPhrases[currentLang] || typewriterPhrases.pl;
-        const currentPhrase = phrases[typeIdx];
-        
+        if (!searchInput || document.activeElement === searchInput) return;
+        const currentTexts = placeholderTexts[currentLang] || placeholderTexts.pl;
+        const fullText = currentTexts[typeIdx];
+
         if (isDeleting) {
-            searchInput.placeholder = currentPhrase.substring(0, charIdx - 1);
+            searchInput.placeholder = fullText.substring(0, charIdx - 1);
             charIdx--;
         } else {
-            searchInput.placeholder = currentPhrase.substring(0, charIdx + 1);
+            searchInput.placeholder = fullText.substring(0, charIdx + 1);
             charIdx++;
         }
 
-        let speed = isDeleting ? 50 : 120;
+        let speed = isDeleting ? 40 : 80;
 
-        if (!isDeleting && charIdx === currentPhrase.length) {
-            speed = 2000;
+        if (!isDeleting && charIdx === fullText.length) {
+            speed = 1500; // Pauza na końcu pełnego napisu
             isDeleting = true;
         } else if (isDeleting && charIdx === 0) {
             isDeleting = false;
-            typeIdx = (typeIdx + 1) % phrases.length;
-            speed = 500;
+            typeIdx = (typeIdx + 1) % currentTexts.length;
+            speed = 400;
         }
 
         typewriterTimer = setTimeout(startTypewriter, speed);
     }
-
-    let currentLang = localStorage.getItem('site_lang') || localStorage.getItem('preferred_lang');
-    if (!currentLang) {
-        const browserLang = navigator.language || navigator.userLanguage || 'pl';
-        currentLang = browserLang.toLowerCase().startsWith('pl') ? 'pl' : 'en';
-    }
-
-    const tagDictionary = {
-        'abstrakcja':         { pl: 'abstrakcja',         en: 'abstract' },
-        'abstract':          { pl: 'abstrakcja',         en: 'abstract' },
-        'street':            { pl: 'street',             en: 'street' },
-        'portret':           { pl: 'portret',            en: 'portrait' },
-        'portrait':          { pl: 'portret',            en: 'portrait' },
-        'krajobraz':         { pl: 'krajobraz',          en: 'landscape' },
-        'landscape':         { pl: 'krajobraz',          en: 'landscape' },
-        'czarnobiale':       { pl: 'czarno-białe',       en: 'black & white' },
-        'blackwhite':        { pl: 'czarno-białe',       en: 'black & white' },
-        'black & white':     { pl: 'czarno-białe',       en: 'black & white' },
-        'monochrome':        { pl: 'monochrom',          en: 'monochrome' },
-        'doublexposure':     { pl: 'podwójna ekspozycja', en: 'double exposure' },
-        'double exposure':   { pl: 'podwójna ekspozycja', en: 'double exposure' },
-        'longexposure':      { pl: 'długa ekspozycja',    en: 'long exposure' },
-        'long exposure':     { pl: 'długa ekspozycja',    en: 'long exposure' },
-        'refractography':    { pl: 'refraktografia',      en: 'refractography' },
-        'refraktografia':    { pl: 'refraktografia',      en: 'refraktografia' },
-        'macro':             { pl: 'makro',               en: 'macro' },
-        'makro':             { pl: 'makro',               en: 'macro' },
-        'urban':             { pl: 'urban',               en: 'urban' },
-        'travel':            { pl: 'podróże',             en: 'travel' },
-        'podroze':           { pl: 'podróże',             en: 'travel' },
-        'podróże':           { pl: 'podróże',             en: 'travel' },
-        'wildlife':          { pl: 'dzika przyroda',      en: 'wildlife' },
-        'dzika przyroda':    { pl: 'dzika przyroda',      en: 'wildlife' },
-        'selfie':            { pl: 'selfie',              en: 'selfie' },
-        'generator':         { pl: 'generator',           en: 'generator' },
-
-        'polska':            { pl: 'polska',              en: 'poland' },
-        'poland':            { pl: 'polska',              en: 'poland' },
-        'albania':           { pl: 'albania',             en: 'albania' },
-        'austria':           { pl: 'austria',             en: 'austria' },
-        'balkans':           { pl: 'bałkany',             en: 'balkans' },
-        'balkany':           { pl: 'bałkany',             en: 'balkans' },
-        'bałkany':           { pl: 'bałkany',             en: 'balkans' },
-        'bosnia':            { pl: 'bośnia',              en: 'bosnia' },
-        'bośnia':            { pl: 'bośnia',              en: 'bosnia' },
-        'bulgaria':          { pl: 'bułgaria',            en: 'bulgaria' },
-        'bułgaria':          { pl: 'bułgaria',            en: 'bulgaria' },
-        'chorwacja':         { pl: 'chorwacja',           en: 'croatia' },
-        'croatia':           { pl: 'chorwacja',           en: 'croatia' },
-        'cypr':              { pl: 'cypr',                en: 'cyprus' },
-        'cyprus':            { pl: 'cypr',                en: 'cyprus' },
-        'czech':             { pl: 'czechy',              en: 'czechia' },
-        'czechy':            { pl: 'czechy',              en: 'czechia' },
-        'czechia':           { pl: 'czechy',              en: 'czechia' },
-        'estonia':           { pl: 'estonia',             en: 'estonia' },
-        'germany':           { pl: 'niemcy',              en: 'germany' },
-        'niemcy':            { pl: 'niemcy',              en: 'germany' },
-        'hiszpania':         { pl: 'hiszpania',           en: 'spain' },
-        'spain':             { pl: 'hiszpania',           en: 'spain' },
-        'holandia':          { pl: 'holandia',            en: 'netherlands' },
-        'netherlands':       { pl: 'holandia',            en: 'netherlands' },
-        'hungary':           { pl: 'węgry',               en: 'hungary' },
-        'wegry':             { pl: 'węgry',               en: 'hungary' },
-        'węgry':             { pl: 'węgry',               en: 'hungary' },
-        'italy':             { pl: 'włochy',              en: 'italy' },
-        'wlochy':            { pl: 'włochy',              en: 'italy' },
-        'włochy':            { pl: 'włochy',              en: 'italy' },
-        'latvia':            { pl: 'łotwa',               en: 'latvia' },
-        'lotwa':             { pl: 'łotwa',               en: 'latvia' },
-        'łotwa':             { pl: 'łotwa',               en: 'latvia' },
-        'lichtenstein':      { pl: 'liechtenstein',       en: 'liechtenstein' },
-        'liechtenstein':     { pl: 'liechtenstein',       en: 'liechtenstein' },
-        'lithuania':         { pl: 'litwa',               en: 'lithuania' },
-        'litwa':             { pl: 'litwa',               en: 'lithuania' },
-        'montenegro':        { pl: 'czarnogóra',          en: 'montenegro' },
-        'czarnogora':        { pl: 'czarnogóra',          en: 'montenegro' },
-        'czarnogóra':        { pl: 'czarnogóra',          en: 'montenegro' },
-        'romania':           { pl: 'rumunia',             en: 'romania' },
-        'rumunia':           { pl: 'rumunia',             en: 'romania' },
-        'serbia':            { pl: 'serbia',              en: 'serbia' },
-        'slowacja':          { pl: 'słowacja',            en: 'slovakia' },
-        'słowacja':          { pl: 'słowacja',            en: 'slovakia' },
-        'slovakia':          { pl: 'słowacja',            en: 'slovakia' },
-
-        'amsterdam':         { pl: 'amsterdam',           en: 'amsterdam' },
-        'belgrad':           { pl: 'belgrad',             en: 'belgrade' },
-        'belgrade':          { pl: 'belgrad',             en: 'belgrade' },
-        'budapest':          { pl: 'budapeszt',           en: 'budapest' },
-        'budapeszt':         { pl: 'budapeszt',           en: 'budapest' },
-        'bukareszt':         { pl: 'bukareszt',           en: 'bucharest' },
-        'bucharest':         { pl: 'bukareszt',           en: 'bucharest' },
-        'catania':           { pl: 'katania',             en: 'catania' },
-        'katania':           { pl: 'katania',             en: 'catania' },
-        'etna':              { pl: 'etna',                en: 'etna' },
-        'gdansk':            { pl: 'gdańsk',              en: 'gdansk' },
-        'gdańsk':            { pl: 'gdańsk',              en: 'gdansk' },
-        'gdynia':            { pl: 'gdynia',              en: 'gdynia' },
-        'poznan':            { pl: 'poznań',              en: 'poznan' },
-        'poznań':            { pl: 'poznań',              en: 'poznan' },
-        'prague':            { pl: 'praga',               en: 'praga' },
-        'praga':             { pl: 'praga',               en: 'praga' },
-        'rome':              { pl: 'rzym',                en: 'rome' },
-        'rzym':              { pl: 'rzym',                en: 'rome' },
-        'ryga':              { pl: 'ryga',                en: 'riga' },
-        'riga':              { pl: 'ryga',                en: 'riga' },
-        'sicily':            { pl: 'sycylia',             en: 'sicily' },
-        'sycylia':           { pl: 'sycylia',             en: 'sicily' },
-        'sopot':             { pl: 'sopot',               en: 'sopot' },
-        'venezia':           { pl: 'wenecja',             en: 'venice' },
-        'wenecja':           { pl: 'wenecja',             en: 'venice' },
-        'venice':            { pl: 'wenecja',             en: 'venice' },
-        'viena':             { pl: 'wiedeń',              en: 'vienna' },
-        'wieden':            { pl: 'wiedeń',              en: 'vienna' },
-        'wiedien':           { pl: 'wiedeń',              en: 'vienna' },
-        'wiedeń':            { pl: 'wiedeń',              en: 'vienna' },
-        'vienna':            { pl: 'wiedeń',              en: 'vienna' },
-
-        'batman':            { pl: 'batman',              en: 'batman' },
-        'beach':             { pl: 'plaża',               en: 'beach' },
-        'plaza':             { pl: 'plaża',               en: 'beach' },
-        'plaża':             { pl: 'plaża',               en: 'beach' },
-        'bear':              { pl: 'niedźwiedź',          en: 'bear' },
-        'niedzwiedz':        { pl: 'niedźwiedź',          en: 'bear' },
-        'niedźwiedź':        { pl: 'niedźwiedź',          en: 'bear' },
-        'bicycle':           { pl: 'rower',               en: 'bicycle' },
-        'rower':             { pl: 'rower',               en: 'bicycle' },
-        'bird':              { pl: 'ptak',                en: 'bird' },
-        'ptak':              { pl: 'ptak',                en: 'bird' },
-        'buty':              { pl: 'buty',                en: 'shoes' },
-        'shoes':             { pl: 'buty',                en: 'shoes' },
-        'car':               { pl: 'samochód',            en: 'car' },
-        'samochod':          { pl: 'samochód',            en: 'car' },
-        'samochód':          { pl: 'samochód',            en: 'car' },
-        'cat':               { pl: 'kot',                 en: 'cat' },
-        'kot':               { pl: 'kot',                 en: 'cat' },
-        'dog':               { pl: 'pies',                en: 'dog' },
-        'pies':              { pl: 'pies',                en: 'dog' },
-        'flower':            { pl: 'kwiaty',              en: 'flowers' },
-        'flowers':           { pl: 'kwiaty',              en: 'flowers' },
-        'kwiat':             { pl: 'kwiaty',              en: 'flowers' },
-        'kwiaty':            { pl: 'kwiaty',              en: 'flowers' },
-        'horse':             { pl: 'koń',                 en: 'horse' },
-        'kon':               { pl: 'koń',                 en: 'horse' },
-        'koń':               { pl: 'koń',                 en: 'horse' },
-        'morze':             { pl: 'morze',               en: 'sea' },
-        'sea':               { pl: 'morze',               en: 'sea' },
-        'night':             { pl: 'noc',                 en: 'night' },
-        'noc':               { pl: 'noc',                 en: 'night' },
-        'pajak':             { pl: 'pająk',               en: 'spider' },
-        'pająk':             { pl: 'pająk',               en: 'spider' },
-        'spider':            { pl: 'pająk',               en: 'spider' },
-        'spiderman':         { pl: 'spiderman',           en: 'spiderman' },
-        'pociag':            { pl: 'pociąg',              en: 'train' },
-        'pociąg':            { pl: 'pociąg',              en: 'train' },
-        'train':             { pl: 'pociąg',              en: 'train' },
-        'skateboard':        { pl: 'deskorolka',          en: 'skateboard' },
-        'deskorolka':        { pl: 'deskorolka',          en: 'skateboard' },
-        'winter':            { pl: 'zima',                en: 'zima' },
-        'zima':              { pl: 'zima',                en: 'winter' },
-        'znaki':             { pl: 'znaki',               en: 'signs' },
-        'signs':             { pl: 'znaki',               en: 'signs' },
-        'zorza':             { pl: 'zorza',               en: 'aurora' },
-        'aurora':            { pl: 'zorza',               en: 'aurora' },
-        'tagi':              { pl: 'tagi',                en: 'tags' },
-        'tags':              { pl: 'tagi',                en: 'tags' },
-
-        'fujifilm':          { pl: 'fujifilm',            en: 'fujifilm' },
-        'nikon':             { pl: 'nikon',               en: 'nikon' },
-        'olympus':           { pl: 'olympus',             en: 'olympus' },
-        'ricoh':             { pl: 'ricoh',               en: 'ricoh' },
-        'sony':              { pl: 'sony',                en: 'sony' }
-    };
 
     function getDisplayTag(rawTag, lang) {
         if (!rawTag) return '';
@@ -409,7 +211,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const mTermsTitle = document.getElementById('modal-terms-title');
         if (mTermsTitle) mTermsTitle.innerText = t.termsTitle;
         const mTermsP1 = document.getElementById('modal-terms-p1');
-        if (mTermsP1) mTermsP1.innerText = t.privacyP1; // fallback
+        if (mTermsP1) mTermsP1.innerText = t.privacyP1;
         const mTermsP2 = document.getElementById('modal-terms-p2');
         if (mTermsP2) mTermsP2.innerText = t.privacyP2;
 
@@ -650,13 +452,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (e.key === "ArrowLeft" && prevBtn) prevBtn.click();
     });
 
- // --- WYSZUKIWARKA Z LISTĄ PODPOWIEDZI (DROPDOWN) ORAZ LOSOWANIE ---
+    // --- WYSZUKIWARKA Z LISTĄ PODPOWIEDZI (DROPDOWN) ORAZ UKŁAD FLEX ---
     let suggestionsContainer = document.querySelector('.search-suggestions');
     if (!suggestionsContainer && searchInput) {
-        // Tworzymy dedykowany kontener wokół samego inputa, aby podpowiedzi zawsze były idealnie pod nim
         const inputWrapper = document.createElement('div');
         inputWrapper.style.position = 'relative';
-        inputWrapper.style.width = '100%';
+        inputWrapper.style.flex = '1';
+        inputWrapper.style.minWidth = '0';
         
         searchInput.parentNode.insertBefore(inputWrapper, searchInput);
         inputWrapper.appendChild(searchInput);
@@ -669,6 +471,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         suggestionsContainer.style.left = '0';
         suggestionsContainer.style.width = '100%';
         inputWrapper.appendChild(suggestionsContainer);
+
+        // Zapewnienie, że rodzic inputa i przycisk są w układzie flex (obok siebie)
+        if (inputWrapper.parentNode) {
+            inputWrapper.parentNode.style.display = 'flex';
+            inputWrapper.parentNode.style.alignItems = 'center';
+            inputWrapper.parentNode.style.gap = '8px';
+        }
     }
 
     if (randomBtn) {
@@ -688,11 +497,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-  if (searchInput) {
+    if (searchInput) {
         searchInput.addEventListener('input', () => {
             const term = searchInput.value.toLowerCase().trim();
             
-            // Sprawdzamy, czy wpisano mniej niż 2 znaki
             if (term.length < 2) {
                 if (suggestionsContainer) {
                     suggestionsContainer.innerHTML = '';
@@ -703,11 +511,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const matches = activeCategories.filter(cat => {
                 const val = (cat[currentLang] || cat.pl).toLowerCase();
-                // Używamy startsWith, aby szukać tylko od początku słowa
                 return val.startsWith(term);
             });
 
-           if (matches.length > 0 && suggestionsContainer) {
+            if (matches.length > 0 && suggestionsContainer) {
                 suggestionsContainer.innerHTML = matches.map(cat => {
                     const text = cat[currentLang] || cat.pl;
                     return `<div class="suggestion-item" style="padding: 8px 12px; cursor: pointer; background: var(--bg-color, #fff); color: var(--text-color, #000); border-bottom: 1px solid rgba(0,0,0,0.05); transition: background-color 0.2s, color 0.2s;" onmouseenter="this.style.backgroundColor='#000'; this.style.color='#fff';" onmouseleave="this.style.backgroundColor='var(--bg-color, #fff)'; this.style.color='var(--text-color, #000)';">${text}</div>`;
@@ -717,7 +524,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 suggestionsContainer.innerHTML = '';
                 suggestionsContainer.style.display = 'none';
             }
-            // UWAGA: Brak performSearch() podczas samego pisania – zdjęcia nie filtrują się automatycznie.
         });
 
         if (suggestionsContainer) {
@@ -727,7 +533,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     searchInput.value = item.innerText;
                     suggestionsContainer.innerHTML = '';
                     suggestionsContainer.style.display = 'none';
-                    performSearch(); // Filtrowanie dopiero po wyborze z listy
+                    performSearch();
                 }
             });
         }
@@ -759,7 +565,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // --- TYPEWRITER ---
     if (searchInput) {
         startTypewriter(); 
         searchInput.addEventListener('focus', () => {
@@ -790,22 +595,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 document.addEventListener('DOMContentLoaded', () => {
     const logoLinks = document.querySelectorAll('.logo-link, .site-logo');
     
-    // Wstępnie ładujemy plik audio raz na starcie
     const shutterSound = new Audio('images/shutter.mp3');
     shutterSound.volume = 0.4;
     shutterSound.preload = 'auto';
 
     logoLinks.forEach(logo => {
         logo.style.cursor = 'pointer';
-        // Dodajemy płynne przejście dla animacji
         logo.style.transition = 'transform 0.3s ease';
 
-        // Lekkie powiększenie po najechaniu myszką
         logo.addEventListener('mouseenter', () => {
             logo.style.transform = 'scale(1.05)';
         });
 
-        // Powrót do normalnego rozmiaru po zjechaniu myszką
         logo.addEventListener('mouseleave', () => {
             logo.style.transform = 'scale(1)';
         });
