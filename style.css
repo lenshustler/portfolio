@@ -26,8 +26,8 @@ body {
    2. NAGŁÓWEK (LOGO + WYSZUKIWARKA + LINKI + JĘZYKI + INSTAGRAM)
    ========================================================================== */
 header {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr max-content 1fr; /* Wymusza 3 strefy: lewa elastyczna, środek dopasowany do wyszukiwarki, prawa elastyczna */
     align-items: center;
     padding: 35px 40px;
     width: 100%;
@@ -35,10 +35,10 @@ header {
 }
 
 .header-branding { 
-    flex: 1 1 0; 
     display: flex; 
     align-items: center; 
     gap: 15px; 
+    justify-self: start; /* Przypinamy logo całkowicie do lewej */
 }
 
 .site-logo { 
@@ -55,23 +55,21 @@ header {
 }
 
 .search-nav { 
-    flex: 1 1 0; 
     display: flex; 
     justify-content: center; 
     align-items: center;
-    gap: 8px; 
-    padding: 0 10px; 
+    gap: 8px; /* Stała odległość między polem a przyciskiem */
     position: relative; 
+    justify-self: center; /* Przypinamy wyszukiwarkę na absolutnym środku ekranu */
 }
 
 .header-links { 
-    flex: 1 1 0; 
     list-style: none; 
     display: flex; 
-    justify-content: flex-end; 
     align-items: center; 
     gap: 35px; 
     padding: 0; 
+    justify-self: end; /* Przypinamy linki całkowicie do prawej */
 }
 
 .header-links a { 
@@ -145,7 +143,7 @@ header {
    3. WYSZUKIWARKA I PRZYCISKI
    ========================================================================== */
 .arnold-search {
-    width: 220px; 
+    width: 220px; /* Okienko ma swoją szerokość, przycisk stoi obok */
     background: transparent; 
     border: 1px solid #ccc;
     color: #000000; 
@@ -624,16 +622,17 @@ footer {
     }
 
     header { 
+        display: flex; /* Na telefonie wracamy do układu pionowego */
         flex-direction: column; 
         padding: 15px 10px; 
         gap: 12px; 
     }
 
     .header-branding, 
-    .header-links { 
+    .header-links,
+    .search-nav { 
         width: 100%; 
         justify-content: center; 
-        flex: none; 
     }
 
     .header-links { 
@@ -647,11 +646,8 @@ footer {
     }
     
     .search-nav { 
-        width: 100%; 
         display: flex;
-        justify-content: center;
         align-items: center;
-        flex: none; 
         padding: 0; 
         flex-wrap: nowrap; 
         gap: 8px; 
