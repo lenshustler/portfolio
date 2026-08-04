@@ -621,11 +621,13 @@ footer {
         width: 100%; 
     }
 
+    /* NAGŁÓWEK NA TELEFONIE */
     header { 
-        display: flex; /* Na telefonie wracamy do układu pionowego */
+        display: flex; /* Zmieniamy Grid na Flexbox na telefonie */
         flex-direction: column; 
-        padding: 15px 10px; 
-        gap: 12px; 
+        align-items: center; /* Wymusza wyśrodkowanie wszystkiego w pionie */
+        padding: 20px 15px; 
+        gap: 15px; 
     }
 
     .header-branding, 
@@ -633,30 +635,37 @@ footer {
     .search-nav { 
         width: 100%; 
         justify-content: center; 
+        justify-self: auto; /* Resetujemy ustawienia Grida z wersji desktopowej */
     }
 
     .header-links { 
-        gap: 18px; 
+        gap: 15px; 
         flex-wrap: wrap;
-        align-items: center;
     }
 
     .header-links a { 
         font-size: 0.75rem; 
     }
     
+    /* WYSZUKIWARKA NA TELEFONIE */
     .search-nav { 
         display: flex;
-        align-items: center;
-        padding: 0; 
-        flex-wrap: nowrap; 
+        flex-direction: row; /* Zawsze trzymaj pole i przycisk w jednym rzędzie */
+        flex-wrap: nowrap; /* Zabrania zrzucania przycisku do nowej linii */
         gap: 8px; 
+        padding: 0; 
     }
 
     .arnold-search { 
-        width: 60%; 
-        max-width: 200px; 
+        flex: 1 1 auto; /* Pozwala polu wyszukiwania skurczyć się na b. wąskich ekranach */
+        width: 100%; 
+        max-width: 220px; 
         text-align: left; 
+    }
+
+    .search-btn, 
+    #random-btn {
+        flex-shrink: 0; /* Zabrania przyciskowi się kurczyć lub łamać */
     }
 
     .search-suggestions,
@@ -665,6 +674,7 @@ footer {
         max-width: 100%; 
     } 
     
+    /* GALERIA I RESZTA */
     .gallery-section { 
         width: 96%; 
         margin: 15px auto; 
