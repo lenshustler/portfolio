@@ -55,10 +55,10 @@ header {
 }
 
 .search-nav { 
-    flex: 1; 
     display: flex; 
+    align-items: center;
     justify-content: flex-start; 
-    gap: 8px; 
+    gap: 8px; /* Odległość między polem a przyciskiem (zmniejsz np. do 4px jeśli chcesz jeszcze bliżej) */
     padding: 0 20px; 
     position: relative; 
 }
