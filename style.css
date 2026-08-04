@@ -144,8 +144,8 @@ header {
    3. WYSZUKIWARKA I PRZYCISKI
    ========================================================================== */
 .arnold-search {
-    width: 100%; 
-    max-width: 350px; 
+    width: auto; /* Zmienione z 100% */
+    width: 250px; /* Sztywna, dopasowana szerokość okienka */
     background: transparent; 
     border: 1px solid #ccc;
     color: #000000; 
